@@ -94,7 +94,7 @@
     "jwt-decode": "^2.2.0",
     "leaflet": "^1.3.4",
     "list-to-tree-lite": "^0.1.0",
-    "lodash": "4.17.11",
+    "lodash": "4.17.15",
     "luxon": "^1.8.2",
     "minimist": "1.2.0",
     "moment": "^2.24.0",
