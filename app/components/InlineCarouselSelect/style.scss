@@ -1,0 +1,18 @@
+@import 'base.scss';
+
+@include block(InlineCarouselSelect) {
+  display: flex;
+  align-items: center;
+  @include element(optionWrap) {
+    overflow: hidden;
+  }
+  @include element(options) {
+    display: flex;
+    transition: all .2s ease;
+  }
+  @include element(controls) {
+    flex-shrink: 0;
+    padding-left: px-to-rem(24);
+    padding-right: px-to-rem(24);
+  }
+}

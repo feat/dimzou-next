@@ -1,0 +1,240 @@
+@import '~@feat/feat-ui/lib/style/themes/default.scss';
+$default-namespace: 'ft';
+
+// Fonts
+$sans-serif-heading-font: 'HelveticaNeue-CondensedBold',
+  'HelveticaNeueCondensedBold', 'HelveticaNeue', 'Helvetica Neue', 'Helvetica',
+  sans-serif;
+$sans-serif-title-font: 'HelveticaNeue-Medium', 'HelveticaNeueMedium',
+  'Microsoft Yahei', sans-serif;
+$sans-serif-text-font: Helvetica, Arial, 'PingFang SC', sans-serif;
+$serif-heading-font: Cambria, serif;
+$serif-title-font: Georgia, serif;
+$serif-text-font: 'Times New Roman', SimSun, Times, serif;
+
+$monospace: Menlo, Consolas, Monaco, 'Courier New', monospace !default;
+
+// Pixel value used to responsively scale all typography. Applied to the `<html>` element.
+$font-size-root: 16px !default;
+
+$font-size-base: 16px !default;
+$font-size-lg: 20px !default;
+$font-size-sm: 14px !default;
+$font-size-xs: 12px !default;
+
+$font-size-h1: 40px !default;
+$font-size-h2: 32px !default;
+$font-size-h3: 28px !default;
+$font-size-h4: 24px !default;
+$font-size-h5: 20px !default;
+$font-size-h6: 16px !default;
+$font-size-text: 16px !default;
+$text-size: $font-size-text;
+
+$line-height: 1.5;
+
+// Color
+
+// Grayscale
+$gray-0: #ffffff;
+$gray-1: #f6f6f6;
+$gray-2: #ededed;
+$gray-3: #dadada;
+$gray-4: #c6c6c6;
+$gray-5: #b2b2b2;
+$gray-6: #9d9d9c;
+$gray-7: #878787;
+$gray-8: #706f6f;
+$gray-9: #575756;
+$gray-10: #3c3c3b;
+$gray-11: #1d1d1b;
+$gray-12: #000000;
+
+$color-link: $color-tertiary;
+$color-primary: $gray-10;
+// $color-secondary: rgb(0, 150, 59); // brand
+// $color-secondary: #b82b2e; // brand
+// $color-tertiary: #b1b1b1;
+// $color-tertiary: #108ee9;
+$color-success: #008000;
+$color-info: $gray-6;
+$color-danger: #e20717; // "danger"
+$color-error: $color-danger;
+$color-warning: #f0c900;
+
+// Typography
+
+$heading-font: $sans-serif-heading-font;
+$title-font: $sans-serif-title-font;
+$text-font: $sans-serif-text-font;
+$text-color: $gray-10;
+
+// Avatar
+$avatar-size-xxs: 24px;
+$avatar-size-xs: 32px;
+$avatar-size-sm: 36px;
+$avatar-size-md: 48px;
+$avatar-size-lg: 100px;
+$avatar-size-xl: 150px;
+
+$color-avatar-meta: $color-tertiary;
+
+// Form
+$form-placeholder-color: $gray-6;
+$form-control-border-color: $gray-3;
+
+// Menu
+$menu-md-padding-x: 12px;
+$menu-md-padding-y: 5px;
+
+// Menu Navbar modifier
+
+// Layout
+$header-height: 56px;
+$fixed-header-index: 1000;
+$header-scroll-height: 50px;
+
+// Alert
+$alert-md-padding-x: 12px;
+$alert-md-padding-y: 8px;
+$alert-md-border-radius: 4px;
+
+//Badge
+$badge-success-color: $color-success;
+$badge-error-color: $color-error;
+$badge-default-color: #d9d9d9;
+$badge-process-color: #108ee9;
+$badge-warning-color: $color-warning;
+
+// Loader
+$loader-shape-color: #767676;
+$loader-track-color: rgba(0, 0, 0, 0.15);
+$loader-xs-size: 20px;
+$loader-xs-border-width: 2px;
+$loader-sm-size: 30px;
+$loader-sm-border-width: 3px;
+$loader-md-size: 40px;
+$loader-md-border-width: 4px;
+$loader-lg-size: 50px;
+$loader-lg-border-width: 5px;
+
+// Comment
+$color-comment-author: $color-secondary;
+$color-comment-desc: $color-tertiary;
+$color-comment-meta: $color-info;
+
+// Avatar
+$color-avatar-username: $color-secondary;
+$color-avatar-desc: $color-tertiary;
+$color-avatar-meta: $color-info;
+$color-avatar-username-reverse: wheat;
+$color-avatar-desc-reverse: white;
+$color-avatar-meta-reverse: white;
+
+// Table
+$table-default-padding-x: 8px;
+$table-default-padding-y: 16px;
+
+$table-small-padding-x: 5px;
+$table-small-padding-y: 5px;
+
+$tab-item-font: 'Myriad Pro';
+
+// $main-container-bg-color: rgb(255, 252, 249);
+$main-container-bg-color: white;
+
+$heading-font: $sans-serif-heading-font;
+$text-font: $sans-serif-text-font;
+
+$submit-btn-color: $color-secondary;
+
+$border-color: $gray-2;
+
+// Card
+$card-title-font: $sans-serif-title-font;
+$card-body-font: $sans-serif-text-font;
+$card-text-color: $gray-8;
+
+// full editor
+$full-editor-width: 1180px;
+
+// snapbar
+$snapbar-height: 56px;
+$snapbar-z-index: 1000;
+
+$flag-image-path: '~@feat/feat-ui/lib/';
+$icon-font-path: '~@feat/feat-ui/lib/style/';
+
+// View Content Section
+$view-section-title-font-size: 36px;
+
+$blockquote-bd-color: $gray-10;
+$blockquote-bg-color: #f4f4f4;
+
+// Dimzou Block Status
+
+$rejected-bd-color: rgba(245, 176, 211, 0.8);
+// $rejected-bg-color: rgba(238, 99, 104, 0.1);
+$rejected-bg-color: rgba(251, 233, 241, 0.5);
+$deleted-bg-color: rgba(238, 99, 104, 0.1);
+$pending-bg-color: rgba(213, 240, 255, 0.3);
+$pending-bd-color: rgba(158, 226, 231, 0.9);
+
+// Layout
+
+// $site-sidebar-width: 308px; // 260 + 48
+$site-sidebar-width: 260px; // 260 + 48 
+$site-nav-width: 212px;
+$site-adPanel-width: 280px;
+
+// Slick
+
+$slick-arrow-color: $gray-10;
+$slick-loader-path: '../../node_modules/slick-carousel/slick/';
+$slick-font-path: '../../node_modules/slick-carousel/slick/fonts/';
+$slick-opacity-not-active: 0.5;
+
+// Content Temlate
+$ct-padding-vertial: 12px;
+$ct-sidebar-first-width: 360px;
+$ct-sidebar-second-width: 320px;
+$ct-sidebar-third-width: 280px;
+
+// Page Title Font Size
+$page-title-font-size: 96px;
+
+// Placeholder
+$placeholder-color: $gray-2;
+
+// Draft Theme
+$origin-theme-color: $color-secondary;
+$translation-theme-color: #1d70b7;
+
+// View Profile
+$view-profile-header-height: 98px;
+
+$bio-link-color: $color-link;
+
+// Responsive
+$screen-xxs-max: 576px; // Portrait phones
+$screen-xs-max: 767px; // Landscape phones and portrait tablets
+
+$screen-xs-min: 576px; // Landscape phones
+$screen-sm-min: 768px; // Portrait tablets and small desktop
+$screen-md-min: 992px; // Landscape tablets and medium desktops
+$screen-lg-min: 1150px; // Large Desktop
+$screen-xl-min: 1440px; // Extra Large Desktop
+$screen-xxl-min: 1920px; // Extreme Large Desktop
+
+// Content Template
+$ct-padding-vertial: 12px;
+$ct-sidebar-first-width: 360px;
+$ct-sidebar-second-width: 320px;
+$ct-sidebar-third-width: 280px;
+$ct-sidebar-min-width: 220px;
+
+// party
+$im-party-view-nav-width: 90px;
+
+// mobile
+$mobile-footer-bar-height: 56px;

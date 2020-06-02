@@ -1,0 +1,7 @@
+@import 'base.scss';
+
+@include block(ns(DropHint, dz)) {
+  width: 100%;
+  background-color: $input-active-color;
+  position: absolute;
+}

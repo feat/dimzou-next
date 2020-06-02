@@ -1,0 +1,58 @@
+@import 'base.scss';
+
+@include block(ns(DimzouDash, dz)) {
+  @include element(tabs) {
+    padding: 5px;
+    // border-bottom: 1px  solid $gray-4;
+    .ft-Button {
+        margin-right: 8px;
+    }
+  }
+  @include element(header) {
+    padding-left: px-to-rem(24);
+    padding-right: px-to-rem(24);
+  }
+  @include element(content) {
+    padding-left: px-to-rem(24);
+    padding-right: px-to-rem(24);
+  }
+}
+
+@include block(ns(DimzouTableRow, dz)) {
+  display: flex;
+  border-bottom: 1px  solid $gray-4;
+  &:last-child {
+      border-bottom: none;
+  }
+
+  &:hover {
+    background-color: $gray-1;
+  }
+
+  @include modifier(header) {
+    font-weight: bold;
+    border-bottom: 3px solid $gray-10;
+  }
+
+  @include element(col) {
+    flex-shrink: 0;
+    flex-grow: 0;
+    padding: 5px;
+
+    @include modifier(title) {
+      flex-basis: 60%;
+      @include text-truncate();
+    }
+
+    @include modifier(actions) {
+
+    }
+  }
+  @include element(action) {
+    margin-right: 12px;
+    color: $color-link;
+    @include modifier(danger) {
+      color: $color-danger;
+    }
+  }
+}

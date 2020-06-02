@@ -1,0 +1,22 @@
+@import 'base.scss';
+
+@include block(ViewProfileHeader) {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  // height: px-to-rem($view-profile-header-height);
+  @include element(inner) {
+    max-height: px-to-rem($view-profile-header-height - 8);
+    overflow: hidden;
+  }
+  @include element(title) {
+    font-family: $sans-serif-heading-font;
+    font-size: px-to-rem(42);
+    line-height: 1;
+    font-weight: bold;
+  }
+  @include element(subTitle) {
+    font-size: px-to-rem(20);
+    font-weight: bold;
+  }
+}

@@ -1,0 +1,34 @@
+@include block(ns(FormItem, ft)) {
+  @include modifier(inline) {
+    display: flex;
+    flex-direction: row;
+    padding-top: px-to-rem(9);
+    padding-bottom: px-to-rem(8);
+
+    @include state(focus, has) {
+      padding-bottom: px-to-rem(7);
+    }
+    @include state(error, has) {
+      padding-bottom: px-to-rem(7);
+    }
+
+    @include element(label, true) {
+        height: px-to-rem($btn-sm-size);
+        width: 6em;
+        :last-child {
+          margin-right: 0;
+        }
+    }
+    @include element(widget, true) {
+        margin-bottom: 0;
+    }
+  }
+}
+
+[lang^='zh'] {
+  .ft-FormItem_inline {
+    .ft-FormItem__label {
+      width: 5em;
+    }
+  }
+}

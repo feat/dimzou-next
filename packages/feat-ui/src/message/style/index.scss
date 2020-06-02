@@ -1,0 +1,89 @@
+@-webkit-keyframes MessageMoveOut {
+  0% {
+    opacity: 1;
+    max-height: 150px;
+    padding: 8px;
+  }
+  100% {
+    opacity: 0;
+    max-height: 0;
+    padding: 0;
+  }
+}
+@keyframes MessageMoveOut {
+  0% {
+    opacity: 1;
+    max-height: 150px;
+    padding: 8px;
+  }
+  100% {
+    opacity: 0;
+    max-height: 0;
+    padding: 0;
+  }
+}
+
+@include block(ns(MessageContainer)) {
+    font-size: px-to-rem(14);
+    position: fixed;
+    width: 100%;
+    top: 16px;
+    left: 0;
+    pointer-events: none;
+    z-index: $modal-z-index + 10;
+}
+
+@include block(ns(Message)) {
+    padding: 8px;
+    text-align: center;
+
+    &:first-child {
+        margin-top: -8px;
+    }
+    @include element(content) {
+        padding: 8px 16px;
+        border-radius: $message-border-radius;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        background: #fff;
+        display: inline-block;
+        pointer-events: all;
+    }
+
+    @include block(ns(Icon)) {
+        margin-right: px-to-rem(5);
+    }
+
+    @include modifier(success) {
+        @include block(ns(Icon)) {
+            color: $color-success;
+        }
+    }
+    @include modifier(error) {
+        @include block(ns(Icon)) {
+            color: $color-error;
+        }
+    }
+    @include modifier(info) {
+        @include block(ns(Icon)) {
+            color: $color-info;
+        }
+    }
+    @include modifier(warning) {
+        @include block(ns(Icon)) {
+            color: $color-warning;
+        }
+    }
+    @include modifier(loading) {
+        @include block(ns(Icon)) {
+            color: $color-info;
+        }
+    }
+
+    &.move-up-leave.move-up-leave-active {
+        -webkit-animation-name: MessageMoveOut;
+                animation-name: MessageMoveOut;
+        overflow: hidden;
+        -webkit-animation-duration: .3s;
+                animation-duration: .3s;
+    }
+}

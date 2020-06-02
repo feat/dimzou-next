@@ -1,0 +1,22 @@
+@import 'base.scss';
+
+@include block(ns(Subscription, b)) {
+  display: flex;
+  height: calc(100vh - 120px);
+  max-width: px-to-rem(1280);
+  flex-direction: column;
+  .ft-Block__content {
+    flex: 1;
+    // overflow: auto;
+    height: 90%;
+  }
+  .XfileList {
+    overflow: auto;
+    height: 100%;
+  }
+  .usr-Works {
+    overflow: auto;
+    height: 100%;
+    padding-right: px-to-rem(24);
+  }
+}

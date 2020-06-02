@@ -1,0 +1,10 @@
+@mixin pop-shadow {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+};
+@mixin poplayer-style {
+    padding: px-to-rem($poplayer-padding);
+    border: 1px solid $poplayer-border-color;
+    border-radius: $poplayer-border-radius;
+    background-color: white;
+    @include pop-shadow;
+}

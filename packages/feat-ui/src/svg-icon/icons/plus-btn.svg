@@ -1,0 +1,7 @@
+<svg class="icon-plus" viewBox="0 0 64 64" >
+                <circle className="icon-plus__circle" fill="#f6f6f6" stroke="#c6c6c6" stroke-width="2" strokeMiterlimit="10" cx="32" cy="32" r="31"/>
+                <g className="icon-plus__char" fill="#575756">
+                    <rect x="16.434" y="30.507" width="31.133" height="4.497"/>
+                    <rect x="29.751" y="17.188" width="4.497" height="31.133"/>
+                </g>
+            </svg>

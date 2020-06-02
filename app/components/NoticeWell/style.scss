@@ -1,0 +1,32 @@
+@import 'base.scss';
+
+@include block(ns(NoticeWell)) {
+  background: #fec72e;
+  padding: 8px;
+  border-radius: px-to-rem(6);
+
+  // Landscape Phones
+  @media (min-width: $screen-xs-min) {
+
+  }
+  // Portrait Tablets & Small Desktop
+  @media (min-width: $screen-sm-min) {
+    
+  }
+  // Landscape Tablets & Medium Desktop
+  @media (min-width: $screen-md-min) {
+    
+  }
+  // Large Desktop
+  @media (min-width: $screen-lg-min) {
+    padding: px-to-rem(12);  
+  }
+  // Extra Large Desktop
+  @media (min-width: $screen-xl-min) {
+
+  }
+  // Extreme Large Desktop
+  @media (min-width: $screen-xxl-min) {
+    
+  }
+}

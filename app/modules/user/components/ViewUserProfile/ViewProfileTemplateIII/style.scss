@@ -1,0 +1,26 @@
+@import 'base.scss';
+
+@include block(ViewProfile) {
+    @include modifier(III) {
+        @include element(content, true) {
+          display: flex;
+        }
+        @include element(row, true) {
+          @include modifier(wrap) {
+            flex-wrap: wrap;
+          }
+        }
+        @include element(col, true) {
+          @include modifier(1) {
+            flex-basis: 25%;
+            padding-top: px-to-rem(12);
+          }
+          @include modifier(2) {
+            flex-basis: 75%;
+          }
+          @include modifier(3) {
+            flex-basis: 33.33%;
+          }
+        }
+      }
+}

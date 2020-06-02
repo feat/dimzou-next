@@ -1,0 +1,68 @@
+@include block(ns(FloatLabelGroup)) {
+    position: relative;
+    box-sizing: border-box;
+
+    @include element(label) {
+        position: relative;
+        font-size: px-to-rem(12);
+        transition: all .2s ease;
+        box-sizing: border-box;
+        cursor: pointer;
+        z-index: 1;
+    }
+
+    @include element(container) {
+        position: relative;
+        opacity: 1;
+        transition: all .2s ease;
+
+        input, textarea {
+            background-color: transparent;
+            border: none;
+
+            &:focus {
+                outline: none;
+            }
+        }
+    }
+
+    @include state(empty) {
+        @include element(label, true) {
+            top: px-to-rem(13);
+            color: $placeholder-color;
+            transform: scale(#{(14 / 12)});
+            transform-origin: left top;
+        }
+        @include element(container, true) {
+            top: px-to-rem(- 10);
+            opacity: 0;
+        }
+    };
+
+    @include state(focused) {
+        @include element(label, true) {
+            transform: scale(1);
+            top: px-to-rem(0);
+        }
+        @include element(container, true) {
+            top: px-to-rem(0);
+            opacity: 1;
+        }
+    };
+}
+
+@include block(ns(FormItem)) {
+    @include state(error, has) {
+        @include block(ns(FloatLabelGroup)) {
+            @include element(label) {
+                transform: scale(1);
+                top: px-to-rem(0);
+                color: $color-danger;
+            }
+            @include element(container) {
+                top: px-to-rem(0);
+                opacity: 1;
+            }
+        };
+    };
+};

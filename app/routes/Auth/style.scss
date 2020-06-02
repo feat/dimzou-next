@@ -1,0 +1,131 @@
+@import 'base.scss';
+
+$auth-form-input-height: 36;
+
+@include block(ns(AuthTemplate, p)) {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+
+  @include element(promoteContainer) {
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+
+  @include element(promoteWrapper) {
+    position: relative;
+    margin: 0 auto;
+    width: 80%;
+    max-width: px-to-rem(320);
+  }
+  @include element(form) {
+    margin: 0 auto;
+    position: relative;
+    min-height: 300px;
+    max-width: 400px;
+    width: 90%;
+  }
+  @include element(title) {
+    text-align: center;
+    line-height: 1;
+    margin-top: 0;
+    margin-bottom: 0.25em;
+  }
+  @include element(logo) {
+    width: 160px;
+    height: auto;
+  }
+  @include element(promoteWords) {
+    font-size: 16px;
+    text-align: center;
+    letter-spacing: 0.2em;
+    margin-top: 0;
+  }
+
+  // Landscape Phones
+  @media(min-width: $screen-xs-min){
+    @include element(promoteContainer) {
+      margin-bottom: 80px;
+
+    }
+  }
+
+  // Portrait Tablets & Small Desktop
+  @media(min-width: $screen-sm-min){
+    flex-direction: row;
+    align-items: flex-start;
+    padding-top: 12%;
+    @include element(logo) {
+      width: px-to-rem(270);
+    }
+    @include element(promoteWords) {
+      font-size: px-to-rem(28);
+    }
+    @include element(promoteContainer) {
+      padding-top: 0;
+      flex-basis: 50%;
+    }
+
+    @include element(formContainer) {
+      flex-basis: 50%;
+      flex-shrink: 0;
+      // min-width: px-to-rem(300);
+      padding-right: px-to-rem(24);
+    }
+    @include element(form) {
+      margin-left: 24px;
+    }
+  }
+  // Landscape Tablets & Medium Desktop
+  @media(min-width: $screen-md-min){
+     @include element(promoteContainer) {
+      flex-basis: 60%;
+    }
+  }
+
+  // Large Desktop
+  @media(min-width: $screen-lg-min){
+    @include element(promoteContainer) {
+      flex-basis: 65%;
+    }
+
+    @include element(formContainer) {
+      flex-basis: 35%;
+    }
+  }
+  // Extra Large Desktop
+  @media(min-width: $screen-xl-min){
+
+  }
+  // Extreme Large Desktop
+  @media(min-width: $screen-xxl-min){
+    @include element(form) {
+      max-width: px-to-rem(400);
+    }
+  }
+}
+
+.shaking {
+  animation: shaking 0.3s ease-in-out 0s 1 alternate;
+}
+
+@keyframes shaking {
+  0% {
+    transform: translate(10px, -5px);
+  }
+  20% {
+    transform: translate(-10px, 5px);
+  }
+  40% {
+    transform: translate(10px, -5px);
+  }
+  60% {
+    transform: translate(-10px, 5px);
+  }
+  80% {
+    transform: translate(10px, -5px);
+  }
+  100% {
+    transform: translate(-10px, 5px);
+  }
+}

@@ -1,0 +1,71 @@
+@include block(ns(Block)) {
+
+    @include modifier(primary) {
+        margin-bottom: px-to-rem(2 * $block-gap-base);
+    }
+
+    @include modifier(secondary) {
+        margin-bottom: px-to-rem(1.5 * $block-gap-base);
+    };
+
+    @include element(header) {
+        display: table;
+        width: 100%;
+        padding-left: px-to-rem($block-indent);
+        padding-right: px-to-rem($block-indent);
+        box-sizing: border-box;
+
+        @include modifier(primary) {
+            border-bottom: px-to-rem($block-primary-header-bd-bottom) solid $block-border-color;
+        }
+        @include modifier(secondary) {
+            border-bottom: px-to-rem($block-secondary-header-bd-bottom) solid $block-border-color;
+        }
+        @include modifier(noPadding) {
+          padding: 0;
+        }
+    }
+    @include element(subHeader) {
+        display: table-cell;
+        vertical-align: middle;
+        padding-left: 12px;
+    }
+    @include element(title) {
+        display: table-cell;
+        vertical-align: middle;
+        font-family: $block-title-font-family;
+        font-weight: bold;
+        a {
+          color: inherit;
+        }
+        @include modifier(primary) {
+            font-size: px-to-rem($block-primary-title-font-size);
+            line-height: 1;
+            padding-top: #{(($block-primary-title-line-height - 1) / 2 )}em;
+            padding-bottom: #{(($block-primary-title-line-height - 1) / 2 )}em;
+        }
+        @include modifier(secondary) {
+            font-size: px-to-rem($block-secondary-title-font-size);
+            line-height: $block-secondary-title-line-height;
+        }
+    }
+    @include element(content) {
+        padding: px-to-rem($block-content-padding-top) px-to-rem($block-indent) 0;
+        @include modifier(noPadding) {
+          padding: 0;
+        }
+    }
+    @include element(footer) {
+        padding-top: px-to-rem(8);
+        padding-bottom: px-to-rem(8);
+    }
+    @include element(help) {
+        color: $block-help-color;
+    }
+    @include element(subTitle) {
+        font-size: px-to-rem(16);
+        font-family: $sans-serif-text-font;
+        font-weight: normal;
+        margin-left: px-to-rem(5);
+    }
+}

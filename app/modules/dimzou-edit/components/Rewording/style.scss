@@ -1,0 +1,224 @@
+@import 'base.scss';
+
+@include block(ns(RewordingSection, dz)) {
+  position: relative;
+  // margin-left: 0.5em;
+  // @include modifier(archived) {
+  //   padding-left: px-to-rem(24);
+  // }
+}
+
+@include block(ns(Rewording, dz)) {
+  margin-top: px-to-rem(12);
+  margin-bottom: px-to-rem(24);
+
+  // padding-left: px-to-rem(16);
+  padding-right: px-to-rem(16);
+  padding-top: px-to-rem(8);
+  padding-left: px-to-rem(12);
+  margin-left: px-to-rem(-12);
+
+  @include modifier(pending) {
+    background-color: $pending-bg-color;
+  }
+  @include modifier(rejected) {
+    background-color: $rejected-bg-color;
+  }
+  @include modifier(history) {
+    color: $gray-8;
+    .icon-heartV2__path {
+      stroke: currentColor;
+    }
+  }
+  // @include modifier(archived) {
+  //   border-bottom: 1px dashed $gray-10;
+  //   margin-bottom: px-to-rem(12);
+  // }
+
+  @include element(flexbox) {
+    display: flex;
+    @include modifier(item) {
+      width: 90%;
+      flex-basis: 100%;
+    }
+  }
+
+  @include element(userAvatar) {
+    margin-right: px-to-rem(12);
+  }
+
+  @include element(date) {
+    color: $gray-6;
+    font-size: px-to-rem(14);
+    padding-top: px-to-rem(5);
+    padding-bottom: px-to-rem(5);
+  }
+  @include element(meta) {
+    color: $gray-6;
+    font-size: px-to-rem(14);
+    span {
+      margin-right: px-to-rem(5);
+    }
+  }
+
+  @include element(userInfo) {
+    line-height: px-to-rem(12);
+    margin-bottom: px-to-rem(3);
+  }
+  @include element(username) {
+    color: $color-avatar-username;
+    font-size: px-to-rem(14);
+  }
+  @include element(expertise) {
+    color: $color-avatar-desc;
+    font-size: px-to-rem(14);
+  }
+  @include element(avatar) {
+    width: px-to-rem(32);
+    margin-right: px-to-rem(12);
+    flex-shrink: 0;
+  }
+  @include element(main) {
+    flex: 1;
+    min-width: 0;
+    // padding-left: px-to-rem(4);
+    .typo-Article {
+      font-size: px-to-rem(16);
+      h1, h2, h3, h4 {
+        margin-top: 0;
+      }
+      ul,
+      ol {
+        margin-bottom: 0;
+      }
+    }
+    // .DraftEditorWrap {
+    //   padding-left: px-to-rem(12);
+    // }
+  }
+  @include element(likeBtn) {
+    width: px-to-rem(18);
+  }
+  @include element(shareBtn) {
+  }
+  @include element(content) {
+
+    [data-entity-type='annotation:add'] {
+      // background-color: rgb(152, 247, 136);
+      background-color: rgba(177, 223, 240, 0.3);
+      padding: 6px 2px;
+      border-radius: 24px;
+    }
+    [data-entity-type='annotation:delete'] {
+      // background-color: rgb(239, 100, 105);
+      background-color: rgba(245, 176, 211, 0.3);
+      padding: 6px 2px;
+      border-radius: 24px;
+    }
+  }
+  @include element(footer) {
+    margin-left: px-to-rem(-16);
+    margin-right: px-to-rem(-16);
+  }
+
+  @include element(para) {
+    margin-top: -4px;
+    padding-right: 0.5em;
+    display: block;
+    position: absolute;
+    text-align: right;
+    font-family: $serif-text-font;
+    font-size: 1.25em;
+    line-height: 1;
+    font-style: italic;
+    opacity: 0.6;
+  }
+
+  @include state(avatar, has) {
+    @include element(flexbox, true) {
+      padding-left: px-to-rem(0);
+    }
+    @include element(para, true) {
+      margin-top: 32px;
+      line-height: 1.5;
+    }
+
+    .typo-Article {
+      font-size: px-to-rem(20);
+    }
+  }
+}
+
+@include block(ns(RewordingFooter, dz)) {
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: px-to-rem(16);
+  padding-right: px-to-rem(16);
+  justify-content: space-between;
+
+  &__left,
+  &__right {
+    height: px-to-rem(48);
+    display: flex;
+    align-items: center;
+  }
+
+  &__right {
+    margin-left: auto;
+  }
+
+
+  &__action {
+    margin-right: px-to-rem(24);
+    &:last-of-type {
+      margin-right: px-to-rem(0);
+    }
+  }
+  &__line {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin-top: px-to-rem(24);
+  }
+  .dz-RewordingVersion,
+  .dz-RewordingCommentTrigger,
+  .dz-RewordingLikeWidget,
+  .dz-RewordingInvitation {
+    .ft-IconButton {
+      width: px-to-rem(24);
+      height: px-to-rem(24);
+      margin-right: px-to-rem(8);
+    }
+    font-size: px-to-rem(14);
+  }
+}
+
+// @include block(ns(BlockSection, dz)) {
+//   @include element(rewordings) {
+//     counter-reset: para;
+//   }
+// }
+
+// .dz-Edit__chapterContent .dz-Rewording {
+//   &::before {
+//     counter-increment: para;
+//     content: counter(para);
+//     margin-top: 32px;
+//     margin-left: 21px;
+//     padding-right: 0.5em;
+//     display: block;
+//     position: absolute;
+//     text-align: right;
+//     font-family: Georgia, serif;
+//     font-size: 1.25em;
+//     line-height: 1.5;
+//     font-style: italic;
+//     transform: translateX(-100%);
+//     opacity: 0.6;
+//   }
+// }
+
+.dz-Edit_origin .dz-Rewording::before {
+  color: $origin-theme-color;
+}
+.dz-Edit_translation .dz-Rewording::before {
+  color: $translation-theme-color;
+}

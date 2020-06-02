@@ -1,0 +1,104 @@
+@keyframes blink {
+    from, to {
+        visibility: visible;
+    }
+    50% {
+        visibility: hidden;
+    }
+}
+@-webkit-keyframes blink {
+    from, to {
+        visibility: visible;;
+    }
+    50% {
+        visibility: hidden;
+    }
+}
+
+@include block(ns(DigitInput)) {
+    display: flex;
+    justify-content: center;
+
+    @include element(container) {
+        position: relative;
+        display: flex;
+        padding: 1px 0;
+        outline: none;
+        cursor: text;
+    }
+
+
+
+    @include element(unit) {
+        position: relative;
+        display: flex;
+        border: 1px solid $gray-6;
+        align-items: center;
+        justify-content: center;
+
+        text-align: center;
+        font-style: normal;
+        -webkit-user-select: none;
+        box-sizing: border-box;
+
+        @include state(active) {
+            border: 2px solid $form-input-active-border-color;
+            // &::before {
+            //     content: "";
+            //     position: absolute;
+            //     display: block;
+            //     width: 100%;
+            //     padding-top: 100%;
+            //     border: 1px solid rgba(82, 168, 236, .8);
+            //     border-radius:5px;
+            //     box-sizing: border-box;
+            //     visibility:visible;
+            //     -webkit-box-shadow: inset 0px 2px 2px rgba(0, 0, 0, 0.75), 0 0 8px rgba(82, 168, 236, 0.6);
+            //     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+            //     top: calc(50%);
+            //     transform: translateY(-50%);
+            // }
+            &::after {
+                content: "";
+                position: absolute;
+                display: block;
+                left: 50%;
+                top: 50%;
+                width: 1px;
+                height: px-to-rem(16);
+                margin-top: - px-to-rem(8);
+                background-color: black;
+                transform: translateX(-50%);
+                animation: 1s blink step-end infinite;
+                -webkit-animation: 1s blink step-end infinite;
+            }
+        };
+    }
+
+    @include modifier(sm) {
+      @include element(unit, true) {
+        border-radius: $btn-sm-border-radius;
+        width: px-to-rem($btn-sm-size);
+        height: px-to-rem($btn-sm-size);
+        font-size: px-to-rem($btn-sm-font-size);
+        margin-left: px-to-rem(2);
+        margin-right: px-to-rem(2);
+      }
+    }
+
+    @include modifier(md) {
+      @include element(unit, true) {
+        border-radius: $btn-md-border-radius;
+        width: px-to-rem($btn-md-size);
+        height: px-to-rem($btn-md-size);
+        font-size: px-to-rem($btn-md-font-size);
+        margin-left: px-to-rem(4);
+        margin-right: px-to-rem(4);
+      }
+    }
+    input {
+        position: absolute;
+        z-index: -1;
+        opacity: 0;
+    }
+};

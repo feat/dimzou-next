@@ -1,0 +1,137 @@
+@import "../../dimzou-card/style/variables.scss";
+
+@include block(ns(FeedTemplate)) {
+  .dz-Card_V {
+    margin-bottom: px-to-rem(12);
+  }
+  @include modifier(I) {
+    @include element(Col1, true) {
+      .dz-Card__title {
+        font-size: px-to-rem($dimzou-title-queen-size);
+      }
+    }
+    @include element(Col2, true) {
+      .dz-Card_III {
+        .dz-Card__title {
+          font-size: px-to-rem($dimzou-title-king-size);
+        }
+        .dz-Card__body {
+          font-size: px-to-rem($dimzou-text-king-size);
+        }
+      }
+      .dz-Card__title {
+        font-size: px-to-rem($dimzou-title-queen-size);
+      }
+    }
+  }
+  @include modifier(IIS) {
+    .dz-Card__title {
+      font-size: px-to-rem($dimzou-title-queen-size);
+    }
+  }
+  @include modifier(III) {
+    @include element(Col1, true) {
+      .dz-Card {
+        height: 100%;
+      }
+      .dz-Card__title {
+        font-size: px-to-rem($dimzou-title-king-size);
+      }
+      .dz-Card__body {
+        font-size: px-to-rem($dimzou-text-king-size);
+      }
+    }
+  }
+  @include modifier(VII) {
+    @include element(Col1, true) {
+      .dz-Card {
+        height: 100%;
+      }
+      .dz-Card__title {
+        font-size: px-to-rem($dimzou-title-king-size);
+      }
+      .dz-Card__body {
+        font-size: px-to-rem($dimzou-text-king-size);
+      }
+    }
+  }
+  @include modifier(VIII) {
+    .dz-Card_III {
+      margin-bottom: px-to-rem(24);
+    }
+  }
+  @include modifier(IX) {
+    @include element(Col1, true) {
+      .dz-Card {
+        height: 100%;
+      }
+      .dz-Card__title {
+        font-size: px-to-rem($dimzou-title-king-size);
+      }
+      .dz-Card__body {
+        font-size: px-to-rem($dimzou-text-king-size);
+      }
+    }
+    @include element(Col2, true) {
+      .dz-Card_III {
+        .dz-Card__title {
+          font-size: px-to-rem($dimzou-title-queen-size);
+        }
+      }
+    }
+  }
+  @include modifier(X) {
+    @include element(Col1, true) {
+      .dz-Card {
+        height: 100%;
+      }
+      .dz-Card__title {
+        font-size: px-to-rem($dimzou-title-queen-size);
+      }
+    }
+    @include element(Col2, true) {
+      .dz-Card {
+        height: 100%;
+      }
+      .dz-Card__title {
+        font-size: px-to-rem($dimzou-title-queen-size);
+      }
+    }
+  }
+  @include modifier(XI) {
+    .dz-Card_V {
+      .dz-Card__content {
+        max-width: px-to-rem(720);
+      }
+      .dz-Card__title {
+        font-size: px-to-rem($dimzou-title-king-size);
+      }
+      .dz-Card__image {
+        padding-top: 30%;
+      }
+    }
+  }
+  @include modifier(XII) {
+    @include element(Col1, true) {
+      .dz-Card_V {
+        .dz-Card__image {
+          padding-top: 70%;
+        }
+        .dz-Card__title {
+          font-size: px-to-rem($dimzou-title-queen-size);
+        }
+        .dz-Card__body {
+          font-size: px-to-rem($dimzou-text-king-size);
+        }
+      }
+    }
+  }
+  @include modifier(XIII) {
+    .dz-Card__title {
+      font-size: px-to-rem($dimzou-title-king-size);
+    }
+    .dz-Card__body {
+      font-size: px-to-rem($dimzou-text-king-size);
+    }
+  }
+}

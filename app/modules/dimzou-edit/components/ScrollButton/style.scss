@@ -1,0 +1,19 @@
+@import 'base.scss';
+
+@include block(ns(LabelButton, dz)) {
+    display: inline-block;
+    cursor: pointer;
+    max-width: 100%;
+    padding: 0 px-to-rem(4);
+    border-radius: px-to-rem(6);
+    vertical-align: middle;
+    @include btn-animation();
+    @include text-truncate();
+    &:hover {
+        background-color: $gray-2;
+    }
+    @include state(active) {
+        background-color: $gray-10;
+        color: white;
+    }
+}

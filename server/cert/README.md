@@ -1,0 +1,4 @@
+- `server.key`
+- `server.crt`
+- `rootca.crt`
+- `intermediate1.crt`

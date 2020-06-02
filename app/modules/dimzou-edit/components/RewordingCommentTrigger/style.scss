@@ -1,0 +1,9 @@
+@import 'base.scss';
+
+@include block(ns(RewordingCommentTrigger, dz)) {
+  display: inline-block;
+
+  .ft-IconButton {
+    margin-right: 8px;
+  }
+}

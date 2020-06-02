@@ -1,0 +1,45 @@
+@import 'base.scss';
+
+@include block(ns(ReleaseReview, dz)) {
+  @include modifier(section) {
+    @include element(info, true) {
+    
+    }
+    @include element(config, true) {
+      
+    }  
+  }
+  
+}
+
+@include block(ns(ReleaseCard, dz)) {
+  padding: px-to-rem(12);
+  border: 1px solid $border-color;
+  margin-top: px-to-rem(16);
+
+  @include element(coverContainer) {
+      position: relative;
+    background-color: $gray-2;
+    padding-top: percentage(9/16);
+  }
+
+  @include element(coverPlaceholder) {
+    max-width: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: $gray-6;
+  }
+
+  .typo-Article {
+    h1 {
+      margin-top: 12px;
+      margin-bottom: 12px;
+      font-size: px-to-rem(24);
+    }
+    .typo-Article__titlePlaceholder {
+      font-size: px-to-rem(24);
+    }
+  }
+}

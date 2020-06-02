@@ -1,0 +1,42 @@
+@include block(ns(Placeholder)) {
+  position: relative;
+  background-color: $placeholder-color;
+  user-select: none;
+  @include placeholder-bg;
+
+  @include element(label) {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0);
+  }
+
+  @include modifier(inverse) {
+    @include placeholder-inverse-bg;
+  }
+
+  @include modifier(textRow) {
+    width: 100%;
+    margin-bottom: #{$line-height - 1.1}em;
+    height: 1.1em;
+  }
+  @include modifier(textBlock) {
+    background: transparent;
+  }
+}
+
+// .cl-avatar {
+//   flex: 1;
+//   .cl-avatar_username {
+//     width: 40%;
+//   }
+//   .cl-avatar_meta {
+//     width: 30%;
+//   }
+// }
+// .avatar_mes {
+//   width: 50%;
+//   .avatar_expertise {
+//     width: 60%;
+//   }
+// }

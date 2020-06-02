@@ -1,0 +1,78 @@
+@import 'base.scss';
+
+@include block(TagGroupWidget) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  @include element(tag) {
+    flex-shrink: 0;
+    margin-right: px-to-rem(5);
+    max-width: 150px;
+    @include text-truncate();
+    // height: px-to-rem(26);
+    // font-size: px-to-rem(14);
+    // margin-bottom: px-to-rem(2);
+  }
+  @include element(inputWrap) {
+    flex: 1;
+    position: relative;
+  }
+  @include element(input) {
+    width: 100%;
+    min-width: px-to-rem(150);
+    height: px-to-rem(26);
+    margin-top: px-to-rem(2);
+    margin-bottom: px-to-rem(2);
+    border-color: transparent;
+    padding-left: px-to-rem(5);
+  }
+  @include element(countHint) {
+    position: absolute;
+    right: 0;
+    height: px-to-rem(26);
+    line-height: px-to-rem(26);
+    font-size: px-to-rem(14);
+    color: $color-danger;
+    padding: 3px;
+  }
+  @include element(optionMenu) {
+    position: absolute;
+    width: 100%;
+    top: calc(100% + 2px);
+    left: 0;
+    background-color: white;
+    z-index: 100;
+    overflow: auto;
+    @include pop-shadow();
+  }
+  @include element(optionItem) {
+    cursor: pointer;
+    padding: px-to-rem(2) px-to-rem(5);
+    &:hover {
+      background-color: $gray-2;
+    }
+    @include state(selected) {
+      background-color: $gray-2;
+    }
+  }
+}
+
+@include block(TagGroupItem) {
+  height: px-to-rem($btn-sm-size);
+  border-radius: px-to-rem($btn-sm-border-radius);
+  border: 1px solid $btn-default-bd-color;
+  background-color: $btn-default-bg-color;
+  display: inline-flex;
+  align-items: center;
+
+  @include element(label) {
+    padding-left: px-to-rem($btn-sm-padding-x);
+    // padding-right: px-to-rem($btn-sm-padding-x);
+  }
+  @include element(btn) {
+    line-height: 0;
+    &:hover {
+      color: $color-danger;
+    }
+  }
+}

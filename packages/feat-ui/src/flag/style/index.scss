@@ -1,0 +1,1011 @@
+
+/* Flag Sprite Based On http://www.famfamfam.com/lab/icons/flags/ */
+
+$flagWidth: 1rem;
+$flagHeight: 0.6rem;
+$flag-image-path: '../' !default;
+
+i.ft-Flag {
+  display: inline-block;
+
+  width: $flagWidth;
+  height: $flagHeight;
+
+  vertical-align: top;
+
+  speak: none;
+  backface-visibility: hidden;
+}
+
+/* Sprite */
+i.ft-Flag:before {
+  display: inline-block;
+  content: '';
+  background: url('#{$flag-image-path}flag/flags.png') no-repeat -108px -1976px;
+  width: $flagWidth;
+  height: $flagHeight;
+}
+/*******************************
+         Theme Overrides
+*******************************/
+
+.ft-Flag.ft-Flag_ad:before,
+.ft-Flag.ft-Flag_andorra:before {
+  background-position: 0px 0px;
+}
+.ft-Flag.ft-Flag_ae:before,
+.ft-Flag.ft-Flag_unitedArabEmirates:before,
+.ft-Flag.ft-Flag_uae:before {
+  background-position: 0px -26px;
+}
+.ft-Flag.ft-Flag_af:before,
+.ft-Flag.ft-Flag_afghanistan:before {
+  background-position: 0px -52px;
+}
+.ft-Flag.ft-Flag_ag:before,
+.ft-Flag.ft-Flag_antigua:before {
+  background-position: 0px -78px;
+}
+.ft-Flag.ft-Flag_ai:before,
+.ft-Flag.ft-Flag_anguilla:before {
+  background-position: 0px -104px;
+}
+.ft-Flag.ft-Flag_al:before,
+.ft-Flag.ft-Flag_albania:before {
+  background-position: 0px -130px;
+}
+.ft-Flag.ft-Flag_am:before,
+.ft-Flag.ft-Flag_armenia:before {
+  background-position: 0px -156px;
+}
+.ft-Flag.ft-Flag_an:before,
+.ft-Flag.ft-Flag_netherlandsAntilles:before {
+  background-position: 0px -182px;
+}
+.ft-Flag.ft-Flag_ao:before,
+.ft-Flag.ft-Flag_angola:before {
+  background-position: 0px -208px;
+}
+.ft-Flag.ft-Flag_ar:before,
+.ft-Flag.ft-Flag_argentina:before {
+  background-position: 0px -234px;
+}
+.ft-Flag.ft-Flag_as:before,
+.ft-Flag.ft-Flag_americanSamoa:before {
+  background-position: 0px -260px;
+}
+.ft-Flag.ft-Flag_at:before,
+.ft-Flag.ft-Flag_austria:before {
+  background-position: 0px -286px;
+}
+.ft-Flag.ft-Flag_au:before,
+.ft-Flag.ft-Flag_australia:before {
+  background-position: 0px -312px;
+}
+.ft-Flag.ft-Flag_aw:before,
+.ft-Flag.ft-Flag_aruba:before {
+  background-position: 0px -338px;
+}
+.ft-Flag.ft-Flag_ax:before,
+.ft-Flag.ft-Flag_alandIslands:before {
+  background-position: 0px -364px;
+}
+.ft-Flag.ft-Flag_az:before,
+.ft-Flag.ft-Flag_azerbaijan:before {
+  background-position: 0px -390px;
+}
+.ft-Flag.ft-Flag_ba:before,
+.ft-Flag.ft-Flag_bosnia:before {
+  background-position: 0px -416px;
+}
+.ft-Flag.ft-Flag_bb:before,
+.ft-Flag.ft-Flag_barbados:before {
+  background-position: 0px -442px;
+}
+.ft-Flag.ft-Flag_bd:before,
+.ft-Flag.ft-Flag_bangladesh:before {
+  background-position: 0px -468px;
+}
+.ft-Flag.ft-Flag_be:before,
+.ft-Flag.ft-Flag_belgium:before {
+  background-position: 0px -494px;
+}
+.ft-Flag.ft-Flag_bf:before,
+.ft-Flag.ft-Flag_burkinaFaso:before {
+  background-position: 0px -520px;
+}
+.ft-Flag.ft-Flag_bg:before,
+.ft-Flag.ft-Flag_bulgaria:before {
+  background-position: 0px -546px;
+}
+.ft-Flag.ft-Flag_bh:before,
+.ft-Flag.ft-Flag_bahrain:before {
+  background-position: 0px -572px;
+}
+.ft-Flag.ft-Flag_bi:before,
+.ft-Flag.ft-Flag_burundi:before {
+  background-position: 0px -598px;
+}
+.ft-Flag.ft-Flag_bj:before,
+.ft-Flag.ft-Flag_benin:before {
+  background-position: 0px -624px;
+}
+.ft-Flag.ft-Flag_bm:before,
+.ft-Flag.ft-Flag_bermuda:before {
+  background-position: 0px -650px;
+}
+.ft-Flag.ft-Flag_bn:before,
+.ft-Flag.ft-Flag_brunei:before {
+  background-position: 0px -676px;
+}
+.ft-Flag.ft-Flag_bo:before,
+.ft-Flag.ft-Flag_bolivia:before {
+  background-position: 0px -702px;
+}
+.ft-Flag.ft-Flag_br:before,
+.ft-Flag.ft-Flag_brazil:before {
+  background-position: 0px -728px;
+}
+.ft-Flag.ft-Flag_bs:before,
+.ft-Flag.ft-Flag_bahamas:before {
+  background-position: 0px -754px;
+}
+.ft-Flag.ft-Flag_bt:before,
+.ft-Flag.ft-Flag_bhutan:before {
+  background-position: 0px -780px;
+}
+.ft-Flag.ft-Flag_bv:before,
+.ft-Flag.ft-Flag_bouvetIsland:before {
+  background-position: 0px -806px;
+}
+.ft-Flag.ft-Flag_bw:before,
+.ft-Flag.ft-Flag_botswana:before {
+  background-position: 0px -832px;
+}
+.ft-Flag.ft-Flag_by:before,
+.ft-Flag.ft-Flag_belarus:before {
+  background-position: 0px -858px;
+}
+.ft-Flag.ft-Flag_bz:before,
+.ft-Flag.ft-Flag_belize:before {
+  background-position: 0px -884px;
+}
+.ft-Flag.ft-Flag_ca:before,
+.ft-Flag.ft-Flag_canada:before {
+  background-position: 0px -910px;
+}
+.ft-Flag.ft-Flag_cc:before,
+.ft-Flag.ft-Flag_cocosIslands:before {
+  background-position: 0px -962px;
+}
+.ft-Flag.ft-Flag_cd:before,
+.ft-Flag.ft-Flag_congo:before {
+  background-position: 0px -988px;
+}
+.ft-Flag.ft-Flag_cf:before,
+.ft-Flag.ft-Flag_centralAfricanRepublic:before {
+  background-position: 0px -1014px;
+}
+.ft-Flag.ft-Flag_cg:before,
+.ft-Flag.ft-Flag_congoBrazzaville:before {
+  background-position: 0px -1040px;
+}
+.ft-Flag.ft-Flag_ch:before,
+.ft-Flag.ft-Flag_switzerland:before {
+  background-position: 0px -1066px;
+}
+.ft-Flag.ft-Flag_ci:before,
+.ft-Flag.ft-Flag_coteDivoire:before {
+  background-position: 0px -1092px;
+}
+.ft-Flag.ft-Flag_ck:before,
+.ft-Flag.ft-Flag_cookIslands:before {
+  background-position: 0px -1118px;
+}
+.ft-Flag.ft-Flag_cl:before,
+.ft-Flag.ft-Flag_chile:before {
+  background-position: 0px -1144px;
+}
+.ft-Flag.ft-Flag_cm:before,
+.ft-Flag.ft-Flag_cameroon:before {
+  background-position: 0px -1170px;
+}
+.ft-Flag.ft-Flag_cn:before,
+.ft-Flag.ft-Flag_china:before {
+  background-position: 0px -1196px;
+}
+.ft-Flag.ft-Flag_co:before,
+.ft-Flag.ft-Flag_colombia:before {
+  background-position: 0px -1222px;
+}
+.ft-Flag.ft-Flag_cr:before,
+.ft-Flag.ft-Flag_costaRica:before {
+  background-position: 0px -1248px;
+}
+.ft-Flag.ft-Flag_cs:before,
+.ft-Flag.ft-Flag_serbia:before {
+  background-position: 0px -1274px;
+}
+.ft-Flag.ft-Flag_cu:before,
+.ft-Flag.ft-Flag_cuba:before {
+  background-position: 0px -1300px;
+}
+.ft-Flag.ft-Flag_cv:before,
+.ft-Flag.ft-Flag_capeVerde:before {
+  background-position: 0px -1326px;
+}
+.ft-Flag.ft-Flag_cx:before,
+.ft-Flag.ft-Flag_christmasIsland:before {
+  background-position: 0px -1352px;
+}
+.ft-Flag.ft-Flag_cy:before,
+.ft-Flag.ft-Flag_cyprus:before {
+  background-position: 0px -1378px;
+}
+.ft-Flag.ft-Flag_cz:before,
+.ft-Flag.ft-Flag_czechRepublic:before {
+  background-position: 0px -1404px;
+}
+.ft-Flag.ft-Flag_de:before,
+.ft-Flag.ft-Flag_germany:before {
+  background-position: 0px -1430px;
+}
+.ft-Flag.ft-Flag_dj:before,
+.ft-Flag.ft-Flag_djibouti:before {
+  background-position: 0px -1456px;
+}
+.ft-Flag.ft-Flag_dk:before,
+.ft-Flag.ft-Flag_denmark:before {
+  background-position: 0px -1482px;
+}
+.ft-Flag.ft-Flag_dm:before,
+.ft-Flag.ft-Flag_dominica:before {
+  background-position: 0px -1508px;
+}
+.ft-Flag.ft-Flag_do:before,
+.ft-Flag.ft-Flag_dominicanRepublic:before {
+  background-position: 0px -1534px;
+}
+.ft-Flag.ft-Flag_dz:before,
+.ft-Flag.ft-Flag_algeria:before {
+  background-position: 0px -1560px;
+}
+.ft-Flag.ft-Flag_ec:before,
+.ft-Flag.ft-Flag_ecuador:before {
+  background-position: 0px -1586px;
+}
+.ft-Flag.ft-Flag_ee:before,
+.ft-Flag.ft-Flag_estonia:before {
+  background-position: 0px -1612px;
+}
+.ft-Flag.ft-Flag_eg:before,
+.ft-Flag.ft-Flag_egypt:before {
+  background-position: 0px -1638px;
+}
+.ft-Flag.ft-Flag_eh:before,
+.ft-Flag.ft-Flag_westernSahara:before {
+  background-position: 0px -1664px;
+}
+.ft-Flag.ft-Flag_er:before,
+.ft-Flag.ft-Flag_eritrea:before {
+  background-position: 0px -1716px;
+}
+.ft-Flag.ft-Flag_es:before,
+.ft-Flag.ft-Flag_spain:before {
+  background-position: 0px -1742px;
+}
+.ft-Flag.ft-Flag_et:before,
+.ft-Flag.ft-Flag_ethiopia:before {
+  background-position: 0px -1768px;
+}
+.ft-Flag.ft-Flag_eu:before,
+.ft-Flag.ft-Flag_europeanUnion:before {
+  background-position: 0px -1794px;
+}
+.ft-Flag.ft-Flag_fi:before,
+.ft-Flag.ft-Flag_finland:before {
+  background-position: 0px -1846px;
+}
+.ft-Flag.ft-Flag_fj:before,
+.ft-Flag.ft-Flag_fiji:before {
+  background-position: 0px -1872px;
+}
+.ft-Flag.ft-Flag_fk:before,
+.ft-Flag.ft-Flag_falklandIslands:before {
+  background-position: 0px -1898px;
+}
+.ft-Flag.ft-Flag_fm:before,
+.ft-Flag.ft-Flag_micronesia:before {
+  background-position: 0px -1924px;
+}
+.ft-Flag.ft-Flag_fo:before,
+.ft-Flag.ft-Flag_faroeIslands:before {
+  background-position: 0px -1950px;
+}
+.ft-Flag.ft-Flag_fr:before,
+.ft-Flag.ft-Flag_france:before {
+  background-position: 0px -1976px;
+}
+.ft-Flag.ft-Flag_ga:before,
+.ft-Flag.ft-Flag_gabon:before {
+  background-position: -36px 0px;
+}
+.ft-Flag.ft-Flag_gb:before,
+.ft-Flag.ft-Flag_unitedKingdom:before {
+  background-position: -36px -26px;
+}
+.ft-Flag.ft-Flag_gd:before,
+.ft-Flag.ft-Flag_grenada:before {
+  background-position: -36px -52px;
+}
+.ft-Flag.ft-Flag_ge:before,
+.ft-Flag.ft-Flag_georgia:before {
+  background-position: -36px -78px;
+}
+.ft-Flag.ft-Flag_gf:before,
+.ft-Flag.ft-Flag_frenchGuiana:before {
+  background-position: -36px -104px;
+}
+.ft-Flag.ft-Flag_gh:before,
+.ft-Flag.ft-Flag_ghana:before {
+  background-position: -36px -130px;
+}
+.ft-Flag.ft-Flag_gi:before,
+.ft-Flag.ft-Flag_gibraltar:before {
+  background-position: -36px -156px;
+}
+.ft-Flag.ft-Flag_gl:before,
+.ft-Flag.ft-Flag_greenland:before {
+  background-position: -36px -182px;
+}
+.ft-Flag.ft-Flag_gm:before,
+.ft-Flag.ft-Flag_gambia:before {
+  background-position: -36px -208px;
+}
+.ft-Flag.ft-Flag_gn:before,
+.ft-Flag.ft-Flag_guinea:before {
+  background-position: -36px -234px;
+}
+.ft-Flag.ft-Flag_gp:before,
+.ft-Flag.ft-Flag_guadeloupe:before {
+  background-position: -36px -260px;
+}
+.ft-Flag.ft-Flag_gq:before,
+.ft-Flag.ft-Flag_equatorialGuinea:before {
+  background-position: -36px -286px;
+}
+.ft-Flag.ft-Flag_gr:before,
+.ft-Flag.ft-Flag_greece:before {
+  background-position: -36px -312px;
+}
+.ft-Flag.ft-Flag_gs:before,
+.ft-Flag.ft-Flag_sandwichIslands:before {
+  background-position: -36px -338px;
+}
+.ft-Flag.ft-Flag_gt:before,
+.ft-Flag.ft-Flag_guatemala:before {
+  background-position: -36px -364px;
+}
+.ft-Flag.ft-Flag_gu:before,
+.ft-Flag.ft-Flag_guam:before {
+  background-position: -36px -390px;
+}
+.ft-Flag.ft-Flag_gw:before,
+.ft-Flag.ft-Flag_guinea-bissau:before {
+  background-position: -36px -416px;
+}
+.ft-Flag.ft-Flag_gy:before,
+.ft-Flag.ft-Flag_guyana:before {
+  background-position: -36px -442px;
+}
+.ft-Flag.ft-Flag_hk:before,
+.ft-Flag.ft-Flag_hongKong:before {
+  background-position: -36px -468px;
+}
+.ft-Flag.ft-Flag_hm:before,
+.ft-Flag.ft-Flag_heardIsland:before {
+  background-position: -36px -494px;
+}
+.ft-Flag.ft-Flag_hn:before,
+.ft-Flag.ft-Flag_honduras:before {
+  background-position: -36px -520px;
+}
+.ft-Flag.ft-Flag_hr:before,
+.ft-Flag.ft-Flag_croatia:before {
+  background-position: -36px -546px;
+}
+.ft-Flag.ft-Flag_ht:before,
+.ft-Flag.ft-Flag_haiti:before {
+  background-position: -36px -572px;
+}
+.ft-Flag.ft-Flag_hu:before,
+.ft-Flag.ft-Flag_hungary:before {
+  background-position: -36px -598px;
+}
+.ft-Flag.ft-Flag_id:before,
+.ft-Flag.ft-Flag_indonesia:before {
+  background-position: -36px -624px;
+}
+.ft-Flag.ft-Flag_ie:before,
+.ft-Flag.ft-Flag_ireland:before {
+  background-position: -36px -650px;
+}
+.ft-Flag.ft-Flag_il:before,
+.ft-Flag.ft-Flag_israel:before {
+  background-position: -36px -676px;
+}
+.ft-Flag.ft-Flag_in:before,
+.ft-Flag.ft-Flag_india:before {
+  background-position: -36px -702px;
+}
+.ft-Flag.ft-Flag_io:before,
+.ft-Flag.ft-Flag_indianOceanTerritory:before {
+  background-position: -36px -728px;
+}
+.ft-Flag.ft-Flag_iq:before,
+.ft-Flag.ft-Flag_iraq:before {
+  background-position: -36px -754px;
+}
+.ft-Flag.ft-Flag_ir:before,
+.ft-Flag.ft-Flag_iran:before {
+  background-position: -36px -780px;
+}
+.ft-Flag.ft-Flag_is:before,
+.ft-Flag.ft-Flag_iceland:before {
+  background-position: -36px -806px;
+}
+.ft-Flag.ft-Flag_it:before,
+.ft-Flag.ft-Flag_italy:before {
+  background-position: -36px -832px;
+}
+.ft-Flag.ft-Flag_jm:before,
+.ft-Flag.ft-Flag_jamaica:before {
+  background-position: -36px -858px;
+}
+.ft-Flag.ft-Flag_jo:before,
+.ft-Flag.ft-Flag_jordan:before {
+  background-position: -36px -884px;
+}
+.ft-Flag.ft-Flag_jp:before,
+.ft-Flag.ft-Flag_japan:before {
+  background-position: -36px -910px;
+}
+.ft-Flag.ft-Flag_ke:before,
+.ft-Flag.ft-Flag_kenya:before {
+  background-position: -36px -936px;
+}
+.ft-Flag.ft-Flag_kg:before,
+.ft-Flag.ft-Flag_kyrgyzstan:before {
+  background-position: -36px -962px;
+}
+.ft-Flag.ft-Flag_kh:before,
+.ft-Flag.ft-Flag_cambodia:before {
+  background-position: -36px -988px;
+}
+.ft-Flag.ft-Flag_ki:before,
+.ft-Flag.ft-Flag_kiribati:before {
+  background-position: -36px -1014px;
+}
+.ft-Flag.ft-Flag_km:before,
+.ft-Flag.ft-Flag_comoros:before {
+  background-position: -36px -1040px;
+}
+.ft-Flag.ft-Flag_kn:before,
+.ft-Flag.ft-Flag_saintKittsAnd.nevis:before {
+  background-position: -36px -1066px;
+}
+.ft-Flag.ft-Flag_kp:before,
+.ft-Flag.ft-Flag_northKorea:before {
+  background-position: -36px -1092px;
+}
+.ft-Flag.ft-Flag_kr:before,
+.ft-Flag.ft-Flag_southKorea:before {
+  background-position: -36px -1118px;
+}
+.ft-Flag.ft-Flag_kw:before,
+.ft-Flag.ft-Flag_kuwait:before {
+  background-position: -36px -1144px;
+}
+.ft-Flag.ft-Flag_ky:before,
+.ft-Flag.ft-Flag_caymanIslands:before {
+  background-position: -36px -1170px;
+}
+.ft-Flag.ft-Flag_kz:before,
+.ft-Flag.ft-Flag_kazakhstan:before {
+  background-position: -36px -1196px;
+}
+.ft-Flag.ft-Flag_la:before,
+.ft-Flag.ft-Flag_laos:before {
+  background-position: -36px -1222px;
+}
+.ft-Flag.ft-Flag_lb:before,
+.ft-Flag.ft-Flag_lebanon:before {
+  background-position: -36px -1248px;
+}
+.ft-Flag.ft-Flag_lc:before,
+.ft-Flag.ft-Flag_saintLucia:before {
+  background-position: -36px -1274px;
+}
+.ft-Flag.ft-Flag_li:before,
+.ft-Flag.ft-Flag_liechtenstein:before {
+  background-position: -36px -1300px;
+}
+.ft-Flag.ft-Flag_lk:before,
+.ft-Flag.ft-Flag_sriLanka:before {
+  background-position: -36px -1326px;
+}
+.ft-Flag.ft-Flag_lr:before,
+.ft-Flag.ft-Flag_liberia:before {
+  background-position: -36px -1352px;
+}
+.ft-Flag.ft-Flag_ls:before,
+.ft-Flag.ft-Flag_lesotho:before {
+  background-position: -36px -1378px;
+}
+.ft-Flag.ft-Flag_lt:before,
+.ft-Flag.ft-Flag_lithuania:before {
+  background-position: -36px -1404px;
+}
+.ft-Flag.ft-Flag_lu:before,
+.ft-Flag.ft-Flag_luxembourg:before {
+  background-position: -36px -1430px;
+}
+.ft-Flag.ft-Flag_lv:before,
+.ft-Flag.ft-Flag_latvia:before {
+  background-position: -36px -1456px;
+}
+.ft-Flag.ft-Flag_ly:before,
+.ft-Flag.ft-Flag_libya:before {
+  background-position: -36px -1482px;
+}
+.ft-Flag.ft-Flag_ma:before,
+.ft-Flag.ft-Flag_morocco:before {
+  background-position: -36px -1508px;
+}
+.ft-Flag.ft-Flag_mc:before,
+.ft-Flag.ft-Flag_monaco:before {
+  background-position: -36px -1534px;
+}
+.ft-Flag.ft-Flag_md:before,
+.ft-Flag.ft-Flag_moldova:before {
+  background-position: -36px -1560px;
+}
+.ft-Flag.ft-Flag_me:before,
+.ft-Flag.ft-Flag_montenegro:before {
+  background-position: -36px -1586px;
+}
+.ft-Flag.ft-Flag_mg:before,
+.ft-Flag.ft-Flag_madagascar:before {
+  background-position: -36px -1613px;
+}
+.ft-Flag.ft-Flag_mh:before,
+.ft-Flag.ft-Flag_marshallIslands:before {
+  background-position: -36px -1639px;
+}
+.ft-Flag.ft-Flag_mk:before,
+.ft-Flag.ft-Flag_macedonia:before {
+  background-position: -36px -1665px;
+}
+.ft-Flag.ft-Flag_ml:before,
+.ft-Flag.ft-Flag_mali:before {
+  background-position: -36px -1691px;
+}
+.ft-Flag.ft-Flag_mm:before,
+.ft-Flag.ft-Flag_myanmar:before,
+.ft-Flag.ft-Flag_burma:before {
+  background-position: -36px -1717px;
+}
+.ft-Flag.ft-Flag_mn:before,
+.ft-Flag.ft-Flag_mongolia:before {
+  background-position: -36px -1743px;
+}
+.ft-Flag.ft-Flag_mo:before,
+.ft-Flag.ft-Flag_macau:before {
+  background-position: -36px -1769px;
+}
+.ft-Flag.ft-Flag_mp:before,
+.ft-Flag.ft-Flag_northernMarianaIslands:before {
+  background-position: -36px -1795px;
+}
+.ft-Flag.ft-Flag_mq:before,
+.ft-Flag.ft-Flag_martinique:before {
+  background-position: -36px -1821px;
+}
+.ft-Flag.ft-Flag_mr:before,
+.ft-Flag.ft-Flag_mauritania:before {
+  background-position: -36px -1847px;
+}
+.ft-Flag.ft-Flag_ms:before,
+.ft-Flag.ft-Flag_montserrat:before {
+  background-position: -36px -1873px;
+}
+.ft-Flag.ft-Flag_mt:before,
+.ft-Flag.ft-Flag_malta:before {
+  background-position: -36px -1899px;
+}
+.ft-Flag.ft-Flag_mu:before,
+.ft-Flag.ft-Flag_mauritius:before {
+  background-position: -36px -1925px;
+}
+.ft-Flag.ft-Flag_mv:before,
+.ft-Flag.ft-Flag_maldives:before {
+  background-position: -36px -1951px;
+}
+.ft-Flag.ft-Flag_mw:before,
+.ft-Flag.ft-Flag_malawi:before {
+  background-position: -36px -1977px;
+}
+.ft-Flag.ft-Flag_mx:before,
+.ft-Flag.ft-Flag_mexico:before {
+  background-position: -72px 0px;
+}
+.ft-Flag.ft-Flag_my:before,
+.ft-Flag.ft-Flag_malaysia:before {
+  background-position: -72px -26px;
+}
+.ft-Flag.ft-Flag_mz:before,
+.ft-Flag.ft-Flag_mozambique:before {
+  background-position: -72px -52px;
+}
+.ft-Flag.ft-Flag_na:before,
+.ft-Flag.ft-Flag_namibia:before {
+  background-position: -72px -78px;
+}
+.ft-Flag.ft-Flag_nc:before,
+.ft-Flag.ft-Flag_newCaledonia:before {
+  background-position: -72px -104px;
+}
+.ft-Flag.ft-Flag_ne:before,
+.ft-Flag.ft-Flag_niger:before {
+  background-position: -72px -130px;
+}
+.ft-Flag.ft-Flag_nf:before,
+.ft-Flag.ft-Flag_norfolkIsland:before {
+  background-position: -72px -156px;
+}
+.ft-Flag.ft-Flag_ng:before,
+.ft-Flag.ft-Flag_nigeria:before {
+  background-position: -72px -182px;
+}
+.ft-Flag.ft-Flag_ni:before,
+.ft-Flag.ft-Flag_nicaragua:before {
+  background-position: -72px -208px;
+}
+.ft-Flag.ft-Flag_nl:before,
+.ft-Flag.ft-Flag_netherlands:before {
+  background-position: -72px -234px;
+}
+.ft-Flag.ft-Flag_no:before,
+.ft-Flag.ft-Flag_norway:before {
+  background-position: -72px -260px;
+}
+.ft-Flag.ft-Flag_np:before,
+.ft-Flag.ft-Flag_nepal:before {
+  background-position: -72px -286px;
+}
+.ft-Flag.ft-Flag_nr:before,
+.ft-Flag.ft-Flag_nauru:before {
+  background-position: -72px -312px;
+}
+.ft-Flag.ft-Flag_nu:before,
+.ft-Flag.ft-Flag_niue:before {
+  background-position: -72px -338px;
+}
+.ft-Flag.ft-Flag_nz:before,
+.ft-Flag.ft-Flag_newZealand:before {
+  background-position: -72px -364px;
+}
+.ft-Flag.ft-Flag_om:before,
+.ft-Flag.ft-Flag_oman:before {
+  background-position: -72px -390px;
+}
+.ft-Flag.ft-Flag_pa:before,
+.ft-Flag.ft-Flag_panama:before {
+  background-position: -72px -416px;
+}
+.ft-Flag.ft-Flag_pe:before,
+.ft-Flag.ft-Flag_peru:before {
+  background-position: -72px -442px;
+}
+.ft-Flag.ft-Flag_pf:before,
+.ft-Flag.ft-Flag_frenchPolynesia:before {
+  background-position: -72px -468px;
+}
+.ft-Flag.ft-Flag_pg:before,
+.ft-Flag.ft-Flag_newGuinea:before {
+  background-position: -72px -494px;
+}
+.ft-Flag.ft-Flag_ph:before,
+.ft-Flag.ft-Flag_philippines:before {
+  background-position: -72px -520px;
+}
+.ft-Flag.ft-Flag_pk:before,
+.ft-Flag.ft-Flag_pakistan:before {
+  background-position: -72px -546px;
+}
+.ft-Flag.ft-Flag_pl:before,
+.ft-Flag.ft-Flag_poland:before {
+  background-position: -72px -572px;
+}
+.ft-Flag.ft-Flag_pm:before,
+.ft-Flag.ft-Flag_saintPierre:before {
+  background-position: -72px -598px;
+}
+.ft-Flag.ft-Flag_pn:before,
+.ft-Flag.ft-Flag_pitcairnIslands:before {
+  background-position: -72px -624px;
+}
+.ft-Flag.ft-Flag_pr:before,
+.ft-Flag.ft-Flag_puertoRico:before {
+  background-position: -72px -650px;
+}
+.ft-Flag.ft-Flag_ps:before,
+.ft-Flag.ft-Flag_palestine:before {
+  background-position: -72px -676px;
+}
+.ft-Flag.ft-Flag_pt:before,
+.ft-Flag.ft-Flag_portugal:before {
+  background-position: -72px -702px;
+}
+.ft-Flag.ft-Flag_pw:before,
+.ft-Flag.ft-Flag_palau:before {
+  background-position: -72px -728px;
+}
+.ft-Flag.ft-Flag_py:before,
+.ft-Flag.ft-Flag_paraguay:before {
+  background-position: -72px -754px;
+}
+.ft-Flag.ft-Flag_qa:before,
+.ft-Flag.ft-Flag_qatar:before {
+  background-position: -72px -780px;
+}
+.ft-Flag.ft-Flag_re:before,
+.ft-Flag.ft-Flag_reunion:before {
+  background-position: -72px -806px;
+}
+.ft-Flag.ft-Flag_ro:before,
+.ft-Flag.ft-Flag_romania:before {
+  background-position: -72px -832px;
+}
+.ft-Flag.ft-Flag_rs:before,
+.ft-Flag.ft-Flag_serbia:before {
+  background-position: -72px -858px;
+}
+.ft-Flag.ft-Flag_ru:before,
+.ft-Flag.ft-Flag_russia:before {
+  background-position: -72px -884px;
+}
+.ft-Flag.ft-Flag_rw:before,
+.ft-Flag.ft-Flag_rwanda:before {
+  background-position: -72px -910px;
+}
+.ft-Flag.ft-Flag_sa:before,
+.ft-Flag.ft-Flag_saudiArabia:before {
+  background-position: -72px -936px;
+}
+.ft-Flag.ft-Flag_sb:before,
+.ft-Flag.ft-Flag_solomonIslands:before {
+  background-position: -72px -962px;
+}
+.ft-Flag.ft-Flag_sc:before,
+.ft-Flag.ft-Flag_seychelles:before {
+  background-position: -72px -988px;
+}
+.ft-Flag.ft-Flag_gbSct:before,
+.ft-Flag.ft-Flag_scotland:before {
+  background-position: -72px -1014px;
+}
+.ft-Flag.ft-Flag_sd:before,
+.ft-Flag.ft-Flag_sudan:before {
+  background-position: -72px -1040px;
+}
+.ft-Flag.ft-Flag_se:before,
+.ft-Flag.ft-Flag_sweden:before {
+  background-position: -72px -1066px;
+}
+.ft-Flag.ft-Flag_sg:before,
+.ft-Flag.ft-Flag_singapore:before {
+  background-position: -72px -1092px;
+}
+.ft-Flag.ft-Flag_sh:before,
+.ft-Flag.ft-Flag_saintHelena:before {
+  background-position: -72px -1118px;
+}
+.ft-Flag.ft-Flag_si:before,
+.ft-Flag.ft-Flag_slovenia:before {
+  background-position: -72px -1144px;
+}
+.ft-Flag.ft-Flag_sj:before,
+.ft-Flag.ft-Flag_svalbard:before,
+.ft-Flag.ft-Flag_janMayen:before {
+  background-position: -72px -1170px;
+}
+.ft-Flag.ft-Flag_sk:before,
+.ft-Flag.ft-Flag_slovakia:before {
+  background-position: -72px -1196px;
+}
+.ft-Flag.ft-Flag_sl:before,
+.ft-Flag.ft-Flag_sierraLeone:before {
+  background-position: -72px -1222px;
+}
+.ft-Flag.ft-Flag_sm:before,
+.ft-Flag.ft-Flag_sanMarino:before {
+  background-position: -72px -1248px;
+}
+.ft-Flag.ft-Flag_sn:before,
+.ft-Flag.ft-Flag_senegal:before {
+  background-position: -72px -1274px;
+}
+.ft-Flag.ft-Flag_so:before,
+.ft-Flag.ft-Flag_somalia:before {
+  background-position: -72px -1300px;
+}
+.ft-Flag.ft-Flag_sr:before,
+.ft-Flag.ft-Flag_suriname:before {
+  background-position: -72px -1326px;
+}
+.ft-Flag.ft-Flag_st:before,
+.ft-Flag.ft-Flag_saoTome:before {
+  background-position: -72px -1352px;
+}
+.ft-Flag.ft-Flag_sv:before,
+.ft-Flag.ft-Flag_elSalvador:before {
+  background-position: -72px -1378px;
+}
+.ft-Flag.ft-Flag_sy:before,
+.ft-Flag.ft-Flag_syria:before {
+  background-position: -72px -1404px;
+}
+.ft-Flag.ft-Flag_sz:before,
+.ft-Flag.ft-Flag_swaziland:before {
+  background-position: -72px -1430px;
+}
+.ft-Flag.ft-Flag_tc:before,
+.ft-Flag.ft-Flag_caicosIslands:before {
+  background-position: -72px -1456px;
+}
+.ft-Flag.ft-Flag_td:before,
+.ft-Flag.ft-Flag_chad:before {
+  background-position: -72px -1482px;
+}
+.ft-Flag.ft-Flag_tf:before,
+.ft-Flag.ft-Flag_frenchTerritories:before {
+  background-position: -72px -1508px;
+}
+.ft-Flag.ft-Flag_tg:before,
+.ft-Flag.ft-Flag_togo:before {
+  background-position: -72px -1534px;
+}
+.ft-Flag.ft-Flag_th:before,
+.ft-Flag.ft-Flag_thailand:before {
+  background-position: -72px -1560px;
+}
+.ft-Flag.ft-Flag_tj:before,
+.ft-Flag.ft-Flag_tajikistan:before {
+  background-position: -72px -1586px;
+}
+.ft-Flag.ft-Flag_tk:before,
+.ft-Flag.ft-Flag_tokelau:before {
+  background-position: -72px -1612px;
+}
+.ft-Flag.ft-Flag_tl:before,
+.ft-Flag.ft-Flag_timorleste:before {
+  background-position: -72px -1638px;
+}
+.ft-Flag.ft-Flag_tm:before,
+.ft-Flag.ft-Flag_turkmenistan:before {
+  background-position: -72px -1664px;
+}
+.ft-Flag.ft-Flag_tn:before,
+.ft-Flag.ft-Flag_tunisia:before {
+  background-position: -72px -1690px;
+}
+.ft-Flag.ft-Flag_to:before,
+.ft-Flag.ft-Flag_tonga:before {
+  background-position: -72px -1716px;
+}
+.ft-Flag.ft-Flag_tr:before,
+.ft-Flag.ft-Flag_turkey:before {
+  background-position: -72px -1742px;
+}
+.ft-Flag.ft-Flag_tt:before,
+.ft-Flag.ft-Flag_trinidad:before {
+  background-position: -72px -1768px;
+}
+.ft-Flag.ft-Flag_tv:before,
+.ft-Flag.ft-Flag_tuvalu:before {
+  background-position: -72px -1794px;
+}
+.ft-Flag.ft-Flag_tw:before,
+.ft-Flag.ft-Flag_taiwan:before {
+  background-position: -72px -1820px;
+}
+.ft-Flag.ft-Flag_tz:before,
+.ft-Flag.ft-Flag_tanzania:before {
+  background-position: -72px -1846px;
+}
+.ft-Flag.ft-Flag_ua:before,
+.ft-Flag.ft-Flag_ukraine:before {
+  background-position: -72px -1872px;
+}
+.ft-Flag.ft-Flag_ug:before,
+.ft-Flag.ft-Flag_uganda:before {
+  background-position: -72px -1898px;
+}
+.ft-Flag.ft-Flag_um:before,
+.ft-Flag.ft-Flag_usMinorIslands:before {
+  background-position: -72px -1924px;
+}
+.ft-Flag.ft-Flag_us:before,
+.ft-Flag.ft-Flag_america:before,
+.ft-Flag.ft-Flag_unitedStates:before {
+  background-position: -72px -1950px;
+}
+.ft-Flag.ft-Flag_uy:before,
+.ft-Flag.ft-Flag_uruguay:before {
+  background-position: -72px -1976px;
+}
+.ft-Flag.ft-Flag_uz:before,
+.ft-Flag.ft-Flag_uzbekistan:before {
+  background-position: -108px 0px;
+}
+.ft-Flag.ft-Flag_va:before,
+.ft-Flag.ft-Flag_vaticanCity:before {
+  background-position: -108px -26px;
+}
+.ft-Flag.ft-Flag_vc:before,
+.ft-Flag.ft-Flag_saintVincent:before {
+  background-position: -108px -52px;
+}
+.ft-Flag.ft-Flag_ve:before,
+.ft-Flag.ft-Flag_venezuela:before {
+  background-position: -108px -78px;
+}
+.ft-Flag.ft-Flag_vg:before,
+.ft-Flag.ft-Flag_britishVirginIslands:before {
+  background-position: -108px -104px;
+}
+.ft-Flag.ft-Flag_vi:before,
+.ft-Flag.ft-Flag_usVirginIslands:before {
+  background-position: -108px -130px;
+}
+.ft-Flag.ft-Flag_vn:before,
+.ft-Flag.ft-Flag_vietnam:before {
+  background-position: -108px -156px;
+}
+.ft-Flag.ft-Flag_vu:before,
+.ft-Flag.ft-Flag_vanuatu:before {
+  background-position: -108px -182px;
+}
+.ft-Flag.ft-Flag_gbWls:before,
+.ft-Flag.ft-Flag_wales:before {
+  background-position: -108px -208px;
+}
+.ft-Flag.ft-Flag_wf:before,
+.ft-Flag.ft-Flag_wallisAndFutuna:before {
+  background-position: -108px -234px;
+}
+.ft-Flag.ft-Flag_ws:before,
+.ft-Flag.ft-Flag_samoa:before {
+  background-position: -108px -260px;
+}
+.ft-Flag.ft-Flag_ye:before,
+.ft-Flag.ft-Flag_yemen:before {
+  background-position: -108px -286px;
+}
+.ft-Flag.ft-Flag_yt:before,
+.ft-Flag.ft-Flag_mayotte:before {
+  background-position: -108px -312px;
+}
+.ft-Flag.ft-Flag_za:before,
+.ft-Flag.ft-Flag_southAfrica:before {
+  background-position: -108px -338px;
+}
+.ft-Flag.ft-Flag_zm:before,
+.ft-Flag.ft-Flag_zambia:before {
+  background-position: -108px -364px;
+}
+.ft-Flag.ft-Flag_zw:before,
+.ft-Flag.ft-Flag_zimbabwe:before {
+  background-position: -108px -390px;
+}

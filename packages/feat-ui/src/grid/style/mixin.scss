@@ -1,0 +1,79 @@
+@mixin make-flex-grid($columns) {
+  @include block(ns(FlexCell)) {
+    @for $i from 1 through $columns {
+      @include modifier(#{$i + "of" + $columns}) {
+        @include make-flex-cell($i, $columns);
+      }
+    }
+  }
+}
+
+// $ft-Cell-list: xs,sm,md,lg;--------
+@mixin make-res-col($colname) {
+  @for $i from 1 through 24 {
+    .ft-Cell_#{$colname}_#{$i} {
+      width: $i/24 * 100%;
+    }
+  }
+}
+// ======================================
+
+@mixin make-flex-cell($size, $columns: $grid-columns) {
+  flex-basis: percentage($size / $columns);
+  max-width: percentage($size / $columns);
+  flex-shrink: 1;
+}
+
+@mixin make-normal-grid($columns: $grid-columns) {
+  @include block(ns(Cell)) {
+    @for $i from 1 through $columns {
+      @include modifier(#{$i + "of" + $columns}) {
+        @include make-normal-cell($i, $columns);
+      }
+      @include modifier(offset) {
+        @include modifier(#{$i + "of" + $columns}) {
+          margin-left: percentage($i / $columns);
+        }
+      }
+    }
+  }
+}
+
+@mixin make-normal-cell($size, $columns: $grid-columns) {
+  width: percentage($size / $columns);
+}
+
+@mixin make-gutter($gutter) {
+  @include block(ns(Cell)) {
+    @include modifier(gutterOffset) {
+      @include modifier($gutter / 2) {
+        padding-left: px-to-rem($gutter / 2);
+        padding-right: px-to-rem($gutter / 2);
+      }
+    }
+  }
+  @include block(ns(FlexCell)) {
+    @include modifier(gutterOffset) {
+      @include modifier($gutter / 2) {
+        padding-left: px-to-rem($gutter / 2);
+        padding-right: px-to-rem($gutter / 2);
+      }
+    }
+  }
+  @include block(ns(FlexRow)) {
+    @include modifier(gutterOffset) {
+      @include modifier($gutter / 2) {
+        margin-left: px-to-rem($gutter / -2);
+        margin-right: px-to-rem($gutter / -2);
+      }
+    }
+  }
+  @include block(ns(Row)) {
+    @include modifier(gutterOffset) {
+      @include modifier($gutter / 2) {
+        margin-left: px-to-rem($gutter / -2);
+        margin-right: px-to-rem($gutter / -2);
+      }
+    }
+  }
+}

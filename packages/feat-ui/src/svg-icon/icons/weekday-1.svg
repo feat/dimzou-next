@@ -1,0 +1,5 @@
+<svg class="icon-weekday" viewBox="0 0 64 64">
+                <circle class="icon-weekday__circle" fill="#FFFFFF" stroke="#000000" stroke-width="2" cx="32" cy="32" r="31"/>
+                <path class="icon-weekday__char" stroke="none" d="M35.56,48.491h-4.886V25.997c-1.826,2.053-3.937,3.562-6.33,4.524v-5.416c1.359-0.551,2.769-1.536,4.227-2.955
+                    c1.458-1.42,2.471-3.054,3.037-4.904h3.951V48.491z"/>
+            </svg>

@@ -1,0 +1,44 @@
+// 不能随便改顺序，不然会报错
+@import "../avatar/style/index.scss";
+@import "../block/style/index.scss";
+@import "../button/style/index.scss";
+@import "../checkbox/style/index.scss";
+@import "../mobile-list/style/index.scss";
+@import "../grid/style/index.scss";
+@import "../flag/style/index.scss";
+@import "../form/style/index.scss";
+@import "../text-input/style/index.scss";
+@import "../flat-date-picker/style/index.scss";
+@import "../digit-input/style/index.scss";
+@import "../password-strength-meter/style/index.scss";
+@import "../placeholder/style/index.scss";
+@import "../float-label-input/style/index.scss";
+@import "../layout/style/index.scss";
+@import "../menu/style/index.scss";
+// @import "../scroll-box/style/index.scss";
+// @import "../pull-to-refresh/style/index.scss";
+@import "../tabs/style/index.scss";
+@import "../loader/style/index.scss";
+@import "../alert/style/index.scss";
+@import "../anchor/style/index.scss";
+@import "../message/style/index.scss";
+@import "../modal/style/index.scss";
+@import "../feat-modal/style/index.scss";
+@import "../badge/style/index.scss";
+@import "../pagination/style/index.scss";
+@import "../comment/style/index.scss";
+@import "../tooltip/style/index.scss";
+@import "../card/style/index.scss";
+@import "../icon/style/index.scss";
+@import "../svg-icon/style/index.scss";
+@import "../notification/style/index.scss";
+@import "../navbar/style/index.scss";
+@import "../switch/style/index.scss";
+@import "../flip-counter/style/index.scss";
+@import "../popover/style/index.scss";
+@import "../lazy-image/style/index.scss";
+@import "../table/style/index.scss";
+@import "../button-select/style/index.scss";
+@import "../search-input/style/index.scss"; //searchBox
+@import "../record-item/style/index.scss";
+@import "../cross-button/style/index.scss"

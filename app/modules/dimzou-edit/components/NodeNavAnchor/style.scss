@@ -1,0 +1,14 @@
+@import 'base.scss';
+
+@include block(ns(NodeNavAnchor, dz)) {
+  margin-top: px-to-rem(36);
+  margin-bottom: px-to-rem(36);
+  padding-top: px-to-rem(12);
+  border-top: 1px dashed $gray-6;
+  @include element(link) {
+    display: block;
+    padding: px-to-rem(16) px-to-rem(24);
+    color: inherit;
+    text-align: right;
+  }
+}

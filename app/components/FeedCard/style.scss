@@ -1,0 +1,108 @@
+/**
+*
+* FeedCard
+*
+*/
+
+@import "base.scss";
+
+$tag-gap: 4;
+$card-meta-color: $gray-4;
+
+@include block(ns(FeedCard, ft)) {
+  height: 100%;
+  position: relative;
+  padding: px-to-rem(28) px-to-rem(16) px-to-rem(16) px-to-rem(16);
+  font-family: $card-body-font;
+  border: 1px solid transparent;
+  flex-grow: 1;
+  transition: all ease 0.3s;
+
+  &:hover {
+    background-color: white;
+    // border: 1px solid $border-color;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  @include element(header) {
+    margin-top: px-to-rem(16);
+  }
+
+  @include element(title) {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    // white-space: nowrap;
+    overflow: hidden;
+    font-family: $card-title-font;
+    font-size: px-to-rem(24);
+    max-height: 2.2em;
+    line-height: 1.1;
+    font-weight: bold;
+    text-overflow: ellipsis;
+    text-transform: capitalize;
+  }
+  @include element(avatar) {
+    margin-bottom: px-to-rem(12);
+  }
+  @include element(meta) {
+    margin-bottom: px-to-rem(12);
+    font-size: px-to-rem(14);
+    color: $card-meta-color;
+    font-weight: 300;
+  }
+  @include element(dot) {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    &::before {
+      content: "·";
+    }
+  }
+  @include element(content) {
+    flex: 1;
+    font-size: px-to-rem(16);
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 6; //限制行数
+    -webkit-box-orient: vertical;
+  }
+  @include element(wrap) {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  @include element(img) {
+    width: 30%;
+    margin-left: px-to-rem(12);
+  }
+  @include element(readMore) {
+    padding-right: px-to-rem(12);
+    padding-top: px-to-rem(4);
+    font-size: px-to-rem(12);
+    color: $color-tertiary;
+  }
+
+  @include element(type) {
+    padding: 0 px-to-rem(12);
+    position: absolute;
+    border: 1px solid $border-color;
+    top: px-to-rem(12);
+    left: px-to-rem(-$tag-gap);
+    font-size: px-to-rem(14);
+    font-weight: bold;
+    font-family: $heading-font;
+    background-color: #fff;
+    text-transform: capitalize;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: px-to-rem(-$tag-gap * 2);
+      left: -1px;
+      width: 0;
+      height: 0;
+      border-left: px-to-rem($tag-gap) solid transparent;
+      border-top: px-to-rem($tag-gap * 2) solid $gray-4;
+    }
+  }
+}

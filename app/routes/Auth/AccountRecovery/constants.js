@@ -1,0 +1,11 @@
+export const STEP_VERIFY_IDENTITY = 0;
+export const STEP_VERIFY_SECURITY = 1;
+export const STEP_SELECT_RECOVERY_FIELD = 2;
+
+export const STEP_CHANGE_PASSWORD = 3;
+export const STEP_UPDATE_CODE_PHRASE = 4;
+export const STEP_RESET_LOGIN_ACCOUNT = 5;
+
+export const STEP_CHANGE_PASSWORD_SUCCESS = 6;
+export const STEP_UPDATE_CODE_PHRASE_SUCCESS = 7;
+export const STEP_RESET_LOGIN_ACCOUNT_SUCCESS = 8;

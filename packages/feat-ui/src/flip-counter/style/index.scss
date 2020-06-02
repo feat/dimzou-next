@@ -1,0 +1,400 @@
+@import "../../style/utils/index.scss";
+@import "../../style/themes/default.scss";
+
+$flip-card-sm-width: 20px;
+$flip-card-sm-height: 28px;
+$flip-card-sm-number-size: 28px;
+$flip-card-sm-separator-size: 18px;
+$flip-card-sm-slot-title-size: 12px;
+
+$flip-card-md-width: 28px;
+$flip-card-md-height: 36px;
+$flip-card-md-number-size: 36px;
+$flip-card-md-separator-size: 24px;
+
+$flip-card-lg-width: 48px;
+$flip-card-lg-height: 64px;
+$flip-card-lg-number-size: 64px;
+$flip-card-lg-separator-size: 40px;
+
+$flip-card-xl-width: 70px;
+$flip-card-xl-height: 100px;
+$flip-card-xl-number-size: 100px;
+$flip-card-xl-separator-size: 60px;
+
+@include block(ns(FlipCountdown)) {
+    display: block;
+    margin: 0 auto;
+    padding: 20px;
+
+    text-align: center;
+    @include element(slot) {
+        display: inline-block;
+        position: relative;
+
+        &:first-child {
+          margin-left: 0;
+          &:before {
+            content: '';
+          }
+        }
+        &::before {
+          content: ':';
+          color: #000;
+          position: absolute;
+        }
+    }
+
+    @include element(slotTitle) {
+        font-family: monospace;
+        color: #9E9E9E;
+        text-transform: uppercase;
+        padding-top: 5px;
+    }
+
+    @include modifier(sm) {
+        @include element(slot, true) {
+            margin-right: 8px;
+            &::before {
+                font-size: $flip-card-sm-separator-size;
+                left: -6px;
+                top: 2px;
+            }
+        }
+        @include element(slotTitle, true) {
+            font-size: $flip-card-sm-slot-title-size;
+        }
+    }
+    @include modifier(md) {
+        @include element(slot, true) {
+            margin-right: 10px;
+            &::before {
+                font-size: $flip-card-md-separator-size;
+                left: -8px;
+                top: 2px;
+            }
+        }
+    }
+    @include modifier(lg) {
+        @include element(slot, true) {
+            margin-right: 12px;
+            &::before {
+                font-size: $flip-card-lg-separator-size;
+                left: -12px;
+                top: 6px;
+            }
+        }
+    }
+    @include modifier(xl) {
+        @include element(slot, true) {
+            margin-right: 15px;
+            &::before {
+                font-size: $flip-card-xl-separator-size;
+                left: -16px;
+                top: 12px;
+            }
+        }
+    }
+}
+
+@include block(ns(FlipCards)) {
+    background: #111;
+    border-radius: 5px;
+    display: inline-block;
+    margin: 1px;
+    border-color: #111;
+    border-style: solid;
+    box-shadow: 0 1px 0 #000;
+    position: relative;
+
+    &:before,
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 50%;
+      background: #292929;
+    }
+
+    @include modifier(sm) {
+        width: $flip-card-sm-width;
+        height: $flip-card-sm-height;
+        border-width: 1px 1px 1px 1px;
+
+        &::before,
+        &::after {
+            width: 2px;
+            height: 5px;
+            margin-top: -2px;
+        }
+        &::before {
+            left: -2px;
+            border-radius: 1px 0 0 1px;
+        }
+        &::after {
+            right: -3px;
+            border-radius: 0 1px 1px 0;
+        }
+    }
+    @include modifier(md) {
+        width: $flip-card-md-width;
+        height: $flip-card-md-height;
+        border-width: 2px 1px 1px 1px;
+        &::before,
+        &::after {
+            width: 2px;
+            height: 8px;
+            margin-top: -4px;
+        }
+        &::before {
+            left: -2px;
+            border-radius: 1px 0 0 1px;
+        }
+        &::after {
+            right: -3px;
+            border-radius: 0 1px 1px 0;
+        }
+    }
+    @include modifier(lg) {
+        width: $flip-card-lg-width;
+        height: $flip-card-lg-height;
+        border-width: 2px 1px 1px 1px;
+        &::before,
+        &::after {
+            width: 3px;
+            height: 12px;
+            margin-top: -6px;
+        }
+        &::before {
+            left: -3px;
+            border-radius: 2px 0 0 2px;
+        }
+        &::after {
+            right: -4px;
+            border-radius: 0 2px 2px 0;
+        }
+    }
+    @include modifier(xl) {
+        height: $flip-card-xl-height;
+        width: $flip-card-xl-width;
+        border-width: 3px 1px 1px 1px;
+        &::before,
+        &::after {
+            width: 3px;
+            height: 14px;
+            margin-top: -7px;
+        }
+        &:before {
+          left: -3px;
+          border-radius: 2px 0 0 2px;
+        }
+
+        &:after {
+          right: -3px;
+          border-radius: 0 2px 2px 0;
+        }
+    }
+}
+
+@include block(ns(FlipCard)) {
+    perspective: 500px;
+    position: absolute;
+    z-index:1;
+
+    &:last-child {
+        z-index: 0;
+    }
+
+    &:after {
+        content: ' ';
+        position: absolute;
+        display: block;
+        top: 100%;
+        height:100%;
+        width: 100%;
+        z-index: 10;
+        transition: none;
+        box-shadow: none;
+        border-radius: 0 0 5px 5px;
+    }
+
+    &.now {
+        z-index: 2;
+    }
+
+    &.now:after {
+        transition: all .5s;
+    }
+
+    &.now + & {
+        z-index: 3;
+    }
+    .now + & #{& + $element-separator + sides},
+    &:last-child #{&+$element-separator+sides} {
+        transform: rotateX(-180deg);
+        transition: all 1s;
+        transform-style: preserve-3d;
+    }
+
+    @include element(sides) {
+        position: relative;
+        transform-origin: bottom;
+    }
+
+    @include element(side) {
+        backface-visibility: hidden;
+    	position: absolute;
+        overflow-y: hidden;
+    	top: 0;
+    	left: 0;
+        background-color: #444;
+        overflow: hidden;
+
+        @include modifier(front) {
+            z-index: 2;
+        	transform: rotateY(0deg);
+            border-radius: 5px 5px 0 0;
+            margin-top: -1px;
+        }
+        @include modifier(back) {
+            transform: rotateX(180deg);
+            border-radius: 0 0 5px 5px;
+            margin-bottom: -1px;
+        }
+    }
+
+    @include element(sideNum) {
+        height: 200%;
+        line-height: 1;
+        vertical-align: middle;
+        text-align: center;
+        box-sizing: border-box;
+        text-indent: 5%;
+        color: #fff;
+        font-family: monospace;
+
+        @include modifier(back) {
+            text-shadow: 0px 1px 1px #000;
+        }
+        @include modifier(front) {
+            text-shadow: 0px -1px 1px #000;
+        }
+    }
+
+    @include modifier(sm) {
+        width: $flip-card-sm-width;
+        height: $flip-card-sm-height / 2;
+        &.now:after {
+            box-shadow: 0 ($flip-card-sm-width - 5) ($flip-card-md-height/2) rgba(0, 0, 0, .8) inset;
+        }
+        @include element(sides, true) {
+            height: $flip-card-sm-height / 2;
+        }
+        @include element(side, true) {
+            width: $flip-card-sm-width;
+            height: $flip-card-sm-height / 2;
+            @include modifier(front) {
+                box-shadow: 0 ($flip-card-sm-width * -0.15) ($flip-card-md-height / 2) rgba(0,0,0, .8) inset;
+            }
+            @include modifier(back) {
+                box-shadow: 0 ($flip-card-sm-width * 0.15) ($flip-card-md-height / 2) rgba(0,0,0, .8) inset;
+            }
+        }
+        @include element(sideNum, true) {
+            font-size: $flip-card-sm-number-size;
+            @include modifier(back) {
+                margin-top: - $flip-card-sm-height / 2;
+            }
+        }
+    }
+
+    @include modifier(md) {
+        width: $flip-card-md-width;
+        height: $flip-card-md-height / 2;
+        &.now:after {
+            box-shadow: 0 ($flip-card-md-width - 5) ($flip-card-md-height/2) rgba(0, 0, 0, .8) inset;
+        }
+        @include element(sides, true) {
+            height: $flip-card-md-height / 2;
+        }
+        @include element(side, true) {
+            width: $flip-card-md-width;
+            height: $flip-card-md-height / 2;
+            @include modifier(front) {
+                box-shadow: 0 ($flip-card-md-width * -0.15) ($flip-card-md-height / 2) rgba(0,0,0, .8) inset;
+            }
+            @include modifier(back) {
+                box-shadow: 0 ($flip-card-md-width * 0.15) ($flip-card-md-height / 2) rgba(0,0,0, .8) inset;
+            }
+        }
+        @include element(sideNum, true) {
+            font-size: $flip-card-md-number-size;
+            @include modifier(back) {
+                margin-top: - $flip-card-md-height / 2;
+            }
+        }
+    }
+
+    @include modifier(lg) {
+        width: $flip-card-lg-width;
+        height: $flip-card-lg-height / 2;
+        &.now:after {
+            box-shadow: 0 ($flip-card-lg-width - 5) ($flip-card-md-height/2) rgba(0, 0, 0, .8) inset;
+        }
+        @include element(sides, true) {
+            height: $flip-card-lg-height / 2;
+        }
+        @include element(side, true) {
+            width: $flip-card-lg-width;
+            height: $flip-card-lg-height / 2;
+            @include modifier(front) {
+                box-shadow: 0 ($flip-card-lg-width * -0.15) ($flip-card-md-height / 2) rgba(0,0,0, .8) inset;
+            }
+            @include modifier(back) {
+                box-shadow: 0 ($flip-card-lg-width * 0.15) ($flip-card-md-height / 2) rgba(0,0,0, .8) inset;
+            }
+        }
+        @include element(sideNum, true) {
+            font-size: $flip-card-lg-number-size;
+            @include modifier(back) {
+                margin-top: - $flip-card-lg-height / 2;
+            }
+        }
+    }
+    @include modifier(xl) {
+        width: $flip-card-xl-width;
+    	height: $flip-card-xl-height / 2;
+        &.now:after {
+            box-shadow: 0 ($flip-card-xl-width - 5) ($flip-card-xl-height/2) rgba(0, 0, 0, .8) inset;
+        }
+        @include element(sides, true) {
+            height: $flip-card-xl-height / 2;
+        }
+        @include element(side, true) {
+            width: $flip-card-xl-width;
+            height: $flip-card-xl-height / 2;
+            @include modifier(front) {
+                box-shadow: 0 ($flip-card-xl-width * -0.15) ($flip-card-xl-height / 2) rgba(0,0,0, .8) inset;
+            }
+            @include modifier(back) {
+                box-shadow: 0 ($flip-card-xl-width * 0.15) ($flip-card-xl-height / 2) rgba(0,0,0, .8) inset;
+            }
+        }
+        @include element(sideNum, true) {
+            font-size: $flip-card-xl-number-size;
+            @include modifier(back) {
+                margin-top: - $flip-card-xl-height / 2;
+            }
+        }
+    }
+}
+
+
+@include block(ns(CountdownBase)) {
+  display: inline-block;
+  @include element(slot) {
+    display: inline-block;
+    margin-left: 2px;
+    margin-right: 2px;
+  }
+}

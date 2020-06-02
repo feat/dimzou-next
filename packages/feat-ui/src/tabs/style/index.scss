@@ -1,0 +1,57 @@
+@include block(ns(TabItem)) {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    padding-left: px-to-rem($tab-padding-x);
+    padding-right: px-to-rem($tab-padding-x);
+    line-height: 1.8;
+    cursor: pointer;
+
+    @include modifier(normal) {
+        border-top-left-radius: px-to-rem($tab-border-radius);
+        border-top-right-radius: px-to-rem($tab-border-radius);
+        background: $tab-bg-color;
+        border-top: 1px solid $tab-bd-color;
+        border-left: 1px solid $tab-bd-color;
+        border-right: 1px solid $tab-bd-color;
+        @include btn-animation;
+
+        &:hover {
+            background-color: $tab-hover-bg-color;
+        }
+
+        @include state(active) {
+            color: $tab-active-text-color;
+            background-color: $tab-active-bg-color;
+        };
+    }
+
+
+    @include modifier(feat) {
+        padding-left: px-to-em(20);
+        padding-right: px-to-em(32);
+
+        &+& {
+            margin-left: px-to-em(-32);
+        }
+
+        @include element(bg, true) {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            fill: $btn-default-bg-color;
+        }
+
+        @include element(label, true) {
+            color: #333;
+            position: relative;
+            font-family: $heading-font;
+            z-index: 1;
+        }
+    }
+
+    @include state(active) {
+        z-index: 10;
+    };
+}

@@ -1,0 +1,43 @@
+@import 'base.scss';
+
+@include block(ns(AboutUs, p)) {
+  display: flex;
+  padding-left: 24px;
+  padding-right: 24px;
+
+  @include element(main) {
+    flex-basis: 63%;
+  }
+  @include element(filex) {
+    flex-basis: 37%;
+    flex-shrink: 0;
+    padding-left: px-to-rem(24);
+  }
+  @include element(header) {
+    display: flex;
+    background-color: $main-container-bg-color;
+    padding-top: 12px;
+    height: px-to-rem($view-profile-header-height);
+    @include header-bottom-border;
+  }
+  @include element(mainContent) {
+    display: flex;
+    padding-top: 24px;
+    margin-left: - px-to-rem(12);
+    margin-right: - px-to-rem(12);
+  }
+  @include element(filexList) {
+    padding-top: 24px;
+  }
+  @include element(col1) {
+    flex-basis: 33%;
+    flex-shrink: 0;
+    padding-left: px-to-rem(12);
+    padding-right: px-to-rem(12);
+  }
+  @include element(col2) {
+    flex: 1;
+    padding-left: px-to-rem(12);
+    padding-right: px-to-rem(12);
+  }
+}

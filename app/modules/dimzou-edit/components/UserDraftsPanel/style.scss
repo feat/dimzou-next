@@ -1,0 +1,204 @@
+@import 'base.scss';
+
+.dz-DraftsPanel {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    display: flex;
+    width: calc(100% - 8px);
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
+    &__header {
+        display: flex;
+        padding: 5px;
+        margin-bottom: 12px;
+        align-items: center;
+        &.has-border {
+            border-bottom: 1px dashed $gray-6;
+        }
+    }
+
+    &__title {
+        font-size: px-to-rem(18);
+        font-weight: bold;
+        a {
+            color: inherit;
+        }
+    }
+
+    &__actions {
+        margin-left: auto;
+    }
+
+    .ft-IconButton {
+        margin-left: 5px;
+        &.is-selected {
+            color: white;
+            background-color: $gray-10;
+        }
+    }
+    
+    // has current ...
+    &__content {
+        // color: $gray-6;
+        flex: 1;
+        position: relative;
+    }
+}
+
+.dz-DraftsPanelNode {
+    position: relative;
+    @include modifier(bundle) {
+        padding-left: 28px;
+        padding-right: 13px;
+        & > .dz-DraftsPanelNodeDropzone_before,
+        & > .dz-DraftsPanelNodeDropzone_after {
+            width: calc(100% - 28px);
+        }
+    }
+    @include modifier(node) {
+        padding-left: 12px;
+        & > .dz-DraftsPanelNodeDropzone_before,
+        & > .dz-DraftsPanelNodeDropzone_after {
+            width: calc(100% - 12px);
+        }
+    }
+    &__icon,
+    &__toggle {
+        position: absolute;
+        left: 0;
+        top: 5px; 
+        padding: 0;
+        width: px-to-rem(26);
+        height: px-to-rem(26);
+        border-radius: px-to-rem(2);
+    }
+
+    &__toggle {
+        cursor: pointer;
+        @include btn-animation();
+        &:hover {
+            background-color: $gray-2;
+        }
+    }
+
+    @include state(current) {
+        // border-left: 2px solid $gray-10;
+    }
+
+    
+}
+
+.dz-DraftsPanelNodeDropzone {
+    &_before {
+        position: absolute;
+        height: 4px;
+        top: -2px;
+    }
+
+    &_inner {
+
+    }
+
+    &_after {
+        position: absolute;
+        height: 4px;
+        bottom: -2px;
+        width: 100%;
+    }
+
+    &.isOver {
+        background-color: $input-active-color;
+    }
+
+    &_node {
+        z-index: 10;
+    }
+}
+
+.dz-DraftsNodeLabel {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    display: flex;
+    &__text {
+        @include text-truncate;
+        margin-right: 5px;
+        // &:hover {
+        //     overflow: visible; 
+        //     white-space: normal;
+        //     height: auto;
+        // }
+    }
+    &__extra {
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+
+    &__sub {
+        margin-left: 12px;
+        margin-right: 5px;
+    }
+
+    a {
+        color: inherit;
+    }
+
+    &_bundle {
+        font-size: px-to-rem(18);
+    }
+    &.is-current {
+        .dz-DraftsNodeLabel__text {
+            font-weight: bold;
+        }
+    }
+}
+
+.dz-StatusLabel {
+    display: inline-block;
+    color: white;
+    font-size: px-to-rem(12);
+    font-family: $sans-serif-text-font;
+    background-color: $gray-10;
+    border-radius: 4px;
+    padding-left: px-to-rem(4);
+    padding-right: px-to-rem(4);
+    font-weight: normal;
+    margin-left: .5em;
+}
+
+.dz-DraftsList {
+    &.isOver {
+        background-color: #3f3f33;
+    }
+}
+
+@include block(ns(DraftsPanelSection, dz)) {
+    & + & {
+        margin-top: px-to-rem(48);
+    }
+  @include element(header) {
+      color: $gray-10;
+      padding-left: px-to-rem(5);
+      font-size: px-to-rem(22);
+      font-weight: bold;
+      margin-bottom: px-to-rem(32);
+  }
+}
+@include block(ns(DraftsPanelSubSection, dz)) {
+  margin-bottom: px-to-rem(32);
+  @include element(header) {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+      color: $gray-10;
+      padding-left: px-to-rem(5);
+      font-size: px-to-rem(18);
+      font-weight: bold;
+      z-index: 10;
+  }
+  @include element(content) {
+      @include modifier(archived) {
+        color: $gray-6;
+      }
+  }
+}

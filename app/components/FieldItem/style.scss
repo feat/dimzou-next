@@ -1,0 +1,24 @@
+@import 'base.scss';
+
+@include block(ns(FieldItem, ft)) {
+  padding-bottom: 1px;
+  border-bottom: 1px solid transparent;
+
+  @include modifier(dashed) {
+    border-bottom: 1px dashed $gray-5;
+  }
+
+  @include modifier(solid) {
+    border-bottom-color: $gray-5;
+  }
+
+  @include element(label) {
+    display: flex;
+    align-items: center;
+    height: px-to-rem($label-item-height);
+  }
+
+  @include element(wrapper) {
+    margin-bottom: px-to-rem(6);
+  }
+}

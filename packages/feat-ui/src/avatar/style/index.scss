@@ -1,0 +1,187 @@
+@include block(ns(Avatar)) {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: middle;
+
+    @include modifier(round) {
+        border-radius: 50%;
+    }
+
+    @include modifier(archived) {
+      filter: grayscale(100%);
+    }
+
+    @include modifier(xxs) {
+        @include size(px-to-rem($avatar-size-xxs));
+    }
+
+    @include modifier(xs) {
+        @include size(px-to-rem($avatar-size-xs));
+    }
+
+    @include modifier(sm) {
+        @include size(px-to-rem($avatar-size-sm));
+    }
+
+    @include modifier(md) {
+        @include size(px-to-rem($avatar-size-md));
+    }
+
+    @include modifier(lg) {
+        @include size(px-to-rem($avatar-size-lg));
+    }
+
+    @include modifier(xl) {
+        @include size(px-to-rem($avatar-size-xl));
+    }
+}
+
+@include block(ns(AvatarPlaceholder)) {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: middle;
+  background-color: $placeholder-color;
+  @include placeholder-bg;
+
+  @include modifier(round) {
+    border-radius: 50%;
+  }
+
+  @include modifier(xxs) {
+    @include size(px-to-rem($avatar-size-xxs));
+  }
+
+  @include modifier(xs) {
+    @include size(px-to-rem($avatar-size-xs));
+  }
+
+  @include modifier(sm) {
+    @include size(px-to-rem($avatar-size-sm));
+  }
+
+  @include modifier(md) {
+    @include size(px-to-rem($avatar-size-md));
+  }
+
+  @include modifier(lg) {
+    @include size(px-to-rem($avatar-size-lg));
+  }
+
+  @include modifier(xl) {
+    @include size(px-to-rem($avatar-size-xl));
+  }
+}
+
+
+@include block(ns(AvatarStamp)) {
+    display: flex;
+    font-size: px-to-rem(14);
+    align-items: flex-start;
+    @include element(avatar) {
+        margin-right: px-to-rem(5);
+        line-height: 0;
+    }
+    @include element(info) {
+        font-size: px-to-rem(14);
+        line-height: 1.2;
+        overflow: hidden;
+        font-family: $sans-serif-text-font;
+        // font-weight: bold;
+    }
+    @include element(username) {
+        color: $color-avatar-username;
+        a {
+            color: inherit;
+        }
+    };
+    @include element(meta) {
+        color: $color-avatar-meta;
+    }
+
+    @include element(desc) {
+        color: $color-avatar-desc;
+    };
+
+    @include element(separator) {
+      margin-left: px-to-rem(4);
+      margin-right: px-to-rem(4);
+    }
+
+    @include state(online) {
+        @include element(localTime, true) {
+            &::after {
+                content: "";
+                position: relative;
+                margin-left: px-to-rem(5);
+                margin-right: px-to-rem(5);
+                display: inline-block;
+                vertical-align: middle;
+                width: px-to-rem(8);
+                height: px-to-rem(8);
+                border-radius: 50%;
+                background-color: #74C54A;
+            }
+        }
+    };
+
+    @include modifier(md) {
+        @include element(info, true) {
+            font-size: px-to-rem(16);
+        }
+    }
+
+    @include modifier(I) {
+
+        @include element(username, true) {
+            display: block;
+            @include text-truncate();
+        }
+        @include element(desc, true) {
+            display: block;
+            @include text-truncate();
+        }
+        @include element(meta, true) {
+            display: block;
+            @include text-truncate();
+        }
+    }
+
+    @include modifier(II) {
+        @include element(meta, true) {
+            margin-left: px-to-rem(5);
+            span + span {
+                margin-left: px-to-rem(5);
+            }
+        };
+        @include element(usernameWrap, true) {
+            display: block;
+            @include text-truncate();
+            color: $color-avatar-meta;
+        }
+        @include element(desc, true) {
+            display: block;
+            @include text-truncate();
+        }
+    }
+
+    @include modifier(reverse) {
+        @include element(username, true) {
+            color: wheat;
+        }
+        @include element(desc, true) {
+            color: white;
+        }
+        @include element(meta, true) {
+            color: white;
+        }
+    }
+
+    @include modifier(placeholder) {
+      min-width: px-to-rem(200);
+      max-width: px-to-rem(250);
+      @include element(info, true) {
+        flex: 1;
+      }
+    }
+
+};

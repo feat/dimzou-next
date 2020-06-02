@@ -1,0 +1,26 @@
+@include block(ns(PopMenu, ft)) {
+  background-color: white;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-radius: 5px;
+  z-index: $popover-z-index;
+  @include pop-shadow;
+}
+@include block(ns(PopMenuItem, ft)) {
+  display: flex;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px dashed $gray-2;
+  font-size: 14px;
+  min-height: 44px;
+  align-items: center;
+  
+  @include element(main) {
+    padding-left: 8px;
+    padding-right: 8px;
+    flex: 1;
+  }
+  @include element(actions) {
+    padding-right: 8px;
+  }
+}

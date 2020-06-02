@@ -1,0 +1,17 @@
+@import "base.scss";
+
+@include block(ns(CountrySelect)) {
+  @include element(option) {
+    height: 100%;
+    width: 100%;
+    @include btn-animation();
+    &:hover {
+      background-color: $gray-2;
+    }
+  }
+  @include element(flag) {
+    width: px-to-rem(20);
+    height: auto;
+    margin-right: px-to-rem(8);
+  }
+}

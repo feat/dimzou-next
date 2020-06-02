@@ -1,0 +1,33 @@
+@import 'base.scss';
+
+
+@include block(ServicePriceItem) {
+  @include btn-base();
+  @include btn-default-style();
+
+  width: 100%;
+  text-align: right;
+  
+  height: px-to-rem(56);
+  padding-right: px-to-rem(6);
+  padding-left: px-to-rem(6);
+  border-radius: px-to-rem($btn-sm-border-radius);
+
+  @include state(disabled) {
+    cursor: not-allowed;
+    transform: none;
+    &:hover {
+      background-color: $gray-1;
+    }
+  }
+
+  @include element(unit) {
+    display: block;
+    height: px-to-rem(18);
+    line-height: 1.1;
+    font-size: px-to-rem(14);
+  }
+  @include element(price) {
+    font-size: px-to-rem(20);
+  }
+}

@@ -1,0 +1,52 @@
+@import 'base.scss';
+
+
+@include block(ViewProfileGrid) {
+    display: grid;
+  
+    // Landscape Phones
+    @media(min-width: $screen-xs-min){
+  
+    }
+  
+    // Portrait Tablets & Small Desktop
+    @media(min-width: $screen-sm-min){
+  
+    }
+    // Landscape Tablets & Medium Desktop
+    @media(min-width: $screen-md-min){
+  
+    }
+    // Large Desktop
+    @media(min-width: $screen-lg-min){
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-column-gap: px-to-rem(32);
+  
+      @include element(cell, true) {
+        min-height: 200px;
+        @include modifier(basic) {
+          grid-row-start: 1;
+          grid-row-end: 6;
+        }
+        @include modifier(expertise) {
+          grid-column-start: 2;
+          grid-column-end: 5;
+          grid-row-start: 1;
+        }
+        @include modifier(workplace) {
+          grid-column-start: 2;
+          grid-column-end: 4;
+          grid-row: span 4;
+        }
+      }
+    }
+    // Extra Large Desktop
+    @media(min-width: $screen-xl-min){
+  
+    }
+    // Extreme Large Desktop
+    @media(min-width: $screen-xxl-min){
+  
+    }
+  }
+  

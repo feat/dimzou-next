@@ -1,0 +1,36 @@
+@import 'base.scss';
+
+@include block(TranslatableMessage) {
+  position: relative;
+  background-color: $gray-1;
+  padding: px-to-rem(3) px-to-rem(10);
+
+  @include state(loading) {
+    opacity: .5;
+  }
+
+  @include element(placeholder) {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: $gray-4;
+    opacity: 0;
+    white-space: nowrap;
+    // transition: all .3s ease;
+    @include state(visible) {
+      opacity: 1;
+    }
+  }
+
+  @include element(input) {
+    position: relative;
+    display: inline-block;
+    min-height: 1em;
+    z-index: 1;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}

@@ -1,0 +1,159 @@
+@import "base.scss";
+
+$home-card-title-font: $sans-serif-title-font;
+$home-card-title-font-size: 24px;
+// $home-card-text-font: $serif-text-font;
+$home-card-text-font: $sans-serif-text-font;
+$home-card-text-font-size: 16px;
+
+@include block(ns(HomeCard, ft)) {
+  padding: px-to-rem(8) px-to-rem(8) px-to-rem(24) px-to-rem(8);
+  font-family: $home-card-text-font;
+  font-size: px-to-rem($home-card-text-font-size);
+  line-height: 1.5;
+  @include clearfix();
+  transition: box-shadow 0.3s;
+
+  &:hover {
+    background-color: white;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  @include element(title) {
+    font-family: $home-card-title-font;
+    font-size: px-to-rem($home-card-title-font-size);
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    text-transform: capitalize;
+    line-height: 1.2;
+    overflow: hidden;
+    @include modifier(xfile) {
+      // two line;
+      max-height: 2.5em;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+    @include modifier(expertise) {
+      // two line;
+      max-height: 2.5em;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+    a {
+      color: inherit;
+    }
+  }
+  @include element(body) {
+    overflow: hidden;
+    @include modifier(xfile) {
+      // 3 line;
+      max-height: #{1.5 * 3}em;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      text-overflow: ellipsis;
+    }
+  }
+  @include element(avatar) {
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+  // @include element(image) {
+  //     padding-top: percentage(9 / 16);
+  //     background-color: $gray-2;
+  //     background-repeat: no-repeat;
+  //     background-size: cover;
+  //     background-position: center center;
+  // }
+
+  @include modifier(expertise) {
+    display: flex;
+    flex-direction: column;
+
+    @include element(map, true) {
+      flex-grow: 1;
+      background-position: bottom center;
+      background-repeat: no-repeat;
+      background-size: 100% auto;
+    }
+
+    @include element(priceInfo, true) {
+      width: 100%;
+      line-height: 2;
+      font-family: $sans-serif-text-font;
+      text-align: right;
+      table-layout: fixed;
+      margin-bottom: px-to-rem(12);
+      border-collapse: collapse;
+      // border: 1px dashed $gray-4;
+
+      %cell {
+        padding-left: px-to-rem(5);
+        padding-right: px-to-rem(5);
+        // border: 1px dashed $gray-4;
+      }
+
+      th {
+        @extend %cell;
+        font-size: px-to-rem(12);
+        font-weight: normal;
+        border-bottom: 1px solid $gray-10;
+      }
+      td {
+        @extend %cell;
+        font-weight: bold;
+      }
+    }
+
+    @include element(location, true) {
+      padding-right: px-to-rem(5);
+    }
+  }
+
+  @include modifier(comment) {
+    @include element(header, true) {
+      max-height: 2.5em;
+    }
+  }
+  @include modifier(demand) {
+    @include element(header, true) {
+      font-family: $sans-serif-text-font;
+    }
+  }
+
+  @include modifier(awesome) {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    .WeekdayWidget__item {
+      width: px-to-rem(28);
+      height: px-to-rem(28);
+      padding-left: 2px;
+      padding-right: 2px;
+    }
+    @include element(openInfo, true) {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: px-to-rem(5);
+      border-bottom: 4px solid $gray-10;
+    }
+    @include element(content, true) {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      .ft-StaticMap {
+        flex: 1;
+      }
+    }
+  }
+
+  .WeekdayButton {
+    margin-left: px-to-rem(2);
+    margin-right: px-to-rem(2);
+  }
+}

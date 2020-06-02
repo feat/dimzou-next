@@ -1,0 +1,22 @@
+$font-size-root: 16px !default;
+$min-rem-pixel: 2px !default;
+
+@function strip-unit($num) {
+    @return $num / ($num * 0 + 1);
+}
+@function px-to-rem( $pixelValue, $base: $font-size-root) {
+    $value: strip-unit($pixelValue);
+    $base: strip-unit($base);
+    @if (abs($value) < $min-rem-pixel ) {
+        @return #{$value}px;
+    }
+    @return #{$value / $base}rem;
+    // @return #{$value}px;
+}
+
+@function px-to-em( $pixelValue, $base: $font-size-root) {
+    $value: strip-unit($pixelValue);
+    $base: strip-unit($base);
+    @return #{$value / $base}em;
+    // @return #{$value}px;
+}

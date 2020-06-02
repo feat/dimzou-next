@@ -1,0 +1,285 @@
+@import 'base.scss';
+
+$sidebar-title-font-size: 36;
+
+@include block(CommonPageTemplate) {
+  // background-color: $main-container-bg-color;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  // & > .sticky-outer-wrapper {
+  //   z-index: 100;
+  // }
+
+  @include element(headerSticky) {
+    z-index: 100;
+  }
+
+  @include element(header) {
+    // border-top: 1px solid darken($main-container-bg-color, 5%);
+    padding-left: px-to-rem(16);
+    padding-right: px-to-rem(16);
+    // background-color: $main-container-bg-color;
+    background: $gray-0;
+    z-index: 100;
+  }
+
+  @include element(pageMore) {
+    float: right;
+  }
+  @include element(readMore) {
+    font-size: px-to-rem(16);
+    font-family: $sans-serif-title-font;
+    font-weight: initial;
+    color: inherit;
+  }
+
+  @include element(sidebarWrap) {
+    position: relative;
+    max-height: calc(100vh - #{px-to-rem(150px)});
+    padding-top: px-to-rem(8);
+    overflow: hidden;
+    & > * {
+      will-change: transform;
+      transition: transform 0.1s linear;
+    }
+
+    &::-webkit-scrollbar {
+      width: px-to-rem(4);
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  @include element(main) {
+    flex: 1;
+    min-width: 0;
+    padding-left: px-to-rem(16);
+    padding-right: px-to-rem(16);
+    padding-top: px-to-rem(16);
+
+    @include block((ns(Block, ft))) {
+      @include element(header_primary) {
+        opacity: 0;
+        margin-bottom: px-to-rem(-45);
+      }
+    }
+  }
+
+  @include element(sidebarMask) {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    background: #000;
+    opacity: 0.3;
+    z-index: 998;
+    transition: all linear 0.5s;
+    display: none;
+  }
+  @include element(sidebar) {
+    // display: none;
+
+    //position: relative;
+    //width: px-to-rem($ct-sidebar-min-width);
+    //flex-shrink: 0;
+    //padding-left: px-to-rem(24);
+
+    position: fixed;
+    background: $gray-0;
+    z-index: 999;
+    width: px-to-rem($site-sidebar-width - 24);
+    height: 100%;
+    top: 0;
+    left: px-to-rem(-228);
+    padding: px-to-rem(54) px-to-rem(12) px-to-rem(54) 0;
+    transition: all ease 0.5s;
+    overflow-y: scroll;
+
+    //.sticky-inner-wrapper {
+    //  position: relative;
+    //  transform: translate3d(0px, 0px, 0px);
+    //}
+  }
+
+  @include element(sidebarWrap) {
+    // padding-left: px-to-rem(24);
+    a {
+      width: 100%;
+      text-align: left;
+    }
+    .ft-Menu__item {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+
+  @include element(title) {
+    border: 0 none;
+    padding: px-to-rem(5);
+    border-bottom: px-to-rem(3) solid;
+    border-image: linear-gradient(
+        to right,
+        $color-secondary 4rem,
+        $gray-10 4rem
+      )
+      1;
+  }
+
+  @include element(sidebarTitle) {
+    margin-bottom: px-to-rem(16);
+    padding: px-to-rem(8) px-to-rem(5);
+    font-family: $sans-serif-heading-font;
+    font-weight: 700;
+    font-size: px-to-rem($sidebar-title-font-size);
+    line-height: 1.2;
+
+    opacity: 0;
+    max-height: px-to-rem(0);
+    border-bottom: px-to-rem(4) solid $gray-10;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  @include element(sidebarNav) {
+    position: absolute;
+    left: px-to-rem(16);
+    z-index: 1;
+
+    .released {
+      .CommonPageTemplate_nav {
+        margin-bottom: 0;
+        position: relative;
+        top: px-to-rem(56);
+      }
+    }
+
+    // .sidebarNav-Sticky {
+    //   .sticky-inner-wrapper {
+    //     width: initial !important;
+    //   }
+    // }
+  }
+  @include modifier(nav) {
+    padding: 10px;
+    margin-bottom: px-to-rem(60);
+    background: $gray-0;
+    border-radius: 4px;
+    box-shadow: 3px 0px 8px $gray-4;
+    @include btn-animation;
+    &:hover {
+      background: $gray-2;
+    }
+  }
+
+  // Landscape Phones
+  @media (min-width: $screen-xs-min) {
+  }
+
+  // Portrait Tablets & Small Desktop
+  @media (min-width: $screen-sm-min) {
+    @include element(mainWrap) {
+      display: flex;
+    }
+    @include element(sidebarNav) {
+      display: none;
+    }
+    @include element(sidebar) {
+      position: static;
+      transform: none;
+      overflow: auto;
+      height: auto;
+      padding-top: 0;
+      padding-right: 0;
+      background-color: transparent;
+      padding-left: px-to-rem(24);
+      z-index: 9;
+    }
+    @include element(sidebarWrap) {
+      width: px-to-rem($site-nav-width);
+      .ft-Button {
+        text-align: start;
+      }
+      // width: px-to-rem($ct-sidebar-min-width - 24);
+    }
+  }
+  // Landscape Tablets & Medium Desktop
+  @media (min-width: $screen-md-min) {
+    @include element(header) {
+      padding-left: px-to-rem(24);
+      padding-right: px-to-rem(24);
+    }
+    @include element(main) {
+      padding-left: px-to-rem(24);
+      padding-right: px-to-rem(24);
+    }
+  }
+  // Large Desktop
+  @media (min-width: $screen-lg-min) {
+    @include element(title) {
+      border-bottom: px-to-rem(4) solid;
+      border-image: linear-gradient(
+          to right,
+          $color-secondary 200px,
+          $gray-10 200px
+        )
+        1;
+      padding-top: px-to-rem(16);
+      padding-bottom: px-to-rem(16);
+    }
+    // @include element(sidebarWrap) {
+    //   width: px-to-rem($ct-sidebar-min-width - 24);
+    // }
+  }
+  // Extra Large Desktop
+  @media (min-width: $screen-xl-min) {
+  }
+  // Extreme Large Desktop
+  @media (min-width: $screen-xxl-min) {
+    @include element(title) {
+      border-bottom: px-to-rem(6) solid;
+      border-image: linear-gradient(
+          to right,
+          $color-secondary 16rem,
+          $gray-10 16rem
+        )
+        1;
+      padding-top: px-to-rem(16);
+      padding-bottom: px-to-rem(16);
+    }
+  }
+}
+
+.t-PageTitle {
+  @media (min-width: $screen-xs-min) {
+  }
+
+  // Small Desktop
+  @media (min-width: $screen-sm-min) {
+  }
+  // Medium Desktop
+  @media (min-width: $screen-md-min) {
+    font-size: px-to-rem(48);
+  }
+  // Large Desktop
+  @media (min-width: $screen-lg-min) {
+  }
+  // Extra Large Desktop
+  @media (min-width: $screen-xl-min) {
+    font-size: px-to-rem(48);
+  }
+  // Extreme Large Desktop
+  @media (min-width: $screen-xxl-min) {
+    font-size: px-to-rem(48);
+  }
+}
+
+// .active {
+//   .CommonPageTemplate__sidebarTitle {
+//     opacity: 1;
+//     max-height: px-to-rem($sidebar-title-font-size * 3);
+//     transition: max-height 0.4s ease;
+//   }
+// }

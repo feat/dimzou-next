@@ -1,0 +1,82 @@
+@import 'base.scss';
+
+@include block(ns(AuthRecovery, p)) {
+  display: flex;
+  flex: 1;
+  @include element(left) {
+    flex-basis: 55%;
+    min-width: 0;
+    padding-top: px-to-rem(150);
+  }
+
+  @include element(right) {
+    flex-basis: 45%;
+    min-width: 0;
+    padding-top: px-to-rem(150);
+    padding-bottom: px-to-rem(80);
+  }
+
+  @include element(hint) {
+    padding-left: px-to-rem(120);
+    padding-right: px-to-rem(120);
+  }
+
+  @include element(hintText) {
+    font-size: px-to-rem(32);
+  }
+
+  @include element(form) {
+    margin: 0 auto;
+    max-width: 400px;
+  }
+
+  @include modifier(success) {
+    justify-content: center;
+    padding-top: px-to-rem(150);
+  }
+}
+
+
+// @include block(RecoveryStepNext) {
+//   min-width: px-to-rem(64);
+// }
+
+// @include block(RecoverySuccessPanel) {
+//   margin: px-to-rem(24) auto;
+//   max-width: px-to-rem(700);
+
+//   @include element(title) {
+//     font-size: px-to-rem(72);
+//     // text-align: center;
+//   }
+
+//   @include element(content) {
+//     padding-left: px-to-rem(100);
+//     background-image: url('./assets/notice.svg');
+//     background-repeat: no-repeat;
+//     background-position: top left;
+//   }
+//   @include element(note) {
+//     font-size: px-to-rem(24);
+//     font-weight: 100;
+//   }
+//   @include modifier(codePhrase) {
+//     @include element(label, true) {
+//       font-size: px-to-rem(14);
+//       display: block;
+//     }
+//     @include element(value, true) {
+//       font-size: px-to-rem(20);
+//     }
+//   }
+//   @include modifier(password) {
+//     @include element(value, true) {
+//       font-size: px-to-rem(36);
+//     }
+//   }
+//   @include modifier(phone) {
+//     @include element(value, true) {
+//       font-size: px-to-rem(36);
+//     }
+//   }
+// }

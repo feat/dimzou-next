@@ -1,0 +1,19 @@
+@import 'base.scss';
+
+@include block(ViewSimpleExpertise) {
+    @include element(title) {
+        padding-left: px-to-rem(6);
+        font-size: px-to-rem(22);
+        font-family: $sans-serif-title-font;
+        font-weight: bold;
+        line-height: 1.1;
+      }
+
+      @include element(row) {
+        display: flex;
+        padding-top: px-to-rem(7);
+        padding-bottom: px-to-rem(4);
+        border-bottom: 1px dashed $gray-5;
+        min-height: px-to-rem(68);
+      }
+}

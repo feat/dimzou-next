@@ -1,0 +1,27 @@
+@mixin placeholder-bg {
+  background: linear-gradient(
+    135deg,
+    $placeholder-color,
+    transparentize($placeholder-color, 0.8),
+    $placeholder-color,
+    transparentize($placeholder-color, 0.8),
+    $placeholder-color,
+    transparentize($placeholder-color, 0.8),
+    $placeholder-color,
+    transparentize($placeholder-color, 0.8)
+  );
+  background-size: 800%;
+
+  animation-fill-mode: forwards;
+  animation: placeholderAnimation 12s linear infinite;
+}
+
+@mixin placeholder-inverse-bg {
+  background: linear-gradient(
+    135deg,
+    white,
+    transparentize($placeholder-color, 0.4),
+    white
+  );
+  background-size: 800%;
+}

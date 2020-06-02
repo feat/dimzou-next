@@ -1,0 +1,67 @@
+@import 'base.scss';
+
+@include block(MainLayout) {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+
+  @include state(sidebar, has) {
+    flex-direction: row;
+  }
+
+  @include element(sidebar) {
+    width: px-to-rem($site-sidebar-width);
+    flex-shrink: 0;
+    @include modifier(ads) {
+      flex-basis: px-to-rem($site-adPanel-width);
+      min-width: 0;
+      width: px-to-rem($site-adPanel-width);
+      @media (max-width: $screen-xxl-min) {
+        flex-basis: px-to-rem($site-adPanel-width - 40);
+      }
+      @media (max-width: $screen-xl-min) {
+        flex-basis: px-to-rem($site-adPanel-width - 80);
+      }
+    }
+    @include modifier(page) {
+      width: auto;
+      padding-left: px-to-rem(24);
+      padding-right: px-to-rem(24);
+    }
+  }
+
+  @include element(main) {
+    flex-grow: 1;
+    min-width: 0;
+
+    @include modifier(base) {
+      position: relative;
+      min-height: calc(100vh - #{px-to-rem(50)});
+      // background: $main-container-bg-color;
+      // border: 1px solid darken($main-container-bg-color, 5%);
+      display: flex;
+      flex-direction: column;
+    }
+    @include modifier(page) {
+      margin-left: px-to-rem(24);
+      margin-right: px-to-rem(24);
+      margin-top: px-to-rem(118);
+      padding-top: px-to-rem(12);
+      border-top: 4px solid $gray-10;
+      .ft-Block__title {
+        font-size: px-to-rem(48);
+      }
+    }
+  }
+
+  @include element(header) {
+    // margin-bottom: px-to-rem(24);
+    padding-left: px-to-rem(24);
+    padding-right: px-to-rem(24);
+    background-color: $main-container-bg-color;
+  }
+
+  @include element(title) {
+    border-bottom: px-to-rem(6) solid $gray-10;
+  }
+}

@@ -1,0 +1,20 @@
+@import "./mixin.scss";
+
+@include block(ns(Checkbox)) {
+    @include formCheckStyle;
+    margin-right: px-to-rem(8);
+
+    .symbol {
+        border-radius: px-to-rem(4);
+    }
+    .symbol::before {
+        border-radius: px-to-rem(2);
+    }
+    @include modifier(block) {
+        display: block;
+        width: 100%;
+    }
+    @include element(label) {
+        @include label-text();
+    }
+}

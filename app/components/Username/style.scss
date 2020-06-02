@@ -1,0 +1,6 @@
+@import 'base.scss';
+
+@include block(ns(Username, ft)) {
+  color: $color-secondary;
+  font-family: $sans-serif-text-font;
+}

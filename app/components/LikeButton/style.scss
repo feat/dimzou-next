@@ -1,0 +1,15 @@
+@import 'base.scss';
+
+@keyframes like-heartbeat {
+	0%   {transform:scale(1);-webkit-transform:scale(1);-moz-transform:scale(1);-o-transform:scale(1);}
+	10% {transform:scale(1.2);-webkit-transform:scale(1.2);-moz-transform:scale(1.2);-o-transform:scale(1.2);}
+	18%   {transform:scale(1);-webkit-transform:scale(1);-moz-transform:scale(1);-o-transform:scale(1);}
+	100%   {transform:scale(1);-webkit-transform:scale(1);-moz-transform:scale(1);-o-transform:scale(1);}
+}
+
+@include block(LikeToggle) {
+  @include state(liking) {
+    animation: 1s linear 0s infinite like-heartbeat;
+    pointer-events: none;
+  }
+}

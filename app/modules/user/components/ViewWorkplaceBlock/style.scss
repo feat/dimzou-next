@@ -1,0 +1,99 @@
+@import "base.scss";
+
+@include block("ViewUserWorkplace") {
+  @include element("mapContainer") {
+    margin-top: px-to-rem(5);
+    padding-top: 100%;
+    position: relative;
+    .DirectionMap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+  }
+  @include element(addressInfo) {
+    padding: px-to-rem(12);
+    background-color: white;
+  }
+
+  @include element(actionOverlay) {
+    position: relative;
+    display: flex;
+    height: px-to-rem(60);
+  }
+  @include element(modeBtn) {
+    position: relative;
+    flex: 1;
+    .DirectionItem {
+      width: 100%;
+    }
+  }
+
+  .ft-Block__content {
+    padding: 0;
+  }
+}
+
+
+@include block(DirectionItem) {
+  min-width: px-to-rem(100);
+  padding-left: px-to-rem(48);
+  padding-top: px-to-rem(4);
+  padding-bottom: px-to-rem(4);
+  height: px-to-rem(60);
+  border-radius: 0;
+  text-align: left;
+
+  @include element(icon) {
+    position: absolute;
+    width: px-to-rem(28);
+    top: px-to-rem(12);
+    left: px-to-rem(10);
+  }
+
+  @include modifier(walking) {
+    @include element(icon, true) {
+      color: #049804;  
+    }
+    @include state(selected) {
+      border-bottom: 2px solid #049804;
+      color: #049804;
+      background-color: transparent;
+    }
+  }
+  @include modifier(transit) {
+
+    @include element(icon, true) {
+      color: $color-secondary;  
+    }
+    
+
+    @include state(selected) {
+      border-bottom: 2px solid $color-secondary;
+      color: $color-secondary;
+      background-color: transparent;
+    }
+  }
+  @include modifier(driving) {
+    @include element(icon, true) {
+      color: $color-tertiary;
+    }
+    
+    @include state(selected) {
+      border-bottom: 2px solid $color-tertiary;
+      color: $color-tertiary;
+      background-color: transparent;
+    }
+  }
+
+  @include element(label) {
+    line-height: 1.1;
+    font-weight: 600;
+  }
+  @include element(duration) {
+    line-height: 1.2;
+    font-weight: 600;
+  }
+}

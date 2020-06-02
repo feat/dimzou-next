@@ -1,0 +1,16 @@
+@import "./clearfix.scss";
+@import "./gg.scss";
+@import "./size.scss";
+@import "./border-radius.scss";
+@import "./text.scss";
+@import "./iconfont.scss";
+@import "./utilities.scss";
+@import "./poplayer.scss";
+@import "./placeholder.scss";
+@import "../../button/style/mixin.scss";
+
+@mixin cbb($color, $bg, $bd) {
+    color: $color;
+    background-color: $bg;
+    border-color: $bd;
+}

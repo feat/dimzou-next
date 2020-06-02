@@ -1,0 +1,180 @@
+
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@include block(ns(Loader)) {
+  display: inline-flex;
+
+  @include modifier(horizontal) {
+    flex-direction: row;
+    align-items: center;
+    vertical-align: middle;
+    // @include element(symbol, true) {
+    //   display: inline-block;
+    // }
+    // @include element(content, true) {
+    //   display: inline-block;
+    //   margin-left: px-to-rem(4);
+    // }
+  }
+
+  @include modifier(vertical) {
+    flex-direction: column;
+    // @include element(symbol, true) {
+    //   display: block;
+    // }
+    // @include element(content, true) {
+    //   margin-top: px-to-rem(4);
+    // }
+  }
+
+  @include modifier(default) {
+    @include element(symbol, true) {
+      div {
+        border-color: $loader-default-color transparent transparent transparent;
+      }
+    }
+    @include element(content, true) {
+      color: $loader-default-color;
+    }
+  }
+  @include modifier(white) {
+    @include element(symbol, true) {
+      div {
+        border-color: #fff transparent transparent transparent;
+      }
+    }
+    @include element(content, true) {
+      color: #fff;
+    }
+  }
+  @include modifier(inverse) {
+    @include element(symbol, true) {
+      div {
+        border-color: $loader-inverse-color transparent transparent transparent;
+      }
+    }
+    @include element(content, true) {
+      color: $loader-inverse-color;
+    }
+  }
+
+  @include element(symbol) {
+
+    position: relative;
+
+    div {
+      box-sizing: border-box;
+      display: block;
+      position: absolute;
+      border-radius: 50%;
+      animation: lds-ring $loader-speed cubic-bezier(0.5, 0, 0.5, 1) infinite;
+
+    }
+
+    div:nth-child(1) {
+      animation-delay: -0.45s;
+    }
+
+    div:nth-child(2) {
+      animation-delay: -0.3s;
+    }
+
+    div:nth-child(3) {
+      animation-delay: -0.15s;
+    }
+
+  }
+
+  @include modifier(xs) {
+    @include element(symbol, true) {
+      width: px-to-rem($loader-xs-size);
+      height: px-to-rem($loader-xs-size);
+      div {
+        width: px-to-rem($loader-xs-size);
+        height: px-to-rem($loader-xs-size);
+        border-width: $loader-xs-border-width;
+        border-style: solid;
+      }
+    }
+    @include element(content, true) {
+      margin-left: px-to-rem(12);
+      font-size: px-to-rem(14);
+    }
+  }
+
+  @include modifier(sm) {
+    @include element(symbol, true) {
+      width: px-to-rem($loader-sm-size);
+      height: px-to-rem($loader-sm-size);
+      div {
+        width: px-to-rem($loader-sm-size - 4);
+        height: px-to-rem($loader-sm-size - 4);
+        margin: px-to-rem(2);
+        border-width: $loader-sm-border-width;
+        border-style: solid;
+      }
+    }
+    @include element(content, true) {
+      margin-left: px-to-rem(8);
+    }
+  }
+
+  @include modifier(md) {
+    @include element(symbol, true) {
+      width: px-to-rem($loader-md-size);
+      height: px-to-rem($loader-md-size);
+
+      div {
+        width: px-to-rem($loader-md-size - 8);
+        height: px-to-rem($loader-md-size - 8);
+        margin: px-to-rem(4);
+        border-width: $loader-md-border-width;
+        border-style: solid;
+      }
+    }
+    @include element(content, true) {
+      margin-left: px-to-rem(10);
+      font-size: px-to-rem($loader-md-font-size);
+    }
+  }
+
+  @include modifier(lg) {
+    @include element(symbol, true) {
+      width: px-to-rem($loader-lg-size);
+      height: px-to-rem($loader-lg-size);
+
+      div {
+        width: px-to-rem($loader-lg-size - 8);
+        height: px-to-rem($loader-lg-size - 8);
+        margin: px-to-rem(4);
+        border-width: $loader-lg-border-width;
+        border-style: solid;
+      }
+    }
+    @include element(content, true) {
+      margin-left: px-to-rem(12);
+      font-size: px-to-rem($loader-lg-font-size);
+    }
+  }
+}
+
+
+@include block(ns(MaskLoader)) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, .2);
+  z-index: 10;
+}

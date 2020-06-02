@@ -1,0 +1,15 @@
+@import 'base.scss';
+
+@include block(ns(PageContent, dz)) {
+    max-width: px-to-rem(720);
+    min-height: 90vh;
+    margin: 0 auto;
+    @include modifier(cover) {
+        padding: px-to-rem(48);      
+    }
+
+    @include modifier(chapter) {
+        padding: px-to-rem(48) 0;      
+        border-top: 1px dashed $gray-8;
+    }
+}

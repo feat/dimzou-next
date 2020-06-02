@@ -1,0 +1,13 @@
+@import 'base.scss';
+
+@include block(ns(DimzouCreation, dz)) {
+  width: 100%;
+  max-width: px-to-rem(720);
+  margin: 0 auto;
+
+  @include element(footer) {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: px-to-rem(96);
+  }
+}

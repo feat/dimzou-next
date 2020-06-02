@@ -1,0 +1,54 @@
+@import 'base.scss';
+
+@include block(ns(ParaTailing, dz)) {
+    position: relative;
+    height: px-to-rem(30);
+    @include element(hint) {
+      display: block;
+      width: 100%;
+      opacity: 0;
+      color: $gray-6;
+      background-color: $gray-1;
+
+      height: auto;
+
+      &:hover {
+        opacity: 1;
+      }
+
+      @include state(dragActive) {
+          // color: $dz-expertise-color;
+          opacity: 1;
+          line-height: 2;
+          font-weight: bold;
+          // border: 2px dashed $dz-expertise-color;
+      };
+
+      @include state(disabled) {
+        opacity: 0;
+        user-select: none;
+      }
+  }
+
+  @include element(dropHint) {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px dashed $input-active-color;
+    background-color: rgba(166, 221, 253, 0.479);
+    border-radius: 3px;
+    transition: all ease 0.2s;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+
+  @include state(over, is) {
+    @include element(dropHint, true) {
+      opacity: 1;
+    }
+  }
+}

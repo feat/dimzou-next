@@ -1,0 +1,64 @@
+$icon-font-path: './' !default;
+
+@font-face {
+    font-family: 'fticon';
+    src: url('#{$icon-font-path}font/fticon.eot?57459173');
+    src: url('#{$icon-font-path}font/fticon.eot?57459173#iefix') format('embedded-opentype'),
+         url('#{$icon-font-path}font/fticon.woff2?57459173') format('woff2'),
+         url('#{$icon-font-path}font/fticon.woff?57459173') format('woff'),
+         url('#{$icon-font-path}font/fticon.ttf?57459173') format('truetype'),
+         url('#{$icon-font-path}font/fticon.svg?57459173#fticon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@include block(ns(Icon)) {
+    display: inline-block;
+    font-family: "fticon";
+    font-style: normal;
+    font-weight: normal;
+    speak: none;
+
+    &::before {
+        content: "";
+        display: inline-block;
+        margin-left: .2em;
+        margin-right: .2em;
+        width: 1em;
+        font-variant: normal;
+        text-align: center;
+        text-decoration: inherit;
+        text-transform: none;
+        line-height: 1em;
+
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+
+    }
+
+    @include modifier(success) {
+        &::before {
+            content: '\e800';
+        }
+    }
+    @include modifier(close) {
+        &::before {
+            content: '\e802';
+        }
+    }
+    @include modifier(warning) {
+        &::before {
+            content: '\e803';
+        }
+    }
+    @include modifier(error) {
+        &::before {
+            content: '\e804';
+        }
+    }
+    @include modifier(info) {
+        &::before {
+            content: '\f129';
+        }
+    }
+}

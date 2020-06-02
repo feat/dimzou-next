@@ -1,0 +1,11 @@
+@import "../../style/utils/index.scss";
+@import "../../style/mixins/index";
+@import "../../style/themes/default.scss";
+
+@include block(ns(Block, ft)) {
+  @include element(titlePlaceholder) {
+    height: px-to-rem(36px);
+    width: 25%;
+    background-color: $gray-4;
+  }
+}

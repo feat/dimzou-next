@@ -1,0 +1,322 @@
+$default-namespace: "ft" !default;
+
+// Fonts
+$sans-serif-heading-font: "HelveticaNeue-CondensedBold", "HelveticaNeueCondensedBold", "HelveticaNeue", "Helvetica Neue", "Helvetica", sans-serif !default;
+$sans-serif-title-font: -apple-system-headline, "HelveticaNeue-Medium", "HelveticaNeueMedium", "Microsoft Yahei", sans-serif !default;
+$sans-serif-text-font: -apple-system, BlinkMacSystemFont, Helvetica, Arial, "PingFang SC", sans-serif !default;
+$sans-serif-light-font: 'HelveticaNeue-Light', 'HelveticaNeueLight', !default;
+$serif-heading-font: Cambria, serif !default;
+$serif-title-font: Georgia, serif !default;
+$serif-text-font: "Times New Roman", Times, serif !default;
+$serif-light-font: serif;
+
+$monospace: Menlo, Consolas, Monaco, "Courier New", monospace !default;
+
+// Pixel value used to responsively scale all typography. Applied to the `<html>` element.
+$font-size-root:             16px !default;
+
+$font-size-base:             16px !default;
+$font-size-lg:               28px !default;
+$font-size-sm:               14px !default;
+$font-size-xs:               12px !default;
+
+$font-size-h1:               40px !default;
+$font-size-h2:               32px !default;
+$font-size-h3:               28px !default;
+$font-size-h4:               24px !default;
+$font-size-h5:               20px !default;
+$font-size-h6:               16px !default;
+$font-size-text:             16px !default;
+$text-size:                  $font-size-text !default;
+
+$line-height:                 1.5 !default;
+
+// Color
+
+// Grayscale
+$gray-0: #FFFFFF !default;
+$gray-1: #F6F6F6 !default;
+$gray-2: #EDEDED !default;
+$gray-3: #DADADA !default;
+$gray-4: #C6C6C6 !default;
+$gray-5: #B2B2B2 !default;
+$gray-6: #9D9D9C !default;
+$gray-7: #878787 !default;
+$gray-8: #706F6F !default;
+$gray-9: #575756 !default;
+$gray-10: #3C3C3B !default;
+$gray-11: #1D1D1B !default;
+$gray-12: #000000 !default;
+
+$color-link: #00AEEF !default;
+$color-primary: $gray-10 !default;
+$color-secondary: #C1272D !default; // brand
+$color-tertiary: #1673BA !default;
+$color-success: #008000 !default;
+$color-progress: #1673BA !default;
+$color-info: $gray-6 !default;
+$color-danger: #C1272D !default; // "danger"
+$color-error: $color-danger !default;
+$color-warning: #F0C900 !default;
+
+// Typography
+
+$heading-font: $sans-serif-heading-font !default;
+$title-font: $sans-serif-title-font !default;
+$text-font: $sans-serif-text-font !default;
+$text-color: $gray-10 !default;
+$label-text-size: 14px !default;
+$label-padding-x: 5px !default;
+$label-item-height: 33px !default;
+
+// Z-index
+$max-z-index: 10000;
+
+// Avatar
+$avatar-size-xxs:   24px !default;
+$avatar-size-xs:    32px !default;
+$avatar-size-sm:    36px !default;
+$avatar-size-md:    48px !default;
+$avatar-size-lg:    100px !default;
+$avatar-size-xl:    150px !default;
+
+$color-avatar-username: $color-secondary !default;
+$color-avatar-desc: $color-tertiary !default;
+$color-avatar-meta: $color-info !default;
+$color-avatar-username-reverse: wheat !default;
+$color-avatar-desc-reverse: white !default;
+$color-avatar-meta-reverse: white !default;
+
+// Button
+
+$btn-border-width: 1px !default;
+$btn-font: $text-font !default;
+
+// Button Size
+$btn-xs-size: 24px !default;
+$btn-sm-size: 30px !default;
+$btn-md-size: 42px !default;
+$btn-lg-size: 56px !default;
+
+$btn-xs-padding-y: 2px !default;
+$btn-xs-padding-x: 2px !default;
+$btn-xs-line-height: 1.2 !default;
+$btn-xs-font-size: 14px !default;
+$btn-xs-border-radius: 6px !default;
+
+$btn-sm-padding-y: 4px !default;
+$btn-sm-padding-x: 8px !default;
+$btn-sm-line-height: 1.4 !default;
+$btn-sm-font-size: 16px !default;
+$btn-sm-border-radius: 10px !default;
+
+$btn-md-padding-y: 2px !default;
+$btn-md-padding-x: 10px !default;
+$btn-md-line-height: 1.5 !default;
+$btn-md-font-size: 18px !default;
+$btn-md-border-radius: 14px !default;
+
+$btn-lg-padding-y: 2px !default;
+$btn-lg-padding-x: 16px !default;
+$btn-lg-line-height: 1.6 !default;
+$btn-lg-font-size: $font-size-lg !default;
+$btn-lg-border-radius: 24px !default;
+
+
+// Button Style
+$btn-default-color: $text-color !default;
+$btn-default-bg-color: $gray-1 !default;
+$btn-default-bd-color: $gray-2 !default;
+$btn-default-hover-bg-color: darken($btn-default-bg-color, 10%) !default;
+$btn-default-hover-bd-color: darken($btn-default-bd-color, 10%) !default;
+$btn-default-selected-color: white !default;
+$btn-default-selected-bg-color: $gray-10 !default;
+$btn-default-selected-bd-color: $gray-10 !default;
+
+$btn-dashed-color: $text-color !default;
+$btn-dashed-bd-color: $gray-4 !default;
+$btn-dashed-bg-color: transparent !default;
+$btn-dashed-hover-bg-color: $gray-1 !default;
+
+$btn-primary-color: white !default;
+$btn-primary-bg-color: $color-primary !default;
+$btn-primary-bd-color: $color-primary !default;
+
+$btn-danger-color: white !default;
+$btn-danger-bg-color: $color-danger !default;
+$btn-danger-bd-color: $color-danger !default;
+
+// Form
+$form-placeholder-color: $gray-6 !default;
+$form-control-border-color: $gray-3 !default;
+$form-input-active-border-color: $color-tertiary !default;
+
+// Input
+$input-sm-height: $btn-sm-size !default;
+$input-md-height: $btn-md-size !default;
+$input-lg-height: $btn-lg-size !default;
+$input-active-color: $color-tertiary !default;
+
+// Menu
+$menu-md-padding-x: 12px !default;
+$menu-md-padding-y: 5px !default;
+
+// Menu navbar modifier
+
+
+// Layout
+$header-height: 50px !default;
+$fixed-header-index: 1000 !default;
+
+// Alert
+$alert-md-padding-x: 12px !default;
+$alert-md-padding-y: 8px !default;
+$alert-md-border-radius: 4px !default;
+
+//Badge
+$badge-md-height: 20px !default;
+$badge-sm-height: 16px !default;
+$badge-font-size-base: 12px !default;
+$badge-dot-size: 10px !default;
+$badge-highlight-color: $color-secondary !default;
+$badge-success-color: $color-success !default;
+$badge-error-color: $color-error !default;
+$badge-default-color: #d9d9d9 !default;
+$badge-process-color: #108ee9 !default;
+$badge-warning-color: $color-warning !default;
+
+// Modal
+$modal-border-radius: $btn-sm-border-radius;
+$modal-z-index: $max-z-index;
+$modal-sm-width: 700px !default;
+$modal-sm-height: 500px !default;
+$modal-sm-padding-x: 24px !default;
+$modal-md-width: 860px !default;
+$modal-md-height: 600px !default;
+$modal-md-padding-x: 32px !default;
+$modal-md-padding-y: 16px !default;
+$modal-md-title-font-size: 20px !default;
+$modal-lg-width: 1000px !default;
+$modal-lg-height: 640px !default;
+$modal-lg-padding-x: 48px !default;
+$modal-lg-padding-y: 24px !default;
+
+// Popover
+$popover-z-index: $max-z-index - 200;
+
+// Loader
+$loader-speed: 1200ms !default;
+$loader-default-color: $gray-4;
+$loader-inverse-color: $gray-10;
+$loader-xs-size: 20px !default;
+$loader-xs-border-width: 2px !default;
+$loader-sm-size: 30px !default;
+$loader-sm-border-width: 3px !default;
+$loader-md-size: 40px !default;
+$loader-md-border-width: 4px !default;
+$loader-md-font-size: $font-size-h5;
+$loader-lg-size: 50px !default;
+$loader-lg-border-width: 5px !default;
+$loader-lg-font-size: $font-size-h4;
+
+// Comment
+$color-comment-author: $color-secondary !default;
+$color-comment-desc: $color-tertiary !default;
+$color-comment-meta: $color-info !default;
+
+// Table
+$table-default-padding-x: 8px !default;
+$table-default-padding-y: 16px !default;
+
+$table-small-padding-x: 5px !default;
+$table-small-padding-y: 5px !default;
+
+// Tables
+$tab-border-radius: 8px !default;
+$tab-padding-x: 12px !default;
+$tab-text-color: $text-color !default;
+$tab-bd-color: $btn-default-bd-color !default;
+$tab-bg-color: $btn-default-bg-color !default;
+$tab-hover-bg-color: $btn-default-hover-bg-color !default;
+$tab-hover-bd-color: $btn-default-hover-bd-color !default;
+$tab-active-text-color: $btn-default-selected-color !default;
+$tab-active-bg-color: $btn-default-selected-bg-color !default;
+$tab-active-bd-color: $btn-default-selected-bd-color !default;
+
+
+// Placeholder
+$placeholder-color: $gray-2 !default;
+
+// Poplayer
+$poplayer-padding: 12px;
+$poplayer-border-radius: $btn-sm-border-radius;
+$poplayer-border-color: $gray-2;
+
+// Menu
+$menu-item-border-radius: $btn-sm-border-radius !default;
+$menu-item-gap-base: 5px !default;
+$menu-item-padding-y: 5px !default;
+$menu-item-padding-x: 12px !default;
+$menu-item-hover-bg: $gray-2 !default;
+
+// Responsive
+$screen-xs-min: 576px !default;  // Landscape phones
+$screen-sm-min: 768px !default; // Portrait tablets and small desktop
+$screen-md-min: 992px !default; // Landscape tablets and medium desktops
+$screen-lg-min: 1150px !default; // Large Desktop
+$screen-xl-min: 1440px !default; // Extra Large Desktop
+$screen-xxl-min: 1920px !default; // Extreme Large Desktop
+
+// Message
+$message-border-radius: 10px !default;
+
+// Notification
+$notification-z-index: $max-z-index + 10 !default;
+$notification-width: 335px !default;
+$notification-padding-x: 16px !default;
+$notification-padding-y: 12px !default;
+$notification-margin-bottom: 10px !default;
+$notification-border-radius: $btn-sm-border-radius !default;
+$notification-message-font-size: 16px !default;
+$notification-message-text-color: $text-color !default;
+$notification-message-font-weight: bold !default;
+$notification-desc-font-size: 14px !default;
+$notification-desc-text-color: $gray-8 !default;
+
+// Tooltip
+$tooltip-arrow-width: 5px !default;
+$tooltip-background-color: $gray-10 !default;
+$tooltip-distance: 4px !default;
+$tooltip-max-width: 255px !default;
+$tooltip-font-size: 14px !default;
+$tooltip-border-radius: 6px !default;
+$tooltip-padding-x: 10px !default;
+$tooltip-padding-y: 4px !default;
+$tooltip-text-color: #fff !default;
+
+// Switch Toggle
+$switch-toggle-height: $btn-sm-size !default;
+$switch-toggle-width: 60px !default;
+$switch-toggle-border-color: $btn-default-bd-color;
+$switch-toggle-border-radius: $btn-sm-border-radius;
+$switch-toggle-inactive-color: $gray-1;
+$switch-toggle-active-color: $btn-default-selected-bd-color;
+
+// Block
+
+$block-gap-base: 12px !default;
+$block-indent: 5px !default;
+
+$block-border-color: $gray-10 !default;
+$block-help-color: $gray-6 !default;
+$block-title-font-family: $heading-font !default;
+$block-content-font-family: $text-font !default;
+$block-content-padding-top: 5px !default;
+
+$block-primary-title-font-size: 36px !default;
+$block-primary-title-line-height: 1.5 !default;
+$block-primary-header-bd-bottom: 4px !default;
+
+$block-secondary-title-font-size: 24px !default;
+$block-secondary-title-line-height: 1.5 !default;
+$block-secondary-header-bd-bottom: 2px !default;

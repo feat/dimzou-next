@@ -1,0 +1,88 @@
+@import 'base.scss';
+
+@include block(LanguageSelect) {
+  .ft-FeatModal__wrap {
+    max-height: 100%;
+  }
+
+  .ft-FeatModal__header {
+    align-items: flex-end;
+  }
+
+  .ft-FeatModal__subHeader {
+    margin-left: auto;
+    margin-bottom: px-to-rem(4);
+  }
+
+  .ft-FeatModal__content {
+    margin-top: 18px;
+    margin-bottom: 40px;
+    overflow: hidden;
+
+    &:hover {
+      overflow-y: auto;
+    }
+  }
+
+  @include element(group) {
+    padding-bottom: px-to-rem(24);
+    @include modifier(label) {
+      font-weight: bold;
+      font-size: px-to-rem(18);
+    }
+  }
+
+  // @include element(option) {
+  //   text-align: left;
+  //   padding-left: 0;
+  //   padding-right: px-to-rem(8);
+  //   @include text-truncate();
+  // }
+  .InlineCarouselSelect {
+    max-width: 80%;
+    margin-left: auto;
+  }
+}
+
+@include block(LanguageSelectFlex) {
+  @include element(option) {
+    flex: 1;
+  }
+}
+
+@include block(LanguageSelectGrid) {
+  max-height: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  overflow: auto;
+
+  .LanguageSelect__option {
+    text-align: left;
+    padding-left: 0;
+    padding-right: px-to-rem(8);
+    @include text-truncate();
+  }
+  // Landscape Phones
+  @media (min-width: $screen-xs-min) {
+  }
+
+  // Portrait Tablets & Small Desktop
+  @media (min-width: $screen-sm-min) {
+  }
+  // Landscape Tablets & Medium Desktop
+  @media (min-width: $screen-md-min) {
+  }
+  // Large Desktop
+  @media (min-width: $screen-lg-min) {
+  }
+  // Extra Large Desktop
+  @media (min-width: $screen-xl-min) {
+    @include element(cell) {
+      // padding-left: px-to-rem(5);
+      // padding-right: px-to-rem(5);
+    }
+  }
+  // Extreme Large Desktop
+  @media (min-width: $screen-xxl-min) {
+  }
+}

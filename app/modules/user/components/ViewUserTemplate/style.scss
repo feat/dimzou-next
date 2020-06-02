@@ -1,0 +1,37 @@
+@import 'base.scss';
+
+@include block(ns(ViewUser, p)) {
+  @include element(header) {
+    margin-left: px-to-rem(24);
+    margin-right: px-to-rem(24);
+    height: px-to-rem($view-profile-header-height);
+    @include header-bottom-border;
+    display: flex;
+    align-content: center;
+    margin-bottom: px-to-rem(16);
+    padding-left: px-to-rem(5);
+  }
+  @include element(title) {
+    font-size: px-to-rem(64);
+    font-family: $sans-serif-heading-font;
+    font-weight: bold;
+    padding-left: px-to-rem(5);
+  }
+  @include element(content) {
+    display: flex;
+    padding-left: px-to-rem(12);
+    padding-right: px-to-rem(12);
+  }
+  @include element(sidebar) {
+    padding-left: px-to-rem(12);
+    padding-right: px-to-rem(12);
+    width: 22%;
+    min-width: 0;
+    flex-shrink: 0;
+  }
+  @include element(main) {
+    padding-left: px-to-rem(12);
+    padding-right: px-to-rem(12);
+    flex: 1;
+  }
+}

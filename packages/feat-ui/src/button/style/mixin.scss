@@ -1,0 +1,163 @@
+@mixin btn-size($height, $padding-x, $font-size, $border-radius) {
+    height: $height;
+    padding: 0 $padding-x;
+    font-size: $font-size;
+    border-radius: $border-radius;
+}
+
+@mixin btn-animation() {
+    transition: all .3s ease;
+    //bug of transitions and backface visibility
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+
+    &:hover {
+        transform: scale(.95);
+    }
+    &:active {
+        transform: scale(.9);
+    }
+    &:disabled,
+    #{state(disabled)} {
+        transform: none;
+    }
+}
+
+@mixin btn-base() {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    box-sizing: border-box;
+    border: $btn-border-width solid transparent;
+    font-family: $btn-font;
+    text-decoration: none;
+    backface-visibility: hidden;
+
+    @include btn-animation();
+
+    &:focus,
+    &:active,
+    #{state(focus)},
+    #{state(active)} {
+        outline: none;
+    }
+
+    &:disabled,
+    #{state(disabled)} {
+        cursor: not-allowed;
+        transform: none;
+        opacity: .5;
+    }
+
+    #{state(invisible)} {
+        opacity: 0;
+        visibility: hidden;
+        user-select: none;
+    }
+}
+
+@mixin btn-variant($color, $background, $border) {
+    color: $color;
+    background-color: $background;
+    border-color: $border;
+
+    &:focus,
+    &:hover {
+        background-color: darken($background, 5%);
+        border-color: darken($border, 5%);
+    }
+
+    &:active,
+    #{state(active)} {
+        color: white;
+        background-color: darken($background, 10%);
+        border-color: darken($border, 10%);
+    }
+
+    &:disabled {
+        color: $color;
+        background-color: $background;
+        border-color: $border;
+    }
+}
+
+@mixin btn-default-style() {
+    @include btn-variant($btn-default-color, $btn-default-bg-color, $btn-default-bd-color);
+    stroke: darken($btn-default-bd-color, 5%);
+
+    @include state(selected) {
+        background-color: $btn-default-selected-bg-color;
+        border-color: $btn-default-selected-bd-color;
+        color: white;
+    };
+}
+
+@mixin btn-link-style {
+    color: $color-link;
+    background-color: transparent;
+
+    &:hover {
+        background-color: lighten($color-link, 50%);
+    }
+    &:active {
+        background-color: lighten($color-link, 10%);
+        color: white;
+    }
+}
+
+@mixin btn-primary-style {
+    @include btn-variant($btn-primary-color, $btn-primary-bg-color, $btn-primary-bd-color);
+    stroke: darken($btn-primary-bd-color, 5%);
+}
+
+@mixin btn-danger-style {
+    @include btn-variant($btn-danger-color, $btn-danger-bg-color, $btn-danger-bd-color);
+    stroke: darken($btn-danger-bd-color, 5%);
+}
+
+@mixin btn-dashed-style {
+    background-color: $btn-dashed-bg-color;
+    border: 1px dashed $btn-dashed-bd-color;
+
+    &:hover {
+        background-color: $btn-dashed-hover-bg-color;
+    }
+}
+
+@mixin btn-primary-outline-style {
+    border-color: $btn-primary-bd-color;
+    color: $btn-primary-bd-color;
+
+    &:hover {
+        background-color: white;
+    }
+}
+
+@mixin btn-danger-outline-style {
+    border-color: $btn-danger-bd-color;
+    color: $btn-danger-bd-color;
+
+    &:hover {
+        background-color: lighten($btn-danger-bd-color, 50%);
+    }
+}
+
+@mixin btn-link-outline-style {
+    border-color:  $color-link;
+    color: $color-link;
+
+    &:hover {
+        background-color: lighten($color-link, 50%);
+    }
+}
+
+@mixin btn-ghost-style {
+  background-color: $gray-1;
+  border: 1px solid $gray-2;
+}

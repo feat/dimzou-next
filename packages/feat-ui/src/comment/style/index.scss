@@ -1,0 +1,78 @@
+@include block(ns(CommentList)) {
+
+    &  & {
+        margin-left: px-to-rem(40);
+    }
+    @include state(indent, no) {
+        margin-left: 0;
+    }
+}
+
+@include block(ns(CommentWrap)) {
+
+}
+
+@mixin comment-info-base {
+  margin-right: px-to-rem(6);
+  font-family: $sans-serif-text-font;
+  font-weight: 400;
+  a {
+      color: inherit;
+  }
+}
+
+@include block(ns(Comment)) {
+    font-size: px-to-rem(14);
+    line-height: 1.33;
+
+    @include element(avatar) {
+        flex-shrink: 0;
+        margin-right: px-to-rem(12);
+
+        @include modifier(md) {
+            margin-right: px-to-rem(8);
+        }
+        @include modifier(xs) {
+            margin-right: px-to-rem(6);
+        }
+    }
+    @include element(main) {
+        width: 100%;
+        flex-shrink: 1;
+    }
+    @include element(header) {
+        font-size: px-to-rem(14);
+        @include auto-hyphens;
+    }
+    @include element(content) {
+      @include auto-hyphens;
+    }
+    @include element(footer) {
+        font-size: px-to-rem(12);
+    }
+
+    @include element(author) {
+        @include comment-info-base();
+        color: $color-comment-author;
+    }
+    @include element(desc) {
+        @include comment-info-base();
+        color: $color-comment-desc;
+    }
+    @include element(meta) {
+        @include comment-info-base();
+        color: $color-comment-meta;
+    }
+
+    @include modifier(I) {
+        display: flex;
+    }
+
+    @include modifier(subComment) {
+      @include element(avatar, true) {
+        width: px-to-rem($avatar-size-sm);
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+}

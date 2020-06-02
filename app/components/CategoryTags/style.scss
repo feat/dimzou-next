@@ -1,0 +1,55 @@
+@import 'base.scss';
+
+@include block(ns(CategoryTags, ft)) {
+  @include element(item) {
+    display: inline-block;
+
+    &::after {
+      content: '-';
+      display: inline-block;
+      margin-left: 0.5em;
+      margin-right: 0.5em;
+    }
+
+    &:last-child::after {
+      content: '';
+      margin: 0;
+    }
+  }
+
+  @include element(reverseItem) {
+    display: inline-block;
+    &::after {
+      content: '<-';
+      display: inline-block;
+      margin-left: 0.5em;
+      margin-right: 0.5em;
+      font-family: Georgia, serif;
+    }
+    &:last-child::after {
+      content: '';
+      margin: 0;
+    }
+    &:first-child {
+      .ft-ReverseCategoryTag {
+        color: $gray-10;
+      }
+    }
+  }
+}
+
+@include block(ns(CategoryTag, ft)) {
+  display: inline-block;
+  color: inherit;
+  padding-left: px-to-rem($btn-sm-padding-x);
+  padding-right: px-to-rem($btn-sm-padding-x);
+  border: 1px solid $btn-default-bd-color;
+  background-color: $btn-default-bg-color;
+
+  border-radius: px-to-rem($btn-sm-border-radius);
+  @include btn-animation();
+}
+
+@include block(ns(ReverseCategoryTag, ft)) {
+  color: inherit;
+}

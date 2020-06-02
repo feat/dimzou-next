@@ -1,0 +1,34 @@
+@include block(ns(Alert)) {
+    position: relative;
+    margin-bottom: px-to-rem(12);
+    padding: px-to-rem($alert-md-padding-y) px-to-rem($alert-md-padding-x);
+    border: 1px solid $gray-4;
+    border-radius: px-to-rem($alert-md-border-radius);
+
+    @include modifier(success) {
+        background-color: rgba( $color-success, .15 );
+        border-color: $color-success;
+    }
+    @include modifier(info) {
+        background-color: rgba( $color-info, .15 );
+        border-color: $color-info;
+    }
+    @include modifier(warning) {
+        background-color: rgba( $color-warning, .15 );
+        border-color: $color-warning;
+    }
+    @include modifier(error) {
+        background-color: rgba( $color-error, .15 );
+        border-color: $color-error;
+    }
+
+    @include element(message) {
+        margin-right: px-to-rem($alert-md-padding-x);
+        font-weight: bold;
+    }
+    @include element(closeIcon) {
+        position: absolute;
+        right: px-to-rem($alert-md-padding-x);
+        cursor: pointer;
+    }
+}

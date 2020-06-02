@@ -1,0 +1,82 @@
+@import 'base.scss';
+
+@include block(ns(EditDockerWrap, dz)) {
+  // height: px-to-rem(160);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+@include block(ns(EditDocker, dz)) {
+  position: relative;
+  padding-left: px-to-rem(12);
+  padding-right: px-to-rem(12);
+  padding-top: px-to-rem(8);
+  padding-bottom: px-to-rem(8);
+  background-color: $gray-2;
+
+  // background-color: transparentize($gray-2, .7);
+  // border: 1px solid $gray-1;
+  // backdrop-filter: blur(2px);
+  border-radius: px-to-rem(8);
+
+  // @include element(section) {
+  //   // background-color: $gray-2;
+  //   & + & {
+  //     margin-top: px-to-rem(10);
+  //   }
+  // }
+
+  @include element(action) {
+    margin-bottom: px-to-rem(5);
+    text-align: left;
+    margin-right: px-to-rem(4);
+    .ft-SvgIcon {
+      margin-right: px-to-rem(4);
+      line-height: 0;
+    }
+    & > .ft-SvgIcon + span {
+      position: relative;
+      top: px-to-rem(2);
+    }
+  }
+}
+
+@include block(ns(DockerButton, dz)) {
+  height: px-to-rem(36);
+  margin-top: px-to-rem(5);
+  & > .ft-SvgIcon {
+    line-height: 0;
+    margin-left: px-to-rem(-3);
+    margin-top: px-to-rem(-2);
+    // margin-right: px-to-rem(3);
+  }
+}
+
+@include block(ns(EditDockerMenu, dz)) {
+  position: absolute;
+  bottom: calc(100% - #{px-to-rem(10)});
+  left: 0;
+  opacity: 0;
+  max-height: px-to-rem(10);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  padding-top: px-to-rem(12);
+  padding-bottom: px-to-rem(12);
+  width: 100%;
+  border-top-left-radius: px-to-rem(8);
+  border-top-right-radius: px-to-rem(8);
+
+  @include state(opened) {
+    opacity: 1;
+    bottom: 100%;
+    max-height: initial;
+    background-color: $gray-2;
+  }
+
+  @include element(item) {
+    display: block;
+    width: 100%;
+    margin-bottom: px-to-rem(5);
+  }
+}

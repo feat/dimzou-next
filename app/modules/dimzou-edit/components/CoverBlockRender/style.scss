@@ -1,0 +1,175 @@
+@import 'base.scss';
+
+@include block(ns(CoverSection, dz)) {
+  position: relative;
+  
+  @include element(navigate) {
+    @include poplayer-style;
+    position: absolute;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    top: 100%;
+    padding: px-to-rem(8) px-to-rem(8);
+    z-index: 10;
+  }
+  @include element(dropzone) {
+    position: relative;
+  }
+
+  @include element(viewBox) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+  }
+
+  @include element(rewordingWrap) {
+    position: relative;
+    transition: all 0.5s ease;
+  }
+
+  @include element(thumbnail) {
+    width: px-to-rem(180);
+  }
+
+  @include element(dropTips) {
+    position: absolute;
+    top: 30%;
+    left: px-to-rem(-16);
+    width: 100%;
+    svg {
+      width: 50%;
+    }
+    @include modifier(tips) {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      text-align: center;
+      font-size: px-to-rem(24);
+      color: $gray-1;
+      text-shadow: 1px 1px 5px $gray-8;
+      font-style: italic;
+      font-weight: 200;
+    }
+  }
+}
+
+@include block(ns(CoverPreview, dz)) {
+  position: relative;
+
+  @include element(image) {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    @include modifier(cropped) {
+      background-size: contain;
+    }
+    @include modifier(rejected) {
+      &:hover {
+        &::before {
+          opacity: 0;
+        }
+      }
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        box-shadow: inset 0 0 40px $rejected-bd-color;
+        transition: opacity .3s ease;
+      }
+    }
+    @include modifier(pending) {
+      &:hover {
+        &::before {
+          opacity: 0;
+        }
+      }
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        box-shadow: inset 0 0 40px $pending-bd-color;
+        transition: opacity .3s ease;
+      }
+    }
+  }
+  @include element(footer) {
+    position: absolute;
+    right: px-to-rem(12);
+    bottom: px-to-rem(5);
+    background-color: rgba(255, 255, 255, 0.9);
+    padding-left: px-to-rem(24);
+    padding-right: px-to-rem(24);
+    border-radius: px-to-rem(2);
+    height: px-to-rem(36);
+    display: flex;
+    align-items: center;
+  }
+
+  @include element(commentBundle) {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    right: 0px;
+    width: px-to-rem(360);
+    max-height: px-to-rem(400);
+    overflow: auto;
+    padding-left: 12px;
+    padding-right: 12px;
+    background-color: white;
+  }
+}
+
+@include block(ns(CoverThumbnail, dz)) {
+  border: 2px solid transparent;
+  padding: px-to-rem(8) px-to-rem(12);
+
+  @include element(img) {
+    opacity: 0.8;
+    background-size: cover;
+  }
+
+  @include state('selected') {
+    z-index: 1;
+    position: relative;
+    @include element(img, true) {
+      opacity: 1;
+    }
+  }
+
+  @include modifier(current) {
+    @include state('selected') {
+      //border-color: transparentize($gray-10, 0.5);
+      box-shadow: 0 0 4px transparentize($gray-10, 0.5);
+    }
+  }
+  @include modifier(pending) {
+    background-color: $pending-bg-color;
+    @include state('selected') {
+      //border-color: $pending-bd-color;
+      box-shadow: 0 0 4px $pending-bd-color;
+    }
+  }
+  @include modifier(historic) {
+    background-color: transparentize($gray-2, 0.5);
+    @include state('selected') {
+      //border-color: transparentize($gray-6, 0.5);
+      box-shadow: 0 0 4px transparentize($gray-6, 0.5);
+    }
+  }
+  @include modifier(rejected) {
+    background-color: $rejected-bg-color;
+    @include state('selected') {
+      //border-color: $rejected-bd-color;
+      box-shadow: 0 0 4px $rejected-bd-color;
+    }
+  }
+}

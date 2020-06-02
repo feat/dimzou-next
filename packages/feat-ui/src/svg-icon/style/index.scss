@@ -1,0 +1,228 @@
+$icon-namespace: "icon";
+
+@include block(ns(SvgIcon)) {
+    display: inline-block;
+    width: px-to-rem(24);
+    height: px-to-rem(24);
+    vertical-align: middle;
+    & > svg {
+        height: 100%;
+        width: 100%;
+        backface-visibility: hidden;
+        transition: all 0.3s ease;
+        &:hover {
+            transition: all 0.3s ease;
+        }
+    }
+
+    @include modifier(placeholder) {
+      background-color: $gray-1;
+    }
+}
+
+@include block(ns(ok, $icon-namespace)) {
+  @include element(circle) {
+    fill: $color-progress;
+    stroke: $gray-2;
+    stroke-alignment: inner;
+    stroke-width: 2;
+    &:hover {
+      fill: lighten($color-progress, 2%);
+    }
+
+  }
+  @include element(char) {
+    fill: white;
+  }
+}
+
+@include block(ns(no, $icon-namespace)) {
+  @include element(circle) {
+    fill: $color-error;
+    stroke: $gray-2;
+    stroke-alignment: inner;
+    stroke-width: 2;
+    &:hover {
+      fill: lighten($color-error, 2%);
+    }
+  }
+  @include element(char) {
+    fill: white;
+  }
+}
+
+
+@include block(ns(weekday, $icon-namespace)) {
+    $father: &;
+    @include state(active) {
+        #{$father}__circle {
+            fill: #000;
+        }
+        #{$father}__char {
+            fill: #fff;
+        }
+    };
+}
+
+@include block(ns(logout, $icon-namespace)) {
+    $father: &;
+    &:hover {
+        #{$father}__outerCircle { fill: #000; }
+    }
+    &:active {
+        #{$father}__outerCircle { fill: $color-secondary; }
+    }
+}
+@include block(ns(heart, $icon-namespace)) {
+    $father: &;
+    &:hover {
+        #{$father}__path { fill: #c1272d; }
+    }
+}
+
+@include block(ns(comment, $icon-namespace)) {
+  $father: &;
+  @include element(circle) {
+    transition: all .3s ease;
+  }
+  &:hover {
+    #{$father}__circle { fill: #dddddd; }
+  }
+}
+
+@include block(ns(addBook, $icon-namespace)) {
+    $father: &;
+    &:hover {
+        #{$father}__finger{ fill: #C89862;}
+        #{$father}__hand{ fill: #F8C797;}
+        #{$father}__handPen{ fill: #3FA9F5;stroke: #666;}
+        #{$father}__handPenTile{ fill: #BDCCD4;stroke: #666;}
+    }
+};
+@include block(ns(search, $icon-namespace)) {
+    $father: &;
+    &:hover {
+        #{$father}__hilt{ fill: #DAD7AB;}
+        #{$father}__lens{ fill: #60AEC8;}
+        #{$father}__lensBorder{ fill: #AAAAAA;}
+    }
+};
+@include block(ns(translateV2, $icon-namespace)) {
+    $father: &;
+    &:hover {
+        #{$father}__circle {
+            fill: #009540;
+        }
+    }
+    @include state(active) {
+        fill: #56AF31;
+    };
+};
+@include block(ns(im, $icon-namespace)) {
+    $father: &;
+    &:hover, #{father}.is-active {
+        #{$father}__faceSay { fill: #FFE9D2; }
+        #{$father}__faceListen { fill: #A67C52; }
+        #{$father}__hair { fill: #4D4D4D; }
+    }
+};
+
+
+@include block(ns(setting, $icon-namespace)) {
+    $father: &;
+    &:hover {
+        #{$father}__circle{ fill: #bdccd4;}
+        #{$father}__bigGear{ fill: #000; }
+        #{$father}__smallGear{ fill: #000; }
+    }
+    &:active {
+        #{$father}__circle{ fill: #A9AEB9;}
+        #{$father}__bigGear{
+            fill: #D20A11;
+            stroke: #C1272D;
+        }
+        #{$father}__smallGear{
+            fill: #FFD200;
+            stroke: #EF7D29;
+        }
+    }
+};
+
+@include block(ns(articles, $icon-namespace)) {
+  $father: &;
+  &:hover {
+    #{$father}__content { fill: #F0E6E4;}
+}
+  &:active {
+    #{$father}__content { fill: #F0E6E4;}
+  }
+}
+
+
+// active state
+@include block(ns(SvgIcon)) {
+
+  @include state(active) {
+
+    @include block(ns(search, $icon-namespace)) {
+      @include element(hilt) {
+        fill: #DAD7AB;
+      }
+      @include element(lens) {
+        fill: #60AEC8;
+      }
+      @include element(lensBorder) {
+        fill: #AAAAAA;
+      }
+    }
+
+    @include block(ns(heart, $icon-namespace)) {
+      @include element(path) {
+        fill: #c1272d;
+      }
+    }
+    @include block(ns(heartV2, $icon-namespace)) {
+      @include element(path) {
+        fill: #c1272d;
+      }
+    }
+
+    @include block(ns(comment, $icon-namespace)) {
+      @include element(circle) {
+        fill: #656565;
+      }
+    }
+
+    @include block(ns(setting, $icon-namespace)) {
+      @include element(circle) {
+        fill: #A9AEB9;
+      }
+      @include element(bigGear) {
+        fill: #D20A11;
+        stroke: #C1272D;
+      }
+      @include element(smallGear) {
+        fill: #FFD200;
+        stroke: #EF7D29;
+      }
+    }
+
+    @include block(ns(translateV2, $icon-namespace)) {
+      @include element(circle) {
+        fill: #009540;
+      }
+    }
+
+    @include block(ns(im, $icon-namespace)) {
+      @include element(faceSay) {
+        fill: #FFE9D2;
+      }
+      @include element(faceListen) {
+        fill: #A67C52;
+      }
+      @include element(hair) {
+        fill: #4D4D4D;
+      }
+    }
+  }
+}

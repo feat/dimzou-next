@@ -1,0 +1,112 @@
+@import "../../style/utils/index.scss";
+@import "../../style/themes/default.scss";
+@import "./mixin.scss";
+
+@include block(ns(FlexRow)) {
+  display: flex;
+  flex-direction: row;
+
+  @include modifier(wrap) {
+    flex-wrap: wrap;
+  }
+
+  @include modifier(spaceBetween) {
+    justify-content: space-between;
+  }
+
+  @include modifier(spaceAround) {
+    justify-content: space-around;
+  }
+
+  @include modifier(center) {
+    justify-content: center;
+  }
+
+  @include modifier(top) {
+    align-items: flex-start;
+  }
+
+  @include modifier(middle) {
+    align-items: center;
+  }
+
+  @include modifier(bottom) {
+    align-items: flex-end;
+  }
+}
+
+@include block(ns(FlexCell)) {
+  flex-grow: 0;
+  flex-shrink: 0;
+  min-width: 0;
+  @include modifier(auto) {
+    flex: 1;
+  }
+}
+
+@include block(ns(Row)) {
+  @include clearfix;
+}
+
+@include block(ns(Cell)) {
+  float: left;
+  box-sizing: border-box;
+}
+
+@include block(ns(FlexColumn)) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  @include modifier(spaceBetween) {
+    justify-content: space-between;
+  }
+
+  @include modifier(spaceBetween) {
+    justify-content: space-between;
+  }
+
+  @include modifier(spaceAround) {
+    justify-content: space-around;
+  }
+
+  @include modifier(center) {
+    justify-content: center;
+  }
+
+  @include modifier(left) {
+    align-items: flex-start;
+  }
+
+  @include modifier(center) {
+    align-items: center;
+  }
+
+  @include modifier(right) {
+    align-items: flex-end;
+  }
+}
+
+@include make-flex-grid(5);
+@include make-flex-grid(24);
+
+@include make-normal-grid(5);
+@include make-normal-grid(24);
+
+@include make-gutter(12);
+@include make-gutter(24);
+
+// ----------responsive----------------------------------
+@media screen and (min-width: 1366px) {
+  @include make-res-col(lg);
+}
+@media screen and (max-width: 1366px) {
+  @include make-res-col(md);
+}
+@media screen and (max-width: 1000px) {
+  @include make-res-col(sm);
+}
+@media screen and (max-width: 768px) {
+  @include make-res-col(xs);
+}
+// ------------------------------------------------------

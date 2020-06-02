@@ -1,0 +1,106 @@
+@import 'base.scss';
+
+@include block(ns(Section, dz)) {
+  position: relative;
+  margin-bottom: 24px;
+  border-bottom: 2px solid black;
+  &::before {
+    content: attr(data-title);
+    position: absolute;
+    display: inline-block;
+    padding: 2px 12px;
+    background-color: $color-secondary;
+    color: white;
+  }
+}
+
+@include block(ns(EditPermissionPanel, dz)) {
+  margin-bottom: px-to-rem(12);
+  display: flex;
+  justify-content: flex-end;
+}
+
+@include block(ns(EditPermissionOption, dz)) {
+  .ft-SvgIcon {
+    width: px-to-rem(14);
+    height: px-to-rem(14);
+    line-height: 0;
+  }
+}
+
+@include block(ns(Edit, dz)) {
+  @include element(pageTitle) {
+    font-size: px-to-rem(84);
+    font-family: $serif-title-font;
+    font-style: italic;
+    margin-bottom: px-to-rem(48);
+    margin-left: px-to-rem(24);
+    color: $gray-5;
+  }
+
+  @include element(coverDropzone) {
+    position: relative;
+  }
+  @include element(coverPreview) {
+    position: relative;
+    background-color: $gray-1;
+    background-position: center;
+    background-size: cover;
+  }
+  @include element(templateSwitch) {
+    position: absolute;
+    bottom: px-to-rem(24);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  @include element(templateOption) {
+    border-bottom: 2px solid transparent;
+    margin-left: px-to-rem(12);
+    margin-right: px-to-rem(12);
+
+    @include state(selected) {
+      border-bottom: 2px solid $gray-10;
+    }
+  }
+  @include element(main) {
+    max-width: px-to-rem(720);
+    min-height: 100vh;
+    margin: 0 auto;
+    position: relative;
+  }
+  @include element(chapterContent) {
+    min-height: px-to-rem(600);
+    position: relative;
+    margin: 0 auto;
+  }
+}
+
+@include block(Result) {
+  @include element(title) {
+    font-size: px-to-rem(48);
+    font-weight: bold;
+  }
+  @include element(content) {
+    margin: 0;
+    font-size: px-to-rem(18);
+    span {
+      text-transform: capitalize;
+      display: inline-block;
+      min-width: px-to-rem(120);
+      font-size: px-to-rem(24);
+    }
+  }
+}
+
+@include block(ns(ValidationSection, dz)) {
+  margin-top: px-to-rem(12);
+  @include element(title) {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: px-to-rem(24);
+  }
+  @include element(info) {
+    list-style: initial;
+  }
+}

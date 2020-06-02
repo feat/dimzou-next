@@ -1,0 +1,48 @@
+@import 'base.scss';
+
+@include block(ViewBasicInfo) {
+  margin-top: px-to-rem(16);
+}
+
+@include block(ViewBasicInfoList) {
+  display: flex;
+  flex-wrap: wrap;
+
+  @include block(ViewBasicInfoItem) {
+    flex-basis: 33.33%;
+    min-width: 0;
+    padding-bottom: 1px;
+    &:nth-child(3n+1) {
+      position: relative;
+      &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        width: 300%;
+        left: 0;
+        bottom: 0;
+        border-bottom: 1px dashed $gray-5;
+      }
+    }
+  };
+};
+
+@include block(ViewBasicInfoItem) {
+  padding-left: px-to-rem(5);
+  @include element(label) {
+    @include label-text();
+    @include text-truncate();
+    display: flex;
+    height: px-to-rem($label-item-height);
+    align-items: center;
+    text-transform: capitalize;
+  };
+  @include element(value) {
+    @include text-truncate();
+    display: block;
+    font-size: px-to-rem(18);
+    font-family: $sans-serif-text-font;
+    padding-top: px-to-rem(5);
+    padding-bottom: px-to-rem(6);
+  };
+};

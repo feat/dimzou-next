@@ -1,0 +1,161 @@
+@import 'base.scss';
+
+@include block(ns(CommentBundle, cm)) {
+  margin-bottom: px-to-rem(24);
+  @include state(content, no) {
+    margin-bottom: 0;
+  }
+  @include element(noContentHint) {
+    padding: px-to-rem(12);
+    color: $gray-8;
+    background: $gray-1;
+    text-align: center;
+  }
+  @include element(sectionHeader) {
+    position: relative;
+    top: px-to-rem(8);
+    font-size: px-to-rem(20);
+    font-family: $sans-serif-title-font;
+    font-weight: bold;
+    padding-left: px-to-rem(5);
+    line-height: 1;
+  }
+}
+
+@include block(ns(RootCommentForm, cm)) {
+  margin-top: px-to-rem(12);
+  @include element(note) {
+    font-size: px-to-rem($font-size-h5);
+    font-family: $sans-serif-title-font;
+    font-weight: bold;
+    line-height: 1.5;
+    padding-left: px-to-rem(5);
+    margin-bottom: px-to-rem(5);
+  }
+  @include element(header) {
+    font-size: px-to-rem(14);
+    .ft-Username {
+      margin-right: .5em;
+    }
+    .t-Meta {
+      margin-right: .5em;
+    }
+  }
+  @include element(wrap) {
+    display: flex;
+    padding: px-to-rem(12);
+    border: 1px solid $border-color;
+    background: white;
+  }
+  @include element(avatar) {
+    margin-right: px-to-rem(12);
+  }
+  @include element(main) {
+    min-width: 0;
+    flex: 1;
+  }
+  .SimpleForm {
+    margin-bottom: 0;
+  }
+  .SimpleForm__input {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .SimpleForm__footer {
+    margin-bottom: 0;
+  }
+}
+
+@include block(ns(CommentSection, cm)) {
+  .SimpleForm__input {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+.cm-CommentSection + .cm-CommentSection_root {
+  margin-top: px-to-rem(36);
+}
+
+@include block(ns(CommentSections, cm)) {
+  counter-reset: commentpage;
+  $page-anchor-size: 24px;
+  @include element(cell) {
+    position: relative;
+    padding: px-to-rem(12) px-to-rem(36) px-to-rem(18) px-to-rem(5);
+    margin-bottom: px-to-rem(48);
+    
+    // min-height: 30em;
+
+    // background:
+    //   linear-gradient(-90deg, transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size),
+    //   linear-gradient(transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size),
+    //   linear-gradient(-90deg, transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size),
+    //   linear-gradient(transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size),
+    //   linear-gradient(-90deg, transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size),
+    //   linear-gradient(transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size),
+    //   linear-gradient(-90deg, transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size),
+    //   linear-gradient(transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size);
+
+    // background:
+    //   linear-gradient(90deg, transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px),
+    //   linear-gradient(transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px),
+    //   linear-gradient(-90deg, transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px),
+    //   linear-gradient(transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px),
+    //   linear-gradient(90deg, transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px),
+    //   linear-gradient(0deg, transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px),
+    //   linear-gradient(-90deg, transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px),
+    //   linear-gradient(0deg, transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px)
+    //   ;
+
+    // background-size:
+    //   $page-anchor-size $page-anchor-size,
+    //   $page-anchor-size $page-anchor-size,
+    //   $page-anchor-size $page-anchor-size,
+    //   $page-anchor-size $page-anchor-size,
+    //   $page-anchor-size $page-anchor-size,
+    //   $page-anchor-size $page-anchor-size,
+    //   $page-anchor-size $page-anchor-size,
+    //   $page-anchor-size $page-anchor-size;
+    // background-repeat: no-repeat;
+    // background-position:
+    //   top left,
+    //   top left,
+    //   top right,
+    //   top right,
+    //   bottom left,
+    //   bottom left,
+    //   bottom right,
+    //   bottom right;
+
+    // &:nth-child(even) {
+    //   &::after {
+    //     content: "";
+    //     position: absolute;
+    //     left: px-to-rem(-14);
+    //     bottom: px-to-rem(-32);
+    //     width: 36px;
+    //     height: 36px;
+    //     background:
+    //       linear-gradient(-90deg, transparent 0px, transparent 17px, $gray-10 17px, transparent 18px, transparent 36px),
+    //       linear-gradient(transparent 0px, transparent 17px, $gray-10 17px, transparent 18px, transparent 36px);
+    //     background-size:
+    //         36px 36px,
+    //         36px 36px;
+    //     background-position: center;
+    //   }
+    // }
+
+    &::before {
+      counter-increment: commentpage;
+      content: counter(commentpage);
+      position: absolute;
+      right: px-to-rem(18);
+      bottom: px-to-rem(15);
+      text-align: right;
+      color: $gray-8;
+      font-size: px-to-rem(12);
+      font-style: italic;
+    }
+  }
+}

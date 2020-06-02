@@ -1,0 +1,30 @@
+@import 'base.scss';
+
+@include block(ns(ReportTable, dz)) {
+  margin-bottom: px-to-rem(36);
+
+  @include element(header) {
+      display: flex;
+      font-weight: bold;
+      border-bottom: 2px solid $gray-10;
+      margin-bottom: px-to-rem(2);
+
+      .dz-ReportTable__cell_name {
+        font-size: px-to-rem(18);
+        }
+  }
+  @include element(row) {
+      display: flex;
+  }
+
+  @include element(cell) {
+    padding: px-to-rem(3);
+    @include modifier(name) {
+        flex: 1;
+    }  
+    @include modifier(val) {
+        flex-basis: 20%;
+        text-align: right;
+    }
+  }
+}

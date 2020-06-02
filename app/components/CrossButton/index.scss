@@ -1,0 +1,17 @@
+@import 'base.scss';
+
+@include block(ns(CrossButton)) {
+    @include block(crossSymbol) {
+        @include element(line) {
+            stroke: transparent;
+            transition: all .3s ease;
+        }
+    }
+    &:hover {
+        @include block(crossSymbol) {
+            @include element(line) {
+                stroke: currentColor;
+            }
+        }
+    }
+}

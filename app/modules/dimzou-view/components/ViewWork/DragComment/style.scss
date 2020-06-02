@@ -1,0 +1,41 @@
+@import 'base.scss';
+
+@include block(comment) {
+  @include element(DragBox) {
+    position: fixed;
+    cursor: move;
+    pointer-events: auto;
+
+    @include modifier(item) {
+      &.isHide {
+        display: none;
+      }
+    }
+    @include block(ns(ViewWork, dz)) {
+      @include element(footer) {
+        margin: 0;
+      }
+      @include element(comment) {
+        margin: 0;
+        position: absolute;
+        width: 100%;
+      }
+    }
+  }
+  @include element(DropBoard) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+}
+
+@media (max-width: $screen-xl-min) {
+  @include block(comment) {
+    @include element(DropBoard) {
+      display: none;
+    }
+  }
+}

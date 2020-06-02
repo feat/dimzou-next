@@ -1,0 +1,53 @@
+@import 'base.scss';
+
+
+@include block(ns(Recommendations, dz)) {
+  display: flex;
+
+  @include element(item) {
+    display: flex;
+    flex: 1;
+    flex-shrink: 0;
+    min-width: 0;
+  }
+
+  // Tablet
+  @media(max-width: $screen-xs-max){
+
+  }
+
+  // Phone
+  @media(max-width: $screen-xxs-max) {
+    display: block;
+    .dz-Card {
+      margin-bottom: 0;
+    }
+    .dz-Card__imageWrap {
+      width: px-to-rem(100);
+      float: left;
+      margin-right: 12px;
+    }
+  }
+
+
+  // Small Desktop
+  @media(min-width: $screen-sm-min){
+
+  }
+  // Medium Desktop
+  @media(min-width: $screen-md-min){
+
+  }
+  // Large Desktop
+  @media(min-width: $screen-lg-min){
+
+  }
+  // Extra Large Desktop
+  @media(min-width: $screen-xl-min){
+
+  }
+  // Extreme Large Desktop
+  @media(min-width: $screen-xxl-min){
+
+  }
+}

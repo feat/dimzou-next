@@ -1,0 +1,31 @@
+@include block(ns(UserList, ft)) {
+
+}
+@include block(ns(UserListItem, ft)) {
+  display: flex;
+  padding: px-to-rem(5);
+  align-items: center;
+
+
+
+  @include element(main) {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  @include element(info) {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.ContactSelect {
+  .ft-UserListItem {
+    &:hover {
+      background-color: $gray-2;
+    }
+    @include state(selected) {
+      background-color: $gray-2;
+    }
+  }
+}

@@ -1,0 +1,107 @@
+@mixin form-item-state($name, $color) {
+  @include state($name, has) {
+    padding-bottom: 0;
+    border-bottom: 2px solid $color;
+    @include element(label, true) {
+      color: $color;
+    }
+    input {
+      background-color: rgba($color, .1);
+    }
+  }
+}
+
+@include block(ns(FormItem)) {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 1px;
+    border-bottom: 1px solid transparent;
+
+    transition: all ease .3s;
+
+    @include element(label) {
+      height: px-to-rem($label-item-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      :last-child {
+        margin-right: px-to-rem(5);
+      }
+    }
+    @include element(widget) {
+      flex-grow: 1;
+      margin-bottom: px-to-rem(6);
+    }
+
+    @include modifier(dashed) {
+      border-bottom: 1px dashed $gray-5;
+    }
+
+    @include modifier(solid) {
+      border-bottom-color: $gray-5;
+    }
+
+    @include modifier(noLabel) {
+      padding-top: px-to-rem(5);
+    }
+
+    @include form-item-state(focus, $input-active-color);
+
+    @include form-item-state(error, $color-danger);
+    @include form-item-state(warning, $color-warning);
+    @include form-item-state(success, $color-success);
+}
+
+@include block(ns(FormLabel)) {
+    @include item-label;
+};
+
+@include block(ns(FormFieldset)) {
+    position: relative;
+    padding: px-to-rem(5);
+    margin-top: px-to-rem(5);
+    margin-bottom: px-to-rem(5);
+}
+
+@include block(ns(FormHelpList)) {
+  list-style: none;
+  padding-left: 0;
+}
+
+@include block(ns(FormHelp)) {
+  @include label-text();
+  @include modifier(error) {
+    color: $color-danger;
+  }
+}
+
+@include block(ns(FormValueStatic)) {
+  display: inline-block;
+  padding-left: px-to-rem(5);
+  padding-right: px-to-rem(5);
+  border: 1px solid $btn-default-bd-color;
+  background-color: $btn-default-bg-color;
+  @include modifier(block) {
+    display: block;
+    width: 100%;
+  }
+  @include modifier(sm) {
+    height: px-to-rem($input-sm-height);
+    line-height: px-to-rem($input-sm-height - 2);
+    border-radius: px-to-rem($btn-sm-border-radius);
+  }
+  @include modifier(md) {
+    height: px-to-rem($input-md-height);
+    border-radius: px-to-rem($btn-md-border-radius);
+  }
+  @include modifier(merge) {
+    background-color: transparent;
+    border-color: transparent;
+    &:hover {
+        background-color: white;
+    }
+    &:focus {
+        background-color: white;
+    }
+  }
+}

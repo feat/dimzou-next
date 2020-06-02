@@ -1,0 +1,41 @@
+$navbar-padding-y: 8px;
+$navbar-padding-x: 16px;
+
+@include block(ns(Navbar)) {
+    padding: px-to-rem($navbar-padding-y) px-to-rem($navbar-padding-x);
+    width: 100%;
+
+    @include element(wrap) {
+        display: flex;
+    }
+    @include element(brand) {
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 0;
+        margin-left: px-to-rem(5);
+        margin-right: px-to-rem(20);
+    }
+    @include element(left) {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    @include element(center) {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    @include element(right) {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+
+    &#{$element-separator + 'center'} +
+    &#{$element-separator + 'right'} {
+        margin-left: inherit;
+    }
+}

@@ -1,0 +1,68 @@
+$diabledColor: #ddd;
+
+
+%pageItem {
+    display: inline-block;
+    box-sizing: border-box;
+    margin-left: 5px;
+    user-select: none;
+    text-align: center;
+}
+
+
+@include block(ns(Pagination)) {
+    @include element(prev) {
+        @extend %pageItem;
+    };
+    @include element(next) {
+        @extend %pageItem;
+    };
+    @include element(page) {
+        @extend %pageItem;
+    };
+    @include element(break) {
+        @extend %pageItem;
+    };
+    @include element(quickJump) {
+        @extend %pageItem;
+        vertical-align: middle;
+
+        & > input {
+          transition: all .3s ease;
+            box-sizing: border-box;
+            width: px-to-rem(50);
+            height: 100%;
+            text-align: center;
+            background-color: $btn-default-bg-color;
+            border: 1px solid $btn-default-bd-color;
+
+            &:focus {
+              border-color: $form-input-active-border-color;
+            }
+        }
+
+        @include modifier(md) {
+            height: px-to-rem($btn-md-size);
+            & > input {
+                font-size: px-to-rem($btn-md-font-size);
+                border-radius: $btn-md-border-radius;
+                &:focus {
+                  border-width: 2px;
+                }
+            }
+        }
+
+        @include modifier(sm) {
+            height: px-to-rem($btn-sm-size);
+            & > input {
+                font-size: px-to-rem($btn-sm-font-size);
+                border-radius: $btn-sm-border-radius;
+                &:focus {
+                  border-width: 2px;
+                }
+            }
+        }
+
+
+    };
+};

@@ -1,0 +1,70 @@
+$element-width: ($switch-toggle-width / 2) - 1;
+
+@include block(ns(SwitchToggle)) {
+    $block: &;
+    position: relative;
+    display: inline-block;
+    padding: 1px;
+    box-sizing: border-box;
+    height: px-to-rem($switch-toggle-height);
+    width: px-to-rem($switch-toggle-width);
+
+    vertical-align: middle;
+    border: 1px solid $switch-toggle-border-color;
+    border-radius: $switch-toggle-border-radius;
+    background-color: $switch-toggle-inactive-color;
+
+    cursor: pointer;
+    transition: all 0.36s;
+    user-select: none;
+
+    @include element(inner) {
+        display: inline-block;
+        width: px-to-rem($element-width);
+        text-align: center;
+        opacity: 0;
+    }
+
+    @include state(checked) {
+        background-color: $switch-toggle-active-color;
+
+        #{$block + $element-separator + "inner"} {
+            color: white;
+            opacity: 1;
+        }
+
+        &::after {
+            left: 100%;
+            margin-left: px-to-rem(- $element-width);
+            box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.2);
+        }
+    };
+
+    &:hover {
+      &::after {
+        transform: scale(.98);
+      }
+    }
+    &:active {
+      &::after {
+        transform: scale(0.9);
+      }
+    }
+
+    &::after {
+        position: absolute;
+        width: px-to-rem(($switch-toggle-width - 6) / 2);
+        height: px-to-rem($switch-toggle-height - 6);
+        left: 2px;
+        top: 1px;
+        background-color: #fff;
+        border-radius: $switch-toggle-border-radius - 3;
+        box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.2);
+        content: " ";
+        cursor: pointer;
+        -webkit-transition: all 0.36s cubic-bezier(.78,.14,.15,.86);
+        transition: all 0.36s cubic-bezier(.78,.14,.15,.86);
+
+
+    }
+};

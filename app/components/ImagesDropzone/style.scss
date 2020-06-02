@@ -1,0 +1,41 @@
+@import 'base.scss';
+
+@include block(ns(ImagesDropzone)) {
+  display: flex;
+  @include element(thumb) {
+    position: relative;
+    width: px-to-rem(64);
+    height: px-to-rem(48);
+    margin-right: px-to-rem(12);
+    border: 1px dashed $gray-5;
+    background: white;
+    background-size: cover;
+    border-radius: px-to-rem(8);
+    background-repeat: no-repeat;
+    transition: border .3s ease;
+
+    @include state(focus, has) {
+      border: 2px solid $input-active-color;
+    }
+  }
+
+  @include element(removeBtn) {
+    position: absolute;
+    top: px-to-rem(-8);
+    right: px-to-rem(-8);
+  }
+
+  @include element(preview) {
+    max-width: px-to-rem(600);
+    height: auto;
+    z-index: 100000;
+  }
+
+  @include element(popover) {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+  }
+
+}

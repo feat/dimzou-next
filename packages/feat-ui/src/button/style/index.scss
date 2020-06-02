@@ -1,0 +1,341 @@
+@import "../../style/utils/index.scss";
+@import "../../style/themes/default.scss";
+@import "./mixin.scss";
+
+%btnBase {
+    @include btn-base;
+}
+
+%squareStyle {
+    @extend %btnBase;
+    padding-left: 1px;
+    padding-right: 1px;
+}
+
+%iconButtonStyle {
+    @extend %btnBase;
+    padding: 0;
+    line-height: 0;
+    background-color: transparent;
+    border: none;
+}
+
+%square_xs {
+    @include size(px-to-rem($btn-xs-size));
+    line-height: px-to-rem($btn-xs-size - 4);
+    font-size: px-to-rem($btn-xs-font-size);
+}
+
+%square_sm {
+    @include size(px-to-rem($btn-sm-size));
+    line-height: px-to-rem($btn-sm-size - 4);
+    font-size: px-to-rem($btn-sm-font-size);
+}
+%square_md {
+    @include size(px-to-rem($btn-md-size));
+    line-height: px-to-rem($btn-md-size - 2);
+    font-size: px-to-rem($btn-md-font-size);
+}
+%square_lg {
+    @include size(px-to-rem($btn-lg-size));
+    line-height: px-to-rem($btn-lg-size - 4);
+    font-size: px-to-rem($btn-lg-font-size);
+}
+
+%btn-default-style {
+    @include btn-default-style;
+}
+%btn-link-style {
+    @include btn-link-style;
+}
+%btn-primary-style {
+    @include btn-primary-style;
+}
+%btn-dashed-style {
+    @include btn-dashed-style;
+}
+%btn-danger-style {
+    @include btn-danger-style;
+}
+%btn-merge-style {
+    border: 1px solid transparent;
+    background-color: transparent;
+
+    &:hover {
+        background-color: $gray-1;
+    }
+
+    &:active {
+        color: $gray-8;
+        background-color: $gray-2;
+    }
+
+    @include state(selected) {
+        color: white;
+        background-color: $gray-10;
+    };
+}
+%btn-ok-style {
+    color: white;
+    background-color: $color-progress;
+    box-shadow: 0 0 0 3px $gray-2;
+
+    &:hover {
+        background-color: lighten($color-progress, 2%);
+    }
+
+    &:active {
+        box-shadow: 0 0 0 3px darken($gray-2, 5%);
+    }
+}
+%btn-no-style {
+    color: white;
+    background-color: $color-error;
+    box-shadow: 0 0 0 3px $gray-2;
+
+    &:hover {
+        background-color: lighten($color-error, 2%);
+    }
+
+    &:active {
+        box-shadow: 0 0 0 3px darken($gray-2, 5%);
+    }
+}
+
+@include block(ns(Button)) {
+    @extend %btnBase;
+
+    @include modifier(default) {
+        @extend %btn-default-style;
+    }
+
+    @include modifier(link) {
+        @extend %btn-link-style;
+    };
+
+    @include modifier(primary) {
+        @extend %btn-primary-style;
+    }
+
+    @include modifier(dashed) {
+        @extend %btn-dashed-style;
+    }
+
+    @include modifier(danger) {
+        @extend %btn-danger-style;
+    }
+
+    @include modifier(primaryOutline) {
+        @include btn-primary-outline-style;
+    }
+    @include modifier(dangerOutline) {
+        @include btn-danger-outline-style;
+    }
+    @include modifier(linkOutline) {
+        @include btn-link-outline-style;
+    }
+
+    @include modifier(merge) {
+        @extend %btn-merge-style;
+    };
+
+    @include modifier(ok) {
+        @extend %btn-ok-style;
+    };
+
+    @include modifier(no) {
+        @extend %btn-no-style;
+    };
+
+    @include modifier(block) {
+        display: block;
+        width: 100%;
+        white-space: normal;
+    }
+
+    @include modifier(xs) {
+      @include btn-size(
+        px-to-rem($btn-xs-size),
+        px-to-rem($btn-xs-padding-x),
+        px-to-rem($btn-xs-font-size),
+        px-to-rem($btn-xs-border-radius)
+      );
+      line-height: px-to-rem($btn-xs-size - 2);
+    }
+
+    @include modifier(sm) {
+      @include btn-size(
+        px-to-rem($btn-sm-size),
+        px-to-rem($btn-sm-padding-x),
+        px-to-rem($btn-sm-font-size),
+        px-to-rem($btn-sm-border-radius)
+      );
+      line-height: px-to-rem($btn-sm-size - 2);
+    }
+    @include modifier(md) {
+      @include btn-size(
+        px-to-rem($btn-md-size),
+        px-to-rem($btn-md-padding-x),
+        px-to-rem($btn-md-font-size),
+        px-to-rem($btn-md-border-radius)
+      );
+      line-height: px-to-rem($btn-md-size - 2);
+    }
+    @include modifier(lg) {
+      @include btn-size(
+        px-to-rem($btn-lg-size),
+        px-to-rem($btn-lg-padding-x),
+        px-to-rem($btn-lg-font-size),
+        px-to-rem($btn-lg-border-radius)
+      );
+      line-height: px-to-rem($btn-lg-size - 2);
+    }
+
+}
+
+@include block(ns(ButtonGroup)) {
+    @include block(ns(Button)) {
+        &:first-child {
+            @include border-right-radius(0);
+        }
+        &:last-child {
+            @include border-left-radius(0);
+        }
+        &:not(:first-child):not(:last-child) {
+          border-radius: 0;
+        }
+    }
+
+    @include modifier(block) {
+        display: flex;
+        width: 100%;
+
+        @include block(ns(Button)) {
+            flex: 1;
+        };
+    }
+};
+
+@include block(ns(SquareButton)) {
+    @extend %squareStyle;
+
+    @include modifier(xs) {
+        @extend %square_xs;
+        border-radius: $btn-xs-border-radius;
+    }
+
+    @include modifier(sm) {
+        @extend %square_sm;
+        border-radius: $btn-sm-border-radius;
+    }
+    @include modifier(md) {
+        @extend %square_md;
+        border-radius: $btn-md-border-radius;
+    }
+    @include modifier(lg) {
+        @extend %square_lg;
+        border-radius: $btn-lg-border-radius;
+    }
+
+    @include modifier(default) {
+        @extend %btn-default-style;
+    }
+
+    @include modifier(link) {
+        @extend %btn-link-style;
+    };
+
+    @include modifier(primary) {
+        @extend %btn-primary-style;
+    }
+
+    @include modifier(dashed) {
+        @extend %btn-dashed-style;
+    }
+
+    @include modifier(danger) {
+        @extend %btn-danger-style;
+    }
+
+    @include modifier(merge) {
+        @extend %btn-merge-style;
+    };
+
+    @include modifier(ok) {
+        @extend %btn-ok-style;
+    };
+
+    @include modifier(no) {
+        @extend %btn-no-style;
+    };
+};
+
+@include block(ns(RoundButton)) {
+    @extend %squareStyle;
+    font-family: $sans-serif-heading-font;
+    border-radius: 50%;
+
+    @include modifier(xs) {
+        @extend %square_xs;
+    }
+    @include modifier(sm) {
+        @extend %square_sm;
+    }
+    @include modifier(md) {
+        @extend %square_md;
+    }
+    @include modifier(lg) {
+        @extend %square_lg;
+    }
+
+    @include modifier(default) {
+        @extend %btn-default-style;
+    }
+
+    @include modifier(link) {
+        @extend %btn-link-style;
+    };
+
+    @include modifier(primary) {
+        @extend %btn-primary-style;
+    }
+
+    @include modifier(dashed) {
+        @extend %btn-dashed-style;
+    }
+
+    @include modifier(danger) {
+        @extend %btn-danger-style;
+    }
+
+    @include modifier(merge) {
+        @extend %btn-merge-style;
+    };
+
+    @include modifier(ok) {
+        @extend %btn-ok-style;
+    }
+    @include modifier(no) {
+        @extend %btn-no-style;
+    }
+}
+
+@include block(ns(IconButton)) {
+    @extend %iconButtonStyle;
+    @include modifier(xs) {
+        @include size(px-to-rem($btn-xs-size));
+    }
+    @include modifier(sm) {
+        @include size(px-to-rem($btn-sm-size));
+    }
+    @include modifier(md) {
+        @include size(px-to-rem($btn-md-size));
+    }
+    @include modifier(lg) {
+        @include size(px-to-rem($btn-lg-size));
+    }
+    @include block(ns(SvgIcon)) {
+        width: 100%;
+        height: 100%;
+    }
+}

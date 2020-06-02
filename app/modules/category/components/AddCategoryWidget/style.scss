@@ -1,0 +1,26 @@
+@import 'base.scss';
+
+@include block(AddCategoryWidget) {
+  display: inline-block;
+  max-width: 100%;
+
+  @include state(expanded) {
+    border-color: transparent;
+  }
+
+  @include state (active) {
+
+  }
+
+  @include element(form) {
+    display: flex;
+    align-content: center;
+    background: $gray-1;
+    border-radius: px-to-rem(12);
+    max-width: 100%;
+  }
+  @include element(input) {
+    padding-left: px-to-rem(12);
+    max-width: calc(100% - #{px-to-rem(24)});
+  }
+}

@@ -1,0 +1,35 @@
+%touch {
+    background-color: #D8C9E0;
+    text-decoration: none;
+    z-index: 12;
+    color: #585857;
+    border: 1px solid #C1BFC1;
+    border-radius: 4px;
+}
+@include block(ns(Anchor)) {
+    $father: &;
+    @include element(link) {
+        display: flex;
+        justify-content: flex-end;
+        padding: 0.3125rem 0.625rem;
+        @include state(active) {
+            #{$father}__linkTitle {
+                @extend %touch;
+            }
+        };
+    };
+    @include element(linkTitle) {
+        padding: 0 0.3125rem;
+        padding-right: 1.125rem;
+        padding-left: 1.125rem;
+        font-size: 0.875rem;
+        line-height: 1.72;
+        height: 1.5rem;
+        color: #333;
+        position: relative;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        &:hover { @extend %touch;}
+    };
+};

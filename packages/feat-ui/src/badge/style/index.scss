@@ -1,0 +1,175 @@
+$ease-in-out: cubic-bezier(.12,.4,.29,1.46);
+
+$ease-in-back: cubic-bezier(.71,-.46,.88,.6);
+
+
+@include block(ns(Badge)) {
+    position: relative;
+    display: inline-block;
+    line-height: 1;
+    vertical-align: middle;
+
+    @include element(count) {
+        box-sizing: border-box;
+        position: absolute;
+        transform: translateX(-50%);
+        background: $badge-highlight-color;
+        color: #fff;
+
+        text-align: center;
+
+        font-size: $badge-font-size-base;
+        white-space: nowrap;
+        transform-origin: -10% center;
+        font-family: tahoma;
+        box-shadow: 0 0 0 1px #fff;
+
+        a,
+        a:hover {
+          color: black;
+        }
+    };
+    @include modifier(md) {
+      @include element(count, true) {
+        top: -$badge-md-height / 2;
+        height: $badge-md-height;
+        padding: 0 6px;
+        border-radius: $badge-md-height / 2;
+        min-width: $badge-md-height;
+        line-height: $badge-md-height;
+      }
+    }
+    @include modifier(sm) {
+        @include element(count, true) {
+            top: -$badge-sm-height / 2;
+            height: $badge-sm-height;
+            padding: 0 2px;
+            border-radius: $badge-sm-height / 2;
+            min-width: $badge-sm-height;
+            line-height: $badge-sm-height;
+          }
+    }
+
+    @include element(dot) {
+        position: absolute;
+        transform: translateX(-50%);
+        transform-origin: 0 center;
+        top: -$badge-dot-size / 2;
+        height: $badge-dot-size;
+        width: $badge-dot-size;
+        border-radius: 100%;
+        background: $badge-highlight-color;
+        z-index: 10;
+        box-shadow: 0 0 0 1px #fff;
+    };
+
+    @include element(status) {
+        line-height: inherit;
+        vertical-align: baseline;
+
+        @include modifier(dot) {
+            width: 8px;
+            height: 8px;
+            display: inline-block;
+            border-radius: 50%;
+        };
+
+        @include modifier(success) {
+            background-color: $badge-success-color;
+        };
+
+        @include modifier(processing) {
+            background-color: $badge-process-color;
+            position: relative;
+            &:after {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              border-radius: 50%;
+              border: 1px solid $badge-process-color;
+              content: '';
+              animation: antStatusProcessing 1.2s infinite $ease-in-out;
+            }
+        };
+
+        @include modifier(default) {
+            background-color: $badge-default-color;
+        };
+
+        @include modifier(error) {
+            background-color: $badge-error-color;
+        };
+
+        @include modifier(warning) {
+            background-color: $badge-warning-color;
+        };
+    };
+
+    @include element(statusText) {
+        color: #fff;
+        font-size: $badge-font-size-base;
+        margin-left: 8px;
+    };
+}
+
+@keyframes antStatusProcessing {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@include block(ns(ScrollNumber)) {
+    overflow: hidden;
+    @include element(only) {
+        display: inline-block;
+        transition: all .3s $ease-in-out;
+
+    };
+    @include modifier(md) {
+        @include element(only, true) {
+            height: $badge-md-height;
+            p {
+                height: $badge-md-height;
+                margin: 0;
+            }
+        }
+    }
+    @include modifier(sm) {
+        @include element(only, true) {
+            height: $badge-sm-height;
+            p {
+                height: $badge-sm-height;
+                margin: 0;
+            }
+        }
+    }
+
+
+};
+
+@keyframes antZoomBadgeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0) translateX(-50%);
+  }
+  100% {
+    transform: scale(1) translateX(-50%);
+  }
+}
+
+@keyframes antZoomBadgeOut {
+  0% {
+    transform: scale(1) translateX(-50%);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) translateX(-50%);
+  }
+}

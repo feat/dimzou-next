@@ -1,0 +1,15 @@
+.ft-Block_feed,
+.ft-Block_primary {
+  .ft-Block__header {
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom-style: solid;
+    border-image: linear-gradient(
+        to right,
+        $color-secondary px-to-rem(112),
+        $gray-10 px-to-rem(112)
+    )
+    1;
+  }
+}

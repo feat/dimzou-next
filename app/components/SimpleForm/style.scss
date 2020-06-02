@@ -1,0 +1,65 @@
+/**
+*
+* SimpleForm
+*
+*/
+
+@import "base.scss";
+
+@include block(SimpleForm) {
+  // border-bottom: 1px solid $gray-3;
+  display: flex;
+  margin-bottom: px-to-rem(12);
+
+  @include element(avatar) {
+    margin-right: px-to-rem(12);
+  }
+  @include element(main) {
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  @include element(input) {
+    width: 100%;
+    //padding-top: px-to-rem(5);
+    //padding-bottom: px-to-rem(5);
+    // padding: px-to-rem(12);
+    font-size: px-to-rem(16);
+    // border: 1px solid $gray-3;
+    // min-height: px-to-rem(144);
+
+    &:active,
+    &:focus {
+      outline: none;
+    }
+  }
+  @include element(footer) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    // margin-bottom: px-to-rem(24);
+    padding-top: px-to-rem(5);
+    padding-bottom: px-to-rem(5);
+  }
+  @include element(hint) {
+    color: $gray-6;
+    font-size: px-to-rem(12);
+  }
+  @include element(submit) {
+    color: white;
+    background-color: $gray-10;
+    border-radius: 0;
+    font-size: px-to-rem(12);
+    padding: px-to-rem(2) px-to-rem(12);
+  }
+  // @include element(delete) {
+  //   border-radius: 0;
+  //   font-size: px-to-rem(12);
+  //   padding: px-to-rem(2) px-to-rem(12);
+  // }
+  @include element(cancel) {
+    border-radius: 0;
+    font-size: px-to-rem(12);
+    padding: px-to-rem(2) px-to-rem(12);
+  }
+}

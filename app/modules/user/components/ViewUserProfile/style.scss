@@ -1,0 +1,29 @@
+@import 'base.scss';
+
+@include block(ViewProfile) {
+  padding-left: px-to-rem(24);
+  padding-right: px-to-rem(24);
+  @include element(header) {
+    display: flex;
+    flex-direction: column;
+    height: px-to-rem($view-profile-header-height);
+    margin-bottom: px-to-rem(16);
+    @include header-bottom-border;
+  }
+
+  @include element(row) {
+    display: flex;
+    margin-left: px-to-rem(-16);
+    margin-right: px-to-rem(-16);
+  }
+  @include element(col) {
+    flex-basis: 50%;
+    min-width: 0;
+    padding-left: px-to-rem(16);
+    padding-right: px-to-rem(16);
+  }
+
+  .ft-Block {
+    margin-bottom: px-to-rem(36);
+  }
+}

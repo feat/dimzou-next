@@ -1,0 +1,81 @@
+@import 'base.scss';
+
+@include block(ViewOpenTime) {
+  padding-bottom: px-to-rem(8);
+  border-bottom: 1px dashed $gray-5;
+
+  @include element(range) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  @include element(rangeLabel) {
+    font-size: px-to-rem(20);
+    padding-left: px-to-rem(8);
+  }
+
+  .WeekdayWidget {
+    display: flex;
+    justify-content: space-around;
+    margin-top: px-to-rem(8);
+    margin-bottom: px-to-rem(8);
+  }
+  .WeekdayWidget__item {
+    width: px-to-rem(32);
+    height: px-to-rem(32);
+  }
+
+  // @include element(block) {
+  //   display: flex;
+  //   justify-content: space-around;
+  //   margin-top: px-to-rem(8);
+  //   margin-bottom: px-to-rem(8);
+  // }
+  // @include element(item) {
+  //   font-size: 0;
+  //   width: px-to-rem(32);
+  //   height: px-to-rem(32);
+  //   @include state(selected) {
+  //     .icon-weekday__circle {
+  //       fill: $gray-10;
+  //     }
+  //     .icon-weekday__char {
+  //       fill: white;
+  //     }
+  //   }
+  //   @include state(show) {
+  //     &::after {
+  //       content: '';
+  //       width: 50%;
+  //       height: 2px;
+  //       background-color: $gray-8;
+  //       display: block;
+  //       margin: 0 auto;
+  //       margin-top: 1px;
+  //     }
+  //   }
+  // }
+
+  // Landscape Phones
+  @media (min-width: $screen-xs-min) {
+  }
+
+  // Portrait Tablets & Small Desktop
+  @media (min-width: $screen-sm-min) {
+  }
+  // Landscape Tablets & Medium Desktop
+  @media (min-width: $screen-md-min) {
+  }
+  // Large Desktop
+  @media (min-width: $screen-lg-min) {
+    @include element(rangeLabel) {
+      font-size: px-to-rem(22);
+    }
+  }
+  // Extra Large Desktop
+  @media (min-width: $screen-xl-min) {
+  }
+  // Extreme Large Desktop
+  @media (min-width: $screen-xxl-min) {
+  }
+}

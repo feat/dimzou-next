@@ -1,0 +1,16 @@
+@import 'base.scss';
+
+
+@include block(ns(BookNodePlaceholder, dz)) {
+  @include element(title) {
+
+  }
+
+  @include element(summary) {
+
+  }
+
+  @include element(action) {
+
+  }
+}

@@ -1,0 +1,20 @@
+@mixin text-truncate() {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@mixin auto-hyphens {
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+@mixin label-text {
+  font-size:  px-to-rem($label-text-size);
+  transition: color .3s ease;
+}
+@mixin item-label {
+  display: inline;
+  padding-left: px-to-rem($label-padding-x);
+  @include label-text();
+}

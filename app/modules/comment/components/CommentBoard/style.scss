@@ -1,0 +1,22 @@
+@import 'base.scss';
+
+@include block(ns(CommentBoard, cm)) {
+  border-bottom: 1px solid $gray-10;
+  margin-bottom: px-to-rem(24);
+
+  @include element(title) {
+    padding-top: px-to-rem(16);
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: px-to-rem(18);
+
+    a {
+      color: inherit;
+    }
+  }
+
+  @include element(content) {
+    padding-left: px-to-rem(3);
+    padding-right: px-to-rem(3);
+  }
+}

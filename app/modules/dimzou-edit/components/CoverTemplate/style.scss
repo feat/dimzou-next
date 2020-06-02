@@ -1,0 +1,33 @@
+@import 'base.scss';
+
+@include block(ns(BundleCover, dz)) {
+  position: relative;
+  width: 100%;
+  max-width: px-to-rem(720+128);
+  background: white;
+  padding: px-to-rem(48) px-to-rem(64);
+  min-height: calc(100vh - 120px);
+  margin: px-to-rem(20) auto;
+  // @include pop-shadow();
+
+  @include element(inner) {
+    max-width: px-to-rem(720);
+    margin: 0 auto;
+  }
+  @include element(cover) {
+    margin-bottom: px-to-rem(12);
+  }
+  @include element(summary) {
+    min-height: px-to-rem(120);
+  }
+  @include element(author) {
+    font-size: px-to-rem(32);
+    margin-top: 1.5em;
+    margin-bottom: 2.5em;
+    font-family: $serif-text-font;
+  }
+  @include element(copyright) {
+    font-size: px-to-rem(14);
+    color: $gray-6;
+  }
+}

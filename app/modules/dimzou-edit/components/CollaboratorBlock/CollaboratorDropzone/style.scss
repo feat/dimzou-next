@@ -1,0 +1,50 @@
+@import 'base.scss';
+
+@include block(ns(CollaboratorDropzone, dz)) {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: px-to-rem(12);
+  @include element(symbol) {
+    width: px-to-rem(18);
+    padding-top: px-to-rem(5);
+    text-align: left;
+    @include modifier(owner) {
+      &::before {
+        // content: '\265A';
+        content: '\2654';
+      }
+    }
+    @include modifier(admin) {
+      &::before {
+        // content: "\265D";
+        content: "\2657";
+      }
+    }
+    @include modifier(participator) {
+      &::before {
+        // content: "\265E";
+        content: "\2658";
+      }
+    }
+  }
+  @include element(inner) {
+    flex: 1;
+    min-width: 0;
+    min-height: px-to-rem(40);
+    border: 2px dashed transparent;
+    transition: all ease .3s;
+    border-radius: 2px;
+
+    @include state(drop, can) {
+      background-color: transparentize($input-active-color, $amount: 0.9);
+      border-color: transparentize($input-active-color, $amount: 0.7);
+      // background-color: transparentize($color: #3998ff, $amount: 0.9);
+      // border-color: transparentize($color: #3998ff, $amount: 0.7);
+    }
+
+    @include state(over, is) {
+      background-color: rgba(166, 221, 253, 0.479);
+      border-color: $input-active-color;
+    }
+  }
+}

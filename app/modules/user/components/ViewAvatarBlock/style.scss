@@ -1,0 +1,13 @@
+@import 'base.scss';
+
+@include block(ViewAvatarBlock) {
+  position: relative;
+  padding-left: px-to-rem(5);
+  padding-right: px-to-rem(5);
+
+  @include element(actions) {
+    position: absolute;
+    bottom: px-to-rem(5);
+    right: px-to-rem(12);
+  }
+}

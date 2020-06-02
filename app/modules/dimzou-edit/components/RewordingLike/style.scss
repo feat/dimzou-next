@@ -1,0 +1,20 @@
+@import 'base.scss';
+
+@include block(ns(RewordingLikeWidget, dz)) {
+  display: inline-block;
+  .LikeToggle {
+    padding: 2px;
+    margin-right: 4px;
+  }
+}
+
+@include block(ns(CoverPreview, dz)) {
+  @include element(footer) {
+    @include block(ns(RewordingLikeWidget, dz)) {
+      .LikeToggle {
+        width: px-to-rem(30);
+        height: px-to-rem(30);
+      }
+    }
+  }
+}

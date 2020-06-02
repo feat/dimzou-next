@@ -1,0 +1,41 @@
+@import 'base.scss';
+
+@include block(ns(AddLocaleWidget, lng)) {
+  display: inline-block;
+  font-size: px-to-rem(14);
+  max-width: 100%;
+
+  @include state(static) {
+    @include btn-base;
+    @include btn-default-style;
+    @include btn-size(
+      px-to-rem($btn-sm-size),
+      px-to-rem($btn-sm-padding-x),
+      px-to-rem($btn-sm-font-size),
+      px-to-rem($btn-sm-border-radius)
+    );
+    line-height: px-to-rem($btn-sm-size - 2);
+    // border-radius: px-to-rem(2);
+    // padding-left: px-to-rem(8);
+    // padding-right: px-to-rem(8);
+  }
+
+  @include state(expanded) {
+    border-color: transparent;
+  }
+
+  height: px-to-rem(24);
+
+
+  @include element(form) {
+    display: flex;
+    align-content: center;
+    background: $gray-1;
+    border-radius: px-to-rem(12);
+    max-width: 100%;
+  }
+  @include element(input) {
+    padding-left: px-to-rem(12);
+    max-width: calc(100% - #{px-to-rem(24)});
+  }
+}

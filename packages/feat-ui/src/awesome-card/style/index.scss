@@ -1,0 +1,31 @@
+$awesome-card-title-font-size: 24px;
+$awesome-card-font-size: 16px;
+
+@include block(ns(AwesomeCard)) {
+  padding: px-to-rem(12);
+  background-color: white;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+
+  @include modifier(nightTheme) {
+    background-color: $gray-10;
+    color: white;
+  }
+
+  @include element(header) {
+    margin-bottom: .5em;
+  }
+  @include element(title) {
+    font-size: px-to-rem($awesome-card-title-font-size);
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  @include element(desc) {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  @include element(content) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

@@ -1,0 +1,69 @@
+@include block(ns(ModalContainer)) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: $modal-z-index;
+    background-color: rgba(0,0,0,0.5);
+
+    @include modifier(invisible) {
+      background-color: transparent;
+      // pointer-events: none;
+    }
+};
+
+@include block(ns(ModalWrap)) {
+    position: absolute;
+    top: 47%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+};
+
+@include block(ns(Modal)) {
+  display: flex;
+  flex-direction: column;
+  width: 80vw;
+  background-color: white;
+  border-radius: px-to-rem($modal-border-radius);
+
+  @include modifier(md) {
+    max-width: px-to-rem(600);
+    min-height: px-to-rem(260);
+  }
+
+  @include element(header) {
+    flex-shrink: 0;
+    padding-top: px-to-rem($modal-md-padding-y);
+    padding-bottom: px-to-rem($modal-md-padding-y * 0.75);
+    padding-left: px-to-rem($modal-md-padding-x);
+    padding-right: px-to-rem($modal-md-padding-x);
+  }
+  @include element(title) {
+    font-weight: bold;
+    font-family: $sans-serif-title-font;
+    font-size: px-to-rem($modal-md-title-font-size);
+  }
+  @include element(content) {
+    flex: 1;
+    font-size: px-to-rem($text-size);
+    padding-top: px-to-rem($modal-md-padding-y * 0.75);
+    padding-bottom: px-to-rem($modal-md-padding-y);
+    padding-left: px-to-rem($modal-md-padding-x);
+    padding-right: px-to-rem($modal-md-padding-x);
+  }
+  @include element(footer) {
+    flex-shrink: 0;
+    padding-top: px-to-rem($modal-md-padding-y * 0.75);
+    padding-bottom: px-to-rem($modal-md-padding-y * 1.5);
+    padding-left: px-to-rem($modal-md-padding-x);
+    padding-right: px-to-rem($modal-md-padding-x);
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.hideScroll {
+    overflow: hidden;
+    padding-left: 17px;
+}

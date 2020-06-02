@@ -1,0 +1,17 @@
+@include block(ns(MobileItem)) {
+    display: flex;
+    padding: px-to-rem(5) px-to-rem(12);
+
+    @include element(content) {
+        flex-grow: 1;
+        
+        @include state(before, has) {
+            padding-left: px-to-rem(12);
+        };
+
+        @include state(after, has) {
+            padding-right: px-to-rem(12);
+        };
+    }
+
+};

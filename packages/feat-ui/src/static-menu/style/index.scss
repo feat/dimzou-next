@@ -1,0 +1,47 @@
+@include block(ns(Menu)) {
+    position: relative;
+    @include clearfix();
+
+    @include modifier(inline) {
+        @include block(ns(MenuItem)) {
+            // float: left;
+            display: inline-block;
+        }
+    }
+
+    @include modifier(horizontal) {
+        display: flex;
+
+        @include block(ns(MenuItem)) {
+            display: block;
+            flex-grow: 1;
+        }
+    }
+
+    @include modifier(vertical) {
+
+    };
+}
+
+@include block(ns(MenuItem)) {
+    padding: px-to-rem($menu-md-padding-y) px-to-rem($menu-md-padding-x);
+    text-align: center;
+
+
+
+    @include modifier(navbar) {
+        line-height: px-to-rem($header-height - ($menu-md-padding-y * 2));
+        font-size: px-to-rem(14);
+
+        a {
+            color: inherit;
+        }
+    }
+
+    @include state(active) {
+        color: red;
+        a {
+            color: inherit;
+        }
+    };
+}

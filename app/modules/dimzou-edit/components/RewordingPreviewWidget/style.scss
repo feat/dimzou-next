@@ -1,0 +1,97 @@
+@import 'base.scss';
+
+@include block(ns(RewordingDropzone, dz)) {
+  transition: all .3s ease;
+  position: relative;
+
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    pointer-events: none;
+    background-color: transparentize($input-active-color, .8);
+    opacity: 0;
+    transition: all .3s ease;
+  }
+  @include state(submitting) {
+    opacity: 0.5;
+  }
+
+  @include state(over) {
+    box-shadow: 0px 0px 1px 3px $input-active-color;
+    border-radius: 2px;
+    &::after {
+      opacity: 1;
+    }
+  }
+}
+
+@include block(ns(RewordingWidget, dz)) {
+  position: relative;
+}
+
+@include block(ns(RewordingWidgetOverlay, dz)) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, .3);
+
+  @include element(inner) {
+    @include poplayer-style();
+  }
+  @include element(message) {
+    min-width: px-to-rem(300);
+    min-height: px-to-rem(60);
+  }
+  @include element(footer) {
+    padding-top: px-to-rem(5);
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+@include block(ns(CodeBlock, dz)) {
+  background-color: #f3f3f3;
+    counter-reset: code-line;
+  font-family: monospace;
+  margin-bottom: 1em;
+
+  @include element(content) {
+    margin-top: 0;
+    padding: px-to-em(16) px-to-em(24);
+    white-space: pre-wrap;
+  }
+    
+  // @include element(content) {
+  //   margin-left: 2.75em;
+  //   padding-left: 0.5em;
+  //   padding-right: 0.5em;
+  //   border-left: 4px solid $gray-4;
+  //   line-height: 1.5em;
+  //   margin-top: 0;
+  //   white-space: pre-wrap;
+
+  //   .line {
+  //     counter-increment: code-line;
+  //     position: relative;
+  //     &::before {
+  //       content: counter(code-line);
+  //       position: absolute;
+  //       margin-left: -4.25em;
+  //       width: 3em;
+  //       text-align: right;
+  //       user-select: none;
+  //     }
+  //   }
+  // }
+}

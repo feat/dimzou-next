@@ -1,0 +1,9 @@
+@import 'base.scss';
+
+@include block(ns(ScrollBox, ft)) {
+  overflow: hidden;
+
+  &:hover {
+      overflow-y: auto;
+  }
+}

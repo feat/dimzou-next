@@ -1,0 +1,5 @@
+<svg class="icon-post" viewBox="0 0 42 42" >
+              <path fill="none" stroke="#326298" stroke-width="2.1025" strokeMiterlimit="10" d="M43.488,21.539           c0,12.147-9.822,21.993-21.94,21.993"/>
+              <path class="icon-post__compo" fill="#F8B900" stroke="#326298" stroke-width="2.1025" strokeMiterlimit="10" d="M39.101,20.283           c0,10.41-8.418,18.853-18.804,18.853c-10.392,0-18.81-8.442-18.81-18.853c0-10.412,8.418-18.852,18.81-18.852           C30.683,1.431,39.101,9.871,39.101,20.283z"/>
+              <path fill="none" stroke="#326298" stroke-width="2.1025" strokeMiterlimit="10" d="M20.295,15.883           c2.424,0,4.387,1.97,4.387,4.399s-1.965,4.399-4.387,4.399c-2.425,0-4.39-1.97-4.39-4.399"/>
+            </svg>

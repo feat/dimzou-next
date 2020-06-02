@@ -1,0 +1,8 @@
+@import "~leaflet/dist/leaflet.css";
+
+@include block(ns(Map)) {
+    @include element(marker) {
+        background-image: url("../images/marker.svg");
+        background-repeat: no-repeat;
+    }
+}

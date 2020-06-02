@@ -1,0 +1,38 @@
+html {
+    position: relative;
+    height: 100%;
+}
+
+@include block(ns(Site)) {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 100vh;
+
+    @include modifier(fixedHeader) {
+        padding-top: px-to-rem($header-height);
+
+        @include element(header, true) {
+            position: fixed;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            top: 0;
+            left: 0;
+            height: px-to-rem($header-height);
+            background: white;
+            z-index: $fixed-header-index;
+        };
+    }
+
+    @include element(content) {
+        flex-grow: 1;
+    }
+    @include element(header) {
+        flex-shrink: 0;
+        // box-shadow: 0 2px 2px 0 rgba(128, 128, 128, .3);
+    }
+    @include element(footer) {
+        flex-shrink: 0;
+    }
+}

@@ -1,0 +1,46 @@
+@import 'base.scss';
+
+@include block(ns(DimzouIndex, p)) {
+  padding-left: px-to-rem($site-sidebar-width - 12);
+  padding-top: px-to-rem(24);
+  padding-right: px-to-rem(12);
+  display: flex;
+  @include element(side) {
+    position: fixed;
+    left: px-to-rem(24);
+  }
+  @include element(nav) {
+    padding-top: px-to-rem(56);
+  }
+  @include element(main) {
+    padding-left: px-to-rem(12);
+    padding-right: px-to-rem(12);
+    flex: 1;
+    min-width: 0;
+  }
+  @include element(right) {
+    padding-left: px-to-rem(12);
+    padding-right: px-to-rem(12);
+    flex-shrink: 0;
+    width: px-to-rem(304);
+    flex-grow: 0;
+    min-width: 0;
+  }
+}
+
+@include block(DimzouIndexSidebar) {
+  width: px-to-rem($site-nav-width);
+  flex: 1;
+  overflow: hidden;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  height: 90vh;
+
+  &:hover {
+    overflow-y: auto;
+  }
+
+  .ft-Button_anchor {
+    text-align: start;
+  }
+}

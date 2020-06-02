@@ -1,0 +1,19 @@
+@import 'base.scss';
+
+@include block(ns(Collaborator, dz)) {
+  padding: px-to-rem(5);
+  margin-bottom: px-to-rem(5);
+  display: flex;
+  // background-color: $gray-1;
+  @include state(pending, is) {
+    filter: grayscale(100%);
+  }
+  @include element(meta) {
+    margin-left: auto;
+    line-height: 1.1;
+    text-align: right;
+  }
+  @include state(archive, is) {
+    filter: grayscale(100%);
+  }
+}

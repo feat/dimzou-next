@@ -1,0 +1,13 @@
+@import 'base.scss';
+
+.ft-Block_sticky {
+  position: relative;
+  .sticky-inner-wrapper {
+    z-index: 10;
+  }
+  .ft-Block__header {
+    // padding-top: px-to-rem(16);
+    background: $main-container-bg-color;
+    z-index: 8;
+  }
+}

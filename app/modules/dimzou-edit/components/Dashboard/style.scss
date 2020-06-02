@@ -1,0 +1,30 @@
+@import 'base.scss';
+
+
+$column-gap: 12px;
+
+@include block(ns(Dashboard, dz)) {
+    display: flex;
+    margin-left: px-to-rem(- $column-gap);
+    margin-right: px-to-rem(- $column-gap);
+
+    &__col1,
+    &__col2,
+    &__col3 {
+        min-width: 0;
+        padding-left: px-to-rem($column-gap);
+        padding-right: px-to-rem($column-gap);
+    }
+    
+    @include element(col1) {
+        flex-basis: 25%;
+    }
+    
+    @include element(col2) {
+        flex-basis: 50%;
+    }
+    @include element(col3) {
+        flex-basis: 25%;
+    }
+
+}

@@ -1,0 +1,15 @@
+/**
+*
+* HomeCategorySection
+*
+*/
+
+@import "base.scss";
+
+@include block((ns(Block, ft))) {
+  @include modifier(feed) {
+    @include element(readMore, true) {
+      color: inherit;
+    }
+  }
+}

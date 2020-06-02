@@ -1,0 +1,216 @@
+@import "../../button/style/mixin.scss";
+@import "../../grid/style/mixin.scss";
+
+$datepickerGap : .5em;
+$datepickerDefaultWidth: 320px;
+$datepickerYmdWidth: 460px;
+
+@include block(ns(FlatDatePicker)) {
+    @include clearfix();
+    font-size: px-to-rem(14);
+    width: px-to-rem($datepickerDefaultWidth);
+    // margin-left: - $datepickerGap;
+    // margin-right: - $datepickerGap;
+
+    @include modifier(default) {
+        width: px-to-rem(560);
+    }
+    %datepickerCompo {
+        padding-left: px-to-rem(5);
+        padding-right: px-to-rem(5);
+        box-sizing: border-box;
+    }
+    @include element(yearCompo) {
+        @extend %datepickerCompo;
+    }
+
+    @include element(monthCompo) {
+        @extend %datepickerCompo;
+    }
+
+    @include element(dayCompo) {
+        @extend %datepickerCompo;
+    }
+    @include element(hourCompo) {
+        @extend %datepickerCompo;
+
+    };
+    @include element(minuteCompo) {
+        @extend %datepickerCompo;
+    };
+
+    @include element(compoTitle) {
+        font-family: $heading-font;
+        font-size: 1em;
+        font-weight: bold;
+        line-height: $line-height;
+        display: flex;
+        align-items: center;
+        margin-top: px-to-rem(4);
+        margin-bottom: px-to-rem(2);
+        &::after {
+          content: '';
+          flex: 1;
+          display: block;
+          margin-left: px-to-rem(5);
+          height: 1;
+          position: relative;
+          top: px-to-rem(4);
+          border-bottom: 1px dashed $gray-5;
+        }
+    }
+    @include element(compoContent) {
+
+    }
+
+    @include element(optionList) {
+        display: table;
+        width: 100%;
+    }
+
+    @include element(option) {
+        @include btn-animation();
+        display: inline-block;
+        margin: .1em 1%;
+        text-align: center;
+        word-wrap: normal;
+        padding-top: .125em;
+        padding-bottom: .125em;
+        float: left;
+        cursor: pointer;
+        user-select: not-allowed;
+        transition: all .3s ease;
+        border-radius: px-to-rem($btn-sm-border-radius);
+
+        &:hover {
+            background-color: $gray-2;
+        }
+
+        @include modifier(year) {
+            width: 10.5%;
+        }
+        @include modifier(month) {
+            width: 23%;
+        }
+        @include modifier(day) {
+            width: 12.2%
+        }
+        @include modifier(hour) {
+            width: 14.2%;
+        }
+        @include modifier(minute) {
+            width: 16.66667%;
+        }
+
+        @include modifier(marked) {
+            background-color: $gray-2;
+        }
+
+        @include state(disabled) {
+            opacity: .5;
+            cursor: auto;
+            &:hover {
+                background-color: transparent;
+            }
+        }
+        @include state(selected) {
+            @include cbb(white, $btn-default-selected-bg-color, $btn-default-selected-bg-color);
+
+            &:hover {
+                @include cbb(white, $btn-default-selected-bg-color, $btn-default-selected-bg-color);
+            }
+        }
+    }
+};
+
+
+@include block(ns(FlatDatePicker), ymd2) {
+    width: px-to-rem($datepickerYmdWidth);
+    display: flex;
+    flex-wrap: wrap;
+
+    @include element(yearCompo, true) {
+        @include make-flex-cell(24, 24);
+        box-sizing: border-box;
+    }
+    @include element(monthCompo, true) {
+        @include make-flex-cell(11, 24);
+        box-sizing: border-box;
+    };
+    @include element(dayCompo, true) {
+        @include make-flex-cell(13, 24);
+        box-sizing: border-box;
+    };
+}
+
+@include block(ns(FlatDatePicker), ymd) {
+    width: px-to-rem($datepickerYmdWidth);
+    @include clearfix();
+
+    @include element(yearCompo, true) {
+        width: 55%;
+        float: left;
+        box-sizing: border-box;
+    }
+    @include element(monthCompo, true) {
+        width: 45%;
+        float: left;
+        box-sizing: border-box;
+    };
+    @include element(dayCompo, true) {
+        width: 45%;
+        float: left;
+        box-sizing: border-box;
+    };
+}
+
+@include block(ns(FlatDatePicker), credit) {
+    @include clearfix();
+    @include element(yearCompo, true) {
+        width: 40%;
+        float: left;
+    };
+    @include element(monthCompo, true) {
+        width: 60%;
+        float: left;
+    };
+    @include element(option, true) {
+        @include modifier(year) {
+            width: 31%;
+        }
+    };
+};
+
+@include block(ns(FlatRangePicker)) {
+    display: block;
+    width: px-to-rem($datepickerDefaultWidth);
+
+    @include element(display) {
+        display: flex;
+        flex-direction: row;
+        margin-top: px-to-rem(3);
+        margin-bottom: px-to-rem(7);
+    }
+    @include element(dsSeparator) {
+        padding-left: px-to-rem(10);
+        padding-right: px-to-rem(10);
+        display: inline-block;
+        flex-shrink: 0;
+    }
+    @include element(dsCompo) {
+        flex-basis: 100%;
+        flex-shrink: 1;
+        @include state(active) {
+            color: $text-color;
+            background-color: $gray-2;
+            border: 2px solid $form-input-active-border-color;
+        };
+    }
+
+    @include modifier(ymd) {
+      width: px-to-rem($datepickerYmdWidth);
+    }
+    @include modifier(ymd2) {
+      width: px-to-rem($datepickerYmdWidth);
+    }
+}

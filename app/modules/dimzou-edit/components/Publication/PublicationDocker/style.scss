@@ -1,0 +1,31 @@
+@import 'base.scss';
+
+@include block(ns(PublicationDocker, dz)) {
+  padding: px-to-rem(8) px-to-rem(12);
+//   background-color: $gray-2;
+
+  @include element(action) {
+    display: inline-block;
+    margin-right: px-to-rem(16);
+    margin-top: px-to-rem(4);
+    margin-bottom: px-to-rem(4);
+
+    & > .ft-Button {
+        background-color: transparent;
+        border: 1px solid $gray-10;
+        border-radius: px-to-rem($btn-sm-size / 2);
+        padding-left: px-to-rem(10);
+        padding-right: px-to-rem(10);
+
+        &.is-active {
+            color: white;
+            background-color: $gray-10;
+        }
+    }
+  }
+  .dz-FloatCommentBundle {
+      position: absolute;
+      bottom: 100%;
+      width: px-to-rem(320);
+  }
+}

@@ -1,0 +1,34 @@
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes placeholderAnimation {
+  0%{background-position: 100% 100%}
+  50%{background-position: 50% 50%}
+  100%{background-position:0% 0%}
+  // 100%{background-position:-100% 0%}
+}
+
+.ani-fade-enter {
+    animation: fadeIn 0.2s cubic-bezier(.78,.14,.15,.86);
+}
+.ani-fade-leave {
+    animation: fadeOut 0.2s cubic-bezier(.78,.14,.15,.86)
+}

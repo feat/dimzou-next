@@ -1,0 +1,60 @@
+.__mobile__ {
+  padding: 0 !important;
+}
+// Mobile global
+.mobileWrap {
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100vw;
+  min-height: 100vh;
+}
+
+.fm-PageTitle {
+  font-size: 20px;
+  font-weight: bold;
+  @include text-truncate;
+}
+
+.fm-PageBase {
+  padding-top: 56px;
+}
+
+.fm-PageMain {
+  @include mobile-main-content;
+}
+
+@include block(ns(OptionGroup, fm)) {
+  display: flex;
+  @include element(option) {
+    flex: 1;
+    flex-shrink: 0;
+    border-radius: 0;
+    @include text-truncate;
+    &:first-of-type {
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+    &:last-of-type {
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+  }
+}
+
+.fm-SectionTitle {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.fm-Input {
+  height: 36px;
+  font-size: 18px;
+  padding-left: 5px;
+  padding-right: 5px;
+  // background-color: $gray-1;
+}
+
+.fm-Input_block {
+  display: block;
+  width: 100%;
+}

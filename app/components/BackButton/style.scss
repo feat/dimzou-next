@@ -1,0 +1,39 @@
+@import "base.scss";
+
+.ft-IconButton.BackBtn {
+  color: $gray-10;
+  position: fixed;
+  bottom: px-to-rem($header-height + 36);
+  right: px-to-rem(36);
+  z-index: 10;
+
+  // Phone
+  @media(max-width: $screen-xxs-max) {
+
+  }
+
+  // Small Desktop
+  @media(min-width: $screen-sm-min){
+    top: px-to-rem($header-height + 36);
+    bottom: auto;
+    right: px-to-rem(48);
+  }
+  // Medium Desktop
+  @media(min-width: $screen-md-min){
+
+  }
+  // Large Desktop
+  @media(min-width: $screen-lg-min){
+
+  }
+  // Extra Large Desktop
+  @media(min-width: $screen-xl-min){
+
+  }
+  // Extreme Large Desktop
+  @media(min-width: $screen-xxl-min){
+    right: px-to-rem($site-adPanel-width - 24);
+  }
+}
+
+

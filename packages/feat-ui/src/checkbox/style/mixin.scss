@@ -1,0 +1,53 @@
+@mixin formCheckStyle {
+    padding-top: px-to-rem(3);
+    padding-bottom: px-to-rem(3);
+    display: inline-block;
+    cursor: pointer;
+
+    &:active .symbol {
+        transform: scale(.9);
+    }
+    input:focus +.checkbox,
+    &:hover .checkbox {
+        transform: scale(.95);
+    }
+    &:hover .symbol::before {
+        background-color: $gray-2;
+    }
+
+    input {
+        position: absolute;
+        z-index: -1;
+        opacity: 0;
+    }
+
+    .symbol {
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
+        width: px-to-rem(16);
+        height: px-to-rem(16);
+        margin-right: px-to-rem(5);
+        border: 1px solid $gray-5;
+        // border-radius: 4px;
+        box-sizing: border-box;
+        background-color: white;
+        transition: all .3s ease;
+    }
+    .symbol::before {
+        content: "";
+        position: absolute;
+        width: px-to-rem(10);
+        height: px-to-rem(10);
+        left: 50%;
+        top: 50%;
+        margin-left: px-to-rem(-5);
+        margin-top: px-to-rem(-5);
+        // border-radius: 2px;
+        transition: all .3s ease;
+    }
+
+    input:checked+.symbol::before {
+        background-color: $gray-10;
+    }
+}

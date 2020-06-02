@@ -1,0 +1,44 @@
+@import 'base.scss';
+
+@include block(comment) {
+  @include element(DragBox) {
+    position: fixed;
+    cursor: move;
+    pointer-events: auto;
+
+    @include block(ns(ViewWork, dz)) {
+      @include element(footer) {
+        margin: 0;
+      }
+      @include element(comment) {
+        margin: 0;
+        position: absolute;
+        width: 100%;
+      }
+    }
+  }
+  @include element(DropBoard) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+}
+
+@include block(ns(DropBoard, dd)) {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
+
+@include block(ns(DragBox, dd)) {
+  position: fixed;
+  cursor: move;
+  pointer-events: auto;
+}

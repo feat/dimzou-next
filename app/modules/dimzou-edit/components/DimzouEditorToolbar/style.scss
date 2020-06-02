@@ -1,0 +1,44 @@
+@import 'base.scss';
+
+@include block(ns(EditorButton, dz)) {
+    padding: px-to-rem(4);
+    min-width: px-to-rem(36);
+    height: px-to-rem(36);
+    font-weight: bold;
+    box-sizing: border-box;
+    margin-right: px-to-rem(5);
+    line-height: 0;
+    text-align: center;
+
+    .ft-SvgIcon {
+        width: px-to-rem(18);
+        height: px-to-rem(18);
+    }
+
+    @include state(active) {
+      background-color: $gray-10;
+        color: white;
+    }
+
+    @include modifier('header-two') {
+      .ft-SvgIcon {
+        width: px-to-rem(22);
+        height: px-to-rem(22);
+      }
+    }
+}
+
+@include block(ns(EditorControls, dz)) {
+    display: inline-block;
+}
+
+@include block(ns(EditorButtonDivider, dz)) {
+  display: inline-block;
+  margin-left: px-to-rem(6);
+  margin-right: px-to-rem(12);
+  width: 1px;
+  height: 1em;
+  background-color: $gray-3;
+  position: relative;
+  top: .3em;
+}

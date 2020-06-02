@@ -1,0 +1,39 @@
+@include block(FeedGrid) {
+  display: grid;
+  // grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
+  grid-column-gap: px-to-rem(2);
+
+  @include element(item) {
+    // height: 420px;
+    // overflow: hidden;
+    min-width: 0;
+  }
+
+  // Landscape Phones
+  @media (min-width: $screen-xs-min) {
+  }
+
+  // Portrait Tablets & Small Desktop
+  @media (min-width: $screen-sm-min) {
+  }
+  // Landscape Tablets & Medium Desktop
+  @media (min-width: $screen-md-min) {
+  }
+  // Large Desktop
+  @media (min-width: $screen-lg-min) {
+  }
+  @media (min-width: $screen-xl-min) {
+  }
+
+  // Extreme Large Desktop
+  @media (min-width: $screen-xxl-min) {
+    // grid-template-columns: repeat(auto-fill, minmax(#{px-to-rem(280px)}, 1fr));
+    grid-column-gap: px-to-rem(8);
+
+    @include element(item) {
+      // height: px-to-rem(420);
+      // overflow: hidden;
+    }
+  }
+}

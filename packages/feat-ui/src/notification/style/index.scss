@@ -1,0 +1,89 @@
+@keyframes MessageMoveOut {
+    0% {
+        opacity: 1;
+        max-height: 150px;
+    }
+
+    100% {
+        opacity: 0;
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+@include block(ns(NotificationContainer)) {
+    $topName: &;
+    position: fixed;
+    z-index: $notification-z-index;
+    width: $notification-width;
+    margin-right: 24px;
+};
+@include block(ns(Notification)) {
+    position: relative;
+    padding: px-to-rem($notification-padding-y) px-to-rem($notification-padding-x);
+    border-radius: px-to-rem($notification-border-radius);
+    box-shadow: 0 2px 8px rgba(0,0,0,.2);
+    background: #fff;
+    line-height: 1.5;
+    margin-bottom: $notification-margin-bottom;
+    overflow: hidden;
+    @include element(message) {
+      display: inline-block;
+      font-size: $notification-message-font-size;
+      color: $notification-message-text-color;
+      font-weight: $notification-message-font-weight;
+      line-height: 1.2;
+      margin-bottom: 0.5em;
+    };
+    @include element(description) {
+      font-size: $notification-desc-font-size;
+      color: $notification-desc-text-color;
+    };
+    @include element(btn) {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: $notification-padding-y * .5;
+    };
+    @include element(close) {
+        position: absolute;
+        right: 16px;
+        top: 10px;
+        color: rgba(0,0,0,.43);
+        outline: none;
+        text-decoration: none;
+    };
+    @include element(close-x) {
+        font-family: fticon;
+        cursor: pointer;
+
+        &:after {
+            content: "\E802";
+        }
+    };
+    @include element(icon) {
+        margin-right: px-to-rem(8);
+        @include modifier(info){
+            color: $color-info;
+        };
+        @include modifier(danger) {
+            color: $color-danger;
+        };
+        @include modifier(error) {
+            color: $color-danger;
+        };
+        @include modifier(warning) {
+            color: $color-warning;
+        };
+        @include modifier(success) {
+            color: $color-success;
+        };
+    };
+
+    &.move-up-leave.move-up-leave-active {
+        -webkit-animation-name: MessageMoveOut;
+        animation-name: MessageMoveOut;
+        overflow: hidden;
+        -webkit-animation-duration: 0.3s;
+        animation-duration: 0.3s;
+    }
+};

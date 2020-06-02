@@ -1,0 +1,53 @@
+@import 'base.scss';
+
+// $gap-base: 12px;
+// $block-primary-title-font-size: 36px;
+
+@include block(ViewServiceTable) {
+  min-height: px-to-rem(250);
+
+  .ft-Block__header {
+    display: flex;
+  }
+  .ft-Block__title {
+    flex: 1;
+  }
+  .ft-Block__subHeader {
+    display: flex;
+    align-items: flex-end;
+  }
+  @include element(title) {
+    padding-left: px-to-rem(6);
+    font-size: px-to-rem(22);
+    font-family: $sans-serif-title-font;
+    font-weight: bold;
+    line-height: 1.1;
+  }
+  @include element(priceItem) {
+    text-align: right;
+    padding-left: px-to-rem(6);
+    padding-right: px-to-rem(6);
+    width: px-to-rem(180);
+    font-size: px-to-rem(14);
+    font-weight: bold;
+  }
+
+  @include element(row) {
+    display: flex;
+    padding-top: px-to-rem(7);
+    padding-bottom: px-to-rem(4);
+    border-bottom: 1px dashed $gray-5;
+  }
+  @include element(title) {
+    flex: 1;
+
+  }
+
+  @include element(footer) {
+    display: flex;
+    padding-top: px-to-rem(5);
+    padding-right: px-to-rem(5);
+    justify-content: flex-end;
+    color: $gray-8;
+  }
+}

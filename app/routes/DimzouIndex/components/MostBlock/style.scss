@@ -1,0 +1,125 @@
+// @import "func/bem";
+// @import "func/base";
+// @import "variables";
+// @import "mixins/base";
+@import 'base.scss';
+
+$dimzou-large-padding: 10px;
+
+@include block(mostItemList) {
+  margin-bottom: px-to-rem($dimzou-large-padding);
+  padding: 0;
+}
+
+@include block(mostItem) {
+  display: flex;
+  position: relative;
+  height: px-to-rem(100);
+  background-size: cover;
+  background-position: center center;
+  font-size: 0;
+  &.withoutTitle {
+    height: px-to-rem(72);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-image: linear-gradient(to right, $gray-8 50%, white 50%);
+    background-position: bottom left;
+    background-size: 8px 1px;
+    background-repeat: repeat-x;
+  }
+
+  $most-item-number-width: 48px;
+
+  @include element(maskRect) {
+    fill: $main-container-bg-color;
+  }
+  @include element(number) {
+    width: px-to-rem($most-item-number-width);
+    height: 100%;
+    flex-shrink: 0;
+  }
+  @include element(info) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: calc(100% - #{px-to-rem($most-item-number-width)});
+    padding-left: px-to-rem(5);
+    padding-right: px-to-rem(12);
+    height: 100%;
+    background: $main-container-bg-color;
+  }
+  @include element(title) {
+    font-family: $sans-serif-title-font;
+    font-size: px-to-rem(16);
+    margin-bottom: px-to-rem(8);
+    margin-top: 0;
+    line-height: 1.2;
+    height: 2em;
+    font-weight: bold;
+    overflow: hidden;
+  }
+  @include element(author) {
+    // color: $light-red;
+    // font-family: $dimzou-link-font;
+    font-size: px-to-rem(12);
+  }
+
+  @include element(numberText) {
+    font-family: $sans-serif-heading-font;
+  }
+  @include element(maskRect) {
+    fill: $main-container-bg-color;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* so that you can resize the element */
+  }
+
+  text {
+    text-anchor: middle;
+    pointer-events: auto; /* Cancel the svg’s pointer-events */
+    font-family: $sans-serif-heading-font;
+  }
+
+  &:not(:hover) {
+    #{'.mostItem' + $element-separator + 'title'} {
+      color: $text-color !important;
+    }
+    #{'.mostItem' + $element-separator + 'numberText'} {
+      fill: transparent !important;
+      stroke: rgba(0, 0, 0, 0.1);
+    }
+  }
+  &:hover {
+    #{'.mostItem' + $element-separator + 'maskRect'} {
+      display: none;
+    }
+    #{'.mostItem' + $element-separator + 'numberText'} {
+      display: block;
+    }
+    #{'.mostItem' + $element-separator + 'info'} {
+      background-color: transparent;
+    }
+  }
+}
+
+@include block(dzSvgNumber) {
+  @include element(bg) {
+  }
+  & text {
+    font-family: $sans-serif-text-font;
+    font-weight: 700;
+  }
+  @include element(number) {
+    stroke: rgba(127, 148, 153, 0.13);
+  }
+}

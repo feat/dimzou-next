@@ -1,0 +1,20 @@
+@import 'base.scss';
+
+@include block(ns(PopMenu, dz)) {
+  width: px-to-rem(200);
+  padding-top: px-to-rem(6);
+  padding-bottom: px-to-rem(6);
+  border-radius: px-to-rem(8);
+  background-color: white;
+  @include pop-shadow;
+  z-index: 10;
+
+  @include element(item) {
+    cursor: pointer;
+    font-size: px-to-rem(14);
+    padding: px-to-rem(5) px-to-rem(12);
+    &:hover {
+      background-color: $gray-2;
+    }
+  }
+}

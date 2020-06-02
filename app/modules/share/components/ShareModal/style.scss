@@ -1,0 +1,228 @@
+@import 'base.scss';
+
+@include block(ShareModal) {
+  width: px-to-rem($modal-lg-width);
+  height: px-to-rem($modal-lg-height);
+  background-color: white;
+
+  @include element(header) {
+    font-family: $sans-serif-heading-font;
+    font-size: px-to-rem(36);
+    padding-top: .5em;
+    padding-bottom: .25em;
+    margin-left: px-to-rem(48);
+    margin-right: px-to-rem(48);
+
+    border-bottom: px-to-rem(4) solid $gray-10;
+  }
+
+  @include element(content) {
+    padding-top: px-to-rem(36);
+
+    .ft-Tabs__tabs {
+      display: flex;
+      justify-content: center;
+    }
+    .tabItem_normal {
+      width: px-to-rem(180);
+      background-color: transparent;
+      border-bottom: 2px solid $gray-2;
+
+      &.is-active {
+        background-color: transparent;
+        color: $text-color;
+        border-color: $gray-10;
+      }
+    }
+  }
+}
+
+@include block(SharePanel) {
+  @include element(hint) {
+    text-align: center;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  // Landscape Phones
+  @media(min-width: $screen-xs-min){
+
+  }
+
+  // Portrait Tablets & Small Desktop
+  @media(min-width: $screen-sm-min){
+
+  }
+  // Landscape Tablets & Medium Desktop
+  @media(min-width: $screen-md-min){
+
+  }
+  // Large Desktop
+  @media(min-width: $screen-lg-min){
+    @include element(hint) {
+      padding: 24px 48px;
+    }
+  }
+  // Extra Large Desktop
+  @media(min-width: $screen-xl-min){
+
+  }
+  // Extreme Large Desktop
+  @media(min-width: $screen-xxl-min){
+    @include element(hint) {
+      padding: px-to-rem(24) px-to-rem(48);
+    }
+  }
+}
+
+@include block(PublicShare) {
+  @include element(well) {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-color: transparentize(#d5f0ff, .5);
+  }
+  @include element(copySection) {
+    padding-top: 24px;
+  }
+  @include element(label) {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+  @include element(copyWidget) {
+    display: flex;
+    margin: 0 auto;
+    border: px-to-rem(2) solid $gray-2;
+  }
+  @include element(link) {
+    display: flex;
+    align-items: center;
+    padding-left: px-to-rem(12);
+    padding-right: px-to-rem(12);
+    flex: 1;
+    font-size: px-to-rem(18);
+    overflow: hidden;
+    border-right: px-to-rem(2) solid $gray-2;
+    white-space: nowrap;
+  }
+  @include element(copyBtn) {
+    padding-left: px-to-rem(36);
+    padding-right: px-to-rem(36);
+    font-size: px-to-rem(18);
+    flex-shrink: 0;
+  }
+
+  // Landscape Phones
+  @media(min-width: $screen-xs-min){
+
+  }
+
+  // Portrait Tablets & Small Desktop
+  @media(min-width: $screen-sm-min){
+
+  }
+  // Landscape Tablets & Medium Desktop
+  @media(min-width: $screen-md-min){
+
+  }
+  // Large Desktop
+  @media(min-width: $screen-lg-min){
+    @include element(well) {
+      padding-top: 36px;
+      padding-bottom: 36px;
+    }
+    @include element(label) {
+      margin-left: 80px;
+      margin-bottom: 24px;
+    }
+    @include element(copyWidget) {
+      width: 640px;
+    }
+    @include element(copyBtn) {
+      min-width: 140px;
+    }
+    @include element(copySection) {
+      padding-top: 48px;
+    }
+  }
+  // Extra Large Desktop
+  @media(min-width: $screen-xl-min){
+    @include element(label) {
+      width: #{$modal-lg-width - 280};
+    }
+  }
+  // Extreme Large Desktop
+  @media(min-width: $screen-xxl-min){
+    @include element(well) {
+      padding-top: px-to-rem(36);
+      padding-bottom: px-to-rem(36);
+    }
+    @include element(label) {
+      margin-left: px-to-rem(80);
+      margin-bottom: px-to-rem(24);
+      width: px-to-rem($modal-lg-width - 280);
+    }
+    @include element(copyBtn) {
+      min-width: px-to-rem(140);
+    }
+    @include element(copySection) {
+      padding-top: px-to-rem(48);
+    }
+  }
+}
+
+.PublicShareOptionSlider {
+  max-width: px-to-rem(120*5+40);
+  margin: 0 auto;
+}
+
+@include block(PublicShareOption) {
+  @include btn-animation();
+  display: block;
+  width: px-to-rem(120);
+  margin: 0 auto;
+  cursor: pointer;
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.PhoneShareForm {
+  width: px-to-rem(400);
+  margin: 0 auto;
+  .ft-FormLabel {
+    font-size: px-to-rem(16);
+  }
+  .ft-FormItem {
+    margin-bottom: px-to-rem(12);
+  }
+  .CountrySelect {
+    border: px-to-rem(2) solid $gray-2;
+    border-radius: 0;
+    height: px-to-rem(44);
+  }
+  .ft-FormInputAddonGroup__before {
+    min-width: px-to-rem(60);
+    justify-content: center;
+    font-size: px-to-rem(18);
+  }
+  &__submitBtn {
+    display: block;
+    height: px-to-rem(44);
+    border-radius: 0;
+    width: 100%;
+    margin-top: px-to-rem(24);
+    font-size: px-to-rem(18);
+    border-width: px-to-rem(2);
+    border-color: $gray-2;
+
+    &:disabled,
+    &:focus,
+    &:hover {
+      border-color: $gray-2;
+    }
+  }
+}

@@ -1,0 +1,27 @@
+@import 'base.scss';
+
+@include block(CountrySelect) {
+  text-align: left;
+  @include element(flag) {
+    width: px-to-rem(28);
+    margin-right: px-to-rem(12);
+    height: auto;
+  }
+  @include element(option) {
+    display: flex;
+    height: 40px;
+    align-items: center;
+    padding-left: px-to-rem(12);
+
+    &:hover {
+      background-color: $gray-2;
+    }
+    @include state(focused) {
+      background-color: $gray-2;
+    }
+    @include state(selected) {
+      background-color: $gray-10;
+      color: white;
+    }
+  }
+}

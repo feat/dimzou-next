@@ -1,0 +1,327 @@
+@import 'base.scss';
+
+$header-text-font-size: 14px;
+
+@include block(Header) {
+  font-size: $header-text-font-size;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+
+  @include element(languageSelect, true) {
+    margin-right: px-to-rem(12);
+    font-size: $header-text-font-size;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+    padding-left: px-to-rem(12);
+    padding-right: px-to-rem(12);
+    border-radius: px-to-rem(15);
+    background-color: white;
+  }
+
+  @include element(logo) {
+    display: inline-block;
+    height: px-to-rem(36);
+    font-size: 0;
+    width: auto;
+  }
+
+  @include element(nav) {
+    padding: 10px;
+    cursor: pointer;
+    &:hover {
+      background: $gray-2;
+    }
+  }
+
+  @include element(menuIcon) {
+    width: px-to-rem(28);
+    display: inline-block;
+    margin-left: px-to-rem(14);
+    margin-right: px-to-rem(28);
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .ft-Menu__item {
+    height: px-to-rem(30);
+    line-height: px-to-rem(28);
+    margin-right: 12px;
+    padding: 0 px-to-rem(12);
+    border: 1px solid $btn-primary-bd-color;
+    border-radius: px-to-rem(15);
+    background-color: white;
+
+    &.is-active {
+      background-color: $gray-10;
+    }
+  }
+
+  .ft-Menu__item_icon {
+    padding-left: px-to-rem(2);
+    padding-right: px-to-rem(8);
+
+    .ft-IconButton_md {
+      width: px-to-rem(26);
+      height: px-to-rem(26);
+      position: relative;
+      top: px-to-rem(-1);
+      .ft-Avatar {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+  .HeaderUserMenu {
+    display: none;
+  }
+
+  #header-main-menu {
+    .ft-Menu__item {
+      border: none;
+      border-radius: 0;
+      &.is-active {
+        background-color: $color-secondary;
+        // border-color: $color-secondary;
+      }
+    }
+  }
+
+  // @include element(navLink) {
+  //   #header-main-menu {
+  //     .ft-Menu__item {
+  //       font-size: px-to-rem(16);
+  //       padding-bottom: 0px;
+  //       display: flex;
+  //       align-items: center;
+  //       border-radius: 0;
+  //       text-transform: uppercase;
+  //       &.is-active {
+  //         background-color: $color-secondary;
+  //       }
+  //     }
+  //   }
+  // }
+
+  @media (min-width: $screen-xs-min) {
+    .HeaderUserMenu {
+      display: flex;
+    }
+  }
+
+  @media (min-width: $screen-md-min) {
+  }
+
+  @media (min-width: $screen-lg-min) {
+    @include element(nav) {
+      display: none;
+    }
+  }
+
+  @media (min-width: $screen-xxl-min) {
+    font-size: px-to-rem($header-text-font-size);
+    @include element(languageSelect) {
+      font-size: px-to-rem($header-text-font-size);
+    }
+  }
+}
+
+.is-active {
+  .icon-awesome__skyblue {
+    fill: skyblue;
+  }
+  .icon-awesome__blue,
+  .icon-search__blue {
+    stroke: #1673ba;
+  }
+  .icon-dollar__gold {
+    fill: gold;
+  }
+  .icon-book__green {
+    fill: green;
+  }
+  .icon-book__subgreen {
+    fill: #74c54a;
+  }
+  .icon-search__lens,
+  .icon-search__subblue {
+    fill: #60aec8;
+  }
+}
+
+@include block(addArtPanel) {
+  display: flex;
+  width: 500px;
+  height: 300px;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  @include element(btn) {
+    width: px-to-rem(100);
+    height: auto;
+    padding-top: px-to-rem(5);
+    padding-bottom: px-to-rem(5);
+  }
+  @include element(wrap) {
+    width: px-to-rem(380);
+    height: px-to-rem(200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  @include element(icon) {
+    display: block;
+    width: 60%;
+    margin: 0 auto px-to-rem(5);
+    height: auto;
+  }
+  @include element(cross) {
+    position: absolute !important;
+    top: 10px;
+    right: 10px;
+  }
+}
+
+@include block(ns(NotificationModal, dev)) {
+  @include pop-shadow();
+  @include poplayer-style();
+  width: px-to-rem(360);
+
+  @include element(header) {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: px-to-rem(12);
+  }
+}
+
+.HeaderPopMenu {
+  position: fixed;
+  width: 100vw;
+  top: px-to-rem(50);
+  left: 0;
+  z-index: 1;
+  overflow: hidden;
+  opacity: 0;
+  height: calc(100vh - 100px);
+  transition: max-height 0.3s ease;
+  max-height: 0;
+
+  &.is-opened {
+    opacity: 1;
+    max-height: 8888px;
+
+    @include element(inner, true) {
+      max-height: 8888px;
+    }
+  }
+
+  @include element(inner) {
+    position: relative;
+    padding: 0 8px;
+    background-color: white;
+    border-top: 1px solid $gray-2;
+    border-bottom-left-radius: px-to-rem(4);
+    border-bottom-right-radius: px-to-rem(4);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-height: 0px;
+  }
+
+  @include element(overlay) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+  .ft-Menu,
+  .RootNav {
+    display: flex;
+    flex-direction: column;
+    padding-top: 8px;
+  }
+  .HeaderUserMenu {
+    display: flex;
+    flex-direction: row;
+    margin-left: 12px;
+    margin-right: 12px;
+    justify-content: space-between;
+  }
+
+  .ft-Menu + .ft-Menu {
+    border-top: 1px solid $gray-2;
+  }
+  .ft-Menu__item {
+    margin-bottom: 8px;
+  }
+
+  @media (min-width: $screen-xs-min) {
+    .HeaderUserMenu {
+      display: none;
+    }
+  }
+}
+
+.HeaderUserMenu {
+  .ft-IconButton_md {
+    width: px-to-rem(32);
+    height: px-to-rem(32);
+    line-height: px-to-rem(0);
+  }
+  .ft-Avatar_xs {
+    width: px-to-rem(32);
+    height: px-to-rem(32);
+  }
+}
+
+@include block(ns(Navbar, ft)) {
+  @include element(bottom) {
+    position: fixed;
+    display: flex;
+    bottom: px-to-rem(24);
+    right: 0;
+    padding-right: px-to-rem(16);
+  }
+}
+
+.Header {
+  &.has-subMenu {
+    height: px-to-rem($header-height + 36);
+  }
+
+  &__subMenu {
+    display: flex;
+    justify-content: center;
+    padding: 3px 20px;
+    background-color: white;
+  }
+
+  .ft-Navbar {
+    height: px-to-rem($header-height);
+  }
+  .ft-Navbar__wrap {
+    height: 100%;
+  }
+}
+
+.BrotherIcon {
+  display: inline-block;
+  width: px-to-rem(26);
+  height: px-to-rem(26);
+  line-height: px-to-rem(24);
+  text-align: center;
+  border-radius: 50%;
+  background-color: $gray-1;
+  border: 1px solid $gray-2;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $gray-2;
+  }
+  &:active,
+  &:focus {
+    color: white;
+    background-color: $gray-10;
+    border-color: $gray-10;
+  }
+}

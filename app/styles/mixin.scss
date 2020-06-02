@@ -1,0 +1,78 @@
+@import '~@feat/feat-ui/lib/style/mixins/index.scss';
+@import '~@feat/feat-ui/lib/button/style/mixin.scss';
+
+@mixin section-title {
+  font-family: $heading-font;
+  font-size: px-to-rem(36);
+}
+
+@mixin submit-btn-style {
+  color: white;
+  background-color: $color-secondary;
+  padding-left: px-to-rem(12);
+  padding-right: px-to-rem(12);
+  border-radius: 0;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: darken($color-secondary, 2%);
+  }
+
+  @include state(disabled) {
+    cursor: not-allowed;
+    color: white;
+    background-color: $color-secondary;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    color: white;
+    background-color: $color-secondary;
+  }
+}
+
+@mixin header-bottom-border {
+  border: 0 none;
+  border-bottom-width: px-to-rem(3);
+  border-bottom-style: solid;
+  border-image: linear-gradient(
+      to right,
+      $color-secondary px-to-rem(112),
+      $gray-10 100px
+    )
+    1;
+  // Landscape Phones
+  @media (min-width: $screen-xs-min) {
+  }
+
+  // Portrait Tablets & Small Desktop
+  @media (min-width: $screen-sm-min) {
+  }
+  // Landscape Tablets & Medium Desktop
+  @media (min-width: $screen-md-min) {
+    border-bottom-width: px-to-rem(4);
+    border-image: linear-gradient(
+        to right,
+        $color-secondary px-to-rem(240),
+        $gray-10 100px
+      )
+      1;
+  }
+  // Large Desktop
+  @media (min-width: $screen-lg-min) {
+  }
+  // Extra Large Desktop
+  @media (min-width: $screen-xl-min) {
+    border-bottom-width: px-to-rem(6);
+  }
+  // Extreme Large Desktop
+  @media (min-width: $screen-xxl-min) {
+  }
+}
+
+@mixin mobile-main-content {
+  height: calc(100vh - 112px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}

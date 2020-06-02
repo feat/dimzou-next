@@ -1,0 +1,57 @@
+@include block(ns(RecordItem)) {
+  position: relative;
+  border-bottom: 1px solid transparent;
+
+  a {
+    color: $color-link;
+  }
+  @include state(pic, has) {
+
+  }
+
+  @include modifier(dashed) {
+    border-bottom: 1px dashed $gray-5;
+  }
+
+  @include element(header) {
+    display: flex;
+    align-items: center;
+    min-height: px-to-rem($label-item-height);
+    padding-left: px-to-rem(5);
+    padding-right: px-to-rem(5);
+  }
+  @include element(content) {
+    padding-top: px-to-rem(6);
+    padding-bottom: px-to-rem(6);
+    padding-left: px-to-rem(6);
+    padding-right: px-to-rem(5);
+  }
+  @include element(title) {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    font-family: $sans-serif-title-font;
+    font-size: px-to-rem(22);
+    line-height: 1.1;
+  }
+
+  &__title + &__date {
+    margin-left: .5em;
+  }
+
+  @include element(date) {
+    color: $gray-6;
+  }
+  @include element(desc) {
+
+  }
+  @include element(imagePreview) {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: px-to-rem(70);
+    background-color: $gray-1;
+    background-size: cover;
+  }
+}

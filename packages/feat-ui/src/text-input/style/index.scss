@@ -1,0 +1,171 @@
+@include block(ns(TextInput)) {
+  padding-left: px-to-rem(5);
+  padding-right: px-to-rem(5);
+  border: 1px solid $btn-default-bd-color;
+  background-color: $btn-default-bg-color;
+
+  @include modifier(block) {
+    display: block;
+    width: 100%;
+  }
+
+  @include modifier(sm) {
+    height: px-to-rem($input-sm-height);
+    border-radius: px-to-rem($btn-sm-border-radius);
+    font-size: px-to-rem($btn-sm-font-size);
+    padding-left: px-to-rem($btn-sm-padding-x);
+    padding-right: px-to-rem($btn-sm-padding-x);
+  }
+  @include modifier(md) {
+    height: px-to-rem($input-md-height);
+    border-radius: px-to-rem($btn-md-border-radius);
+    font-size: px-to-rem($btn-md-font-size);
+    padding-left: px-to-rem($btn-md-padding-x);
+    padding-right: px-to-rem($btn-md-padding-x);
+  }
+  @include modifier(lg) {
+    height: px-to-rem($input-lg-height);
+    border-radius: px-to-rem($btn-lg-border-radius);
+    font-size: px-to-rem($btn-lg-font-size);
+    padding-left: px-to-rem($btn-lg-padding-x);
+    padding-right: px-to-rem($btn-lg-padding-x);
+  }
+
+  @include modifier(merge) {
+    background-color: transparent;
+    border-color: transparent;
+    transition: all .3s ease;
+    &:hover {
+        background-color: white;
+    }
+    &:focus {
+        background-color: white;
+    }
+  }
+}
+
+@include block(ns(TextInputAddonGroup)) {
+    display: inline-block;
+    display: inline-flex;
+    width: 100%;
+
+    @include modifier(block) {
+      display: flex;
+    }
+
+
+    @include block(ns(TextInput)) {
+      flex: 1;
+    }
+}
+
+@include block(ns(TextInputWidget)) {
+  display: inline-block;
+  display: inline-flex;
+
+  @include state(prefix, has) {
+    .#{ns(TextInput)} {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+  @include state(suffix, has) {
+    .#{ns(TextInput)} {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  @include element(prefix) {
+    display: inline-block;
+    background-color: $btn-default-bd-color;
+    border-color: $btn-default-bd-color;
+    text-align: center;
+  }
+  @include element(suffix) {
+    display: inline-block;
+    background-color: $btn-default-bd-color;
+    border-color: $btn-default-bd-color;
+    text-align: center;
+  }
+
+  @include modifier(block) {
+    display: block;
+  }
+
+  @include modifier(sm) {
+    @include element(prefix, true) {
+      font-size: px-to-rem($btn-sm-font-size);
+      padding-left: px-to-rem($btn-sm-padding-x);
+      padding-right: px-to-rem($btn-sm-padding-x);
+      border-top-left-radius: px-to-rem($btn-sm-border-radius);
+      border-bottom-left-radius: px-to-rem($btn-sm-border-radius);
+      height: px-to-rem($btn-sm-size);
+      min-width: px-to-rem($btn-sm-size);
+      line-height: px-to-rem($btn-sm-size);
+    }
+    @include element(suffix, true) {
+      font-size: px-to-rem($btn-sm-font-size);
+      padding-left: px-to-rem($btn-sm-padding-x);
+      padding-right: px-to-rem($btn-sm-padding-x);
+      border-top-right-radius: px-to-rem($btn-sm-border-radius);
+      border-bottom-right-radius: px-to-rem($btn-sm-border-radius);
+      height: px-to-rem($btn-sm-size);
+      min-width: px-to-rem($btn-sm-size);
+      line-height: px-to-rem($btn-sm-size);
+    }
+  }
+  @include modifier(md) {
+    @include element(prefix, true) {
+      font-size: px-to-rem($btn-md-font-size);
+      padding-left: px-to-rem($btn-md-padding-x);
+      padding-right: px-to-rem($btn-md-padding-x);
+      border-top-left-radius: px-to-rem($btn-md-border-radius);
+      border-bottom-left-radius: px-to-rem($btn-md-border-radius);
+      height: px-to-rem($btn-md-size);
+      min-width: px-to-rem($btn-md-size);
+      line-height: px-to-rem($btn-md-size);
+    }
+    @include element(suffix, true) {
+      font-size: px-to-rem($btn-md-font-size);
+      padding-left: px-to-rem($btn-md-padding-x);
+      padding-right: px-to-rem($btn-md-padding-x);
+      border-top-right-radius: px-to-rem($btn-md-border-radius);
+      border-bottom-right-radius: px-to-rem($btn-md-border-radius);
+      height: px-to-rem($btn-md-size);
+      min-width: px-to-rem($btn-md-size);
+      line-height: px-to-rem($btn-md-size);
+    }
+  }
+  @include modifier(lg) {
+    @include element(prefix, true) {
+      font-size: px-to-rem($btn-lg-font-size);
+      padding-left: px-to-rem($btn-lg-padding-x);
+      padding-right: px-to-rem($btn-lg-padding-x);
+      border-top-left-radius: px-to-rem($btn-lg-border-radius);
+      border-bottom-left-radius: px-to-rem($btn-lg-border-radius);
+      height: px-to-rem($btn-lg-size);
+      min-width: px-to-rem($btn-lg-size);
+      line-height: px-to-rem($btn-lg-size);
+    }
+    @include element(suffix, true) {
+      font-size: px-to-rem($btn-lg-font-size);
+      padding-left: px-to-rem($btn-lg-padding-x);
+      padding-right: px-to-rem($btn-lg-padding-x);
+      border-top-right-radius: px-to-rem($btn-lg-border-radius);
+      border-bottom-right-radius: px-to-rem($btn-lg-border-radius);
+      height: px-to-rem($btn-lg-size);
+      min-width: px-to-rem($btn-lg-size);
+      line-height: px-to-rem($btn-lg-size);
+    }
+  }
+}
+
+// @include block(ns(TextInputGroup)) {
+//     @include block(ns(TextInputGroupAddon)) {
+
+//     }
+//     @include block(ns(TextInput)) {
+
+//     };
+// }

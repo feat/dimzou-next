@@ -1,0 +1,44 @@
+/**
+*
+* RichContent
+*
+*/
+
+@import "base.scss";
+
+pre[data-language] {
+  background-color: $gray-1;
+  white-space: pre-wrap;
+  counter-reset: code-line;
+  overflow: auto;
+  padding: 1em 1.5em;
+
+  .wrap {
+    // margin-left: 2.75em;
+    // padding-left: 0.5em;
+    // padding-right: 0.5em;
+    // border: none;
+    // border-left: 4px solid $gray-4;
+    
+  }
+
+  // .line {
+  //   counter-increment: code-line;
+  //   position: relative;
+  //   &::before {
+  //     content: counter(code-line);
+  //     position: absolute;
+  //     margin-left: -4.25em;
+  //     width: 3em;
+  //     text-align: right;
+  //     user-select: none;
+  //   }
+  // }
+
+  & > code {
+    border-radius: 0;
+    line-height: 1.5em;
+    margin-top: 0;
+    white-space: pre-wrap;
+  }
+}

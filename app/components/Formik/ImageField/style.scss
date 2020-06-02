@@ -1,0 +1,48 @@
+@import 'base.scss';
+
+@include block(ns(ImageForm, ft)) {
+  position: relative;
+}
+
+@include block(ns(ImageDropzone, ft)) {
+  border: 1px dashed $gray-4;
+  transition: all 0.3s ease;
+  padding: 1px;
+  @include element(placeholder) {
+    display: block;
+    padding: px-to-rem(20);
+    text-align: center;
+  }
+
+  @include state(active) {
+    border: 2px solid $input-active-color;
+    padding: 0px;
+  }
+
+  @include element(cropContainer) {
+    @include poplayer-style;
+    position: absolute;
+    border: 1px solid $gray-1;
+    left: 100%;
+    top: 0;
+    max-width: px-to-rem(960);
+    width: 400%;
+    padding: px-to-rem(12);
+    z-index: 1000;
+    @include block(ns(ImageCropPanel, ft)) {
+      @include element(content) {
+        .ReactCrop {
+          width: 100%;
+          img {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+  @include element(cropControls) {
+    margin-top: px-to-rem(12);
+    display: flex;
+    justify-content: flex-end;
+  }
+}

@@ -1,0 +1,24 @@
+@include block(ns(Card)) {
+    background-color: white;
+    border: 1px solid $gray-4;
+    border-radius: 4px;
+
+    & > * {
+        margin-left: px-to-rem(12);
+        margin-right: px-to-rem(12);
+    }
+
+    @include element(title) {
+        font-size: px-to-rem(18);
+    }
+
+    @include element(image) {
+    }
+    @include element(content) {
+        margin-top: px-to-rem(12);
+        margin-bottom: px-to-rem(12);
+        font-size: px-to-rem(14);
+    }
+    @include element(extra) {
+    }
+}

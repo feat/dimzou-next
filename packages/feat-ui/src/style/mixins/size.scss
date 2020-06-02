@@ -1,0 +1,18 @@
+@mixin size($width, $height: $width) {
+    width: $width;
+    height: $height;
+}
+
+@mixin square($size) {
+    @include size($size, $size);
+}
+
+@mixin make-size($size) {
+    @include block(size) {
+        @include modifier($size) {
+            @include modifier($size) {
+                @include size(px-to-rem($size));
+            }
+        }
+    }
+}

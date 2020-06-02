@@ -1,0 +1,32 @@
+@import "../../style/utils/index.scss";
+@import "../../style/themes/default.scss";
+@import "../../style/mixins/text.scss";
+
+@include block(LanguageSelect) {
+    width: px-to-rem(600);
+    height: px-to-rem(400);
+    background-color: white;
+    padding: px-to-rem(8) px-to-rem(12);
+    overflow: hidden;
+
+    @include element(groups) {
+        padding-right: px-to-rem(5);
+        border-right: 1px solid $gray-2;
+    }
+
+    @include element(languages) {
+        padding-left: px-to-rem(5);
+        overflow: auto;
+        margin-right: px-to-rem(- 15 - 12);
+        padding-right: px-to-rem(15 + 12);
+
+        .ft-Cell {
+            padding-left: px-to-rem(2);
+            padding-right: px-to-rem(2);
+        }
+    }
+    @include element(option) {
+        margin: px-to-rem(2) 0;
+        @include text-truncate();
+    }
+}

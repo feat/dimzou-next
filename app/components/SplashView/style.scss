@@ -1,0 +1,77 @@
+@import 'base.scss';
+
+
+@include block(SplashView) {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $main-container-bg-color;
+
+  @include element(inner) {
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-bottom: 24px;
+    margin-top: -65px;
+  }
+  @include element(logo) {
+    position: relative;
+    width: px-to-rem(94);
+    height: px-to-rem(94);
+    padding: px-to-rem(24);
+    border-radius: 50%;
+    background-color: white;
+    margin: 0 auto;
+
+    transition: all 0.3s ease-in-out;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      border-radius: 50%;
+      background-color: transparent;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      left: 0;
+      top: 0;
+      border-radius: 50%;
+      background-color: transparent;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    &:hover {
+      // transform: scale(.95, .95);
+      &::before {
+        opacity: 0;
+      }
+      &::after {
+        opacity: 1;
+      }
+    }
+
+  }
+  @include element(hint) {
+    margin-top: 20px;
+    font-size: 14px;
+    text-align: center;
+  }
+}
+
+#app > .SplashView {
+  height: 100vh;
+
+}

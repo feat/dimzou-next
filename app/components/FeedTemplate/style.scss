@@ -1,0 +1,503 @@
+@import 'base.scss';
+@import '~@feat/feat-ui/lib/feed-template/style/index.scss';
+
+//
+@include block(ns(Card, dz)) {
+  @include modifier(I) {
+    .dz-Card__imageWrap {
+      max-width: 50%;
+    }
+  }
+}
+
+// Tablet
+@media (max-width: $screen-xs-max) {
+}
+
+// Phone
+@media (max-width: $screen-xxs-max) {
+  .ft-FeedTemplate {
+    margin-bottom: px-to-rem(0);
+    .dz-Card {
+      margin-bottom: px-to-rem(24);
+    }
+  }
+
+  .ft-FeedTemplate_X {
+    .ft-FeedTemplate__Col1 {
+      padding-right: px-to-rem(10);
+    }
+    .ft-FeedTemplate__Col2 {
+      padding-left: px-to-rem(10);
+    }
+  }
+
+  .ft-FeedTemplate_XIII {
+    margin-left: px-to-rem(-8);
+    margin-right: px-to-rem(-8);
+
+    .dz-Card_IV {
+      display: block;
+      margin-left: 0;
+      margin-right: 0;
+
+      .dz-Card__content {
+        padding-left: 0;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1366px) {
+  @include block(ns(FeedTemplate)) {
+    @include modifier(I) {
+      flex-wrap: wrap;
+      @include element(Col1, true) {
+        flex-basis: 40%;
+        .dz-Card__title {
+          font-size: px-to-rem(32);
+          line-height: 1.2;
+        }
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(14);
+        }
+      }
+      @include element(Col2, true) {
+        flex-basis: 60%;
+        .dz-Card_III {
+          .dz-Card__title {
+            font-size: px-to-rem(48);
+            line-height: 1.2;
+          }
+          .dz-Card__body {
+            font-weight: 300;
+            font-size: px-to-rem(16);
+          }
+        }
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(14);
+        }
+      }
+      @include element(Col3, true) {
+        display: flex;
+        flex-basis: 100%;
+        .dz-Card__title {
+          font-size: px-to-rem(32);
+          line-height: 1.2;
+        }
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(14);
+        }
+      }
+    }
+
+    @include modifier(III) {
+      @include element(Col1, true) {
+        .dz-Card__title {
+          font-size: px-to-rem(48);
+          line-height: 1.2;
+        }
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(18);
+        }
+      }
+      @include element(Col2, true) {
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(14);
+        }
+        // Grid css  test
+        // .dz-Card_II {
+        //   display: grid;
+        //   grid-template-rows: auto auto 64px;
+        //   overflow: hidden;
+        // }
+      }
+    }
+
+    @include modifier(V) {
+      @include block(ns(FlexCell)) {
+        @include modifier(8of24) {
+          flex-basis: 50%;
+          max-width: 50%;
+        }
+        .dz-Card__title {
+          font-size: px-to-rem(32);
+          line-height: 1.2;
+        }
+        .dz-Card__body {
+          font-size: px-to-rem(14);
+          font-weight: 300;
+        }
+      }
+    }
+
+    @include modifier(VII) {
+      @include element(Col1, true) {
+        // flex-basis: 85%;
+        .dz-Card__title {
+          font-size: px-to-rem(42);
+          line-height: 1.2;
+        }
+        .dz-Card__body {
+          font-size: px-to-rem(14);
+          font-weight: 300;
+        }
+      }
+      @include element(Col2, true) {
+        // @include block(ns(FlexCell)) {
+        //   @include modifier(12of24) {
+        //     flex-basis: 100%;
+        //     max-width: 100%;
+        //   }
+        // }
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(14);
+        }
+      }
+    }
+
+    @include modifier(VIII) {
+      @include block(ns(FlexCell)) {
+        @include modifier(6of24) {
+          flex-basis: 50%;
+          max-width: 50%;
+        }
+        .dz-Card__title {
+          font-size: px-to-rem(32);
+          line-height: 1.2;
+        }
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(14);
+        }
+      }
+    }
+
+    @include modifier(IX) {
+      @include element(Col1, true) {
+        .dz-Card__title {
+          font-size: px-to-rem(46);
+          line-height: 1.2;
+        }
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(16);
+        }
+      }
+      @include element(Col2, true) {
+        .dz-Card_III .dz-Card__title,
+        .dz-Card_II .dz-Card__title {
+          font-size: px-to-rem(30);
+          line-height: 1.2;
+        }
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(14);
+        }
+        // .dz-Card__avatar {
+        //   margin-top: px-to-rem(20);
+        // }
+      }
+    }
+
+    @include modifier(X) {
+      flex-wrap: wrap;
+      @include element(Col1, true) {
+        flex-basis: 50%;
+        .dz-Card__title {
+          font-size: px-to-rem(32);
+        }
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(14);
+        }
+      }
+      @include element(Col2, true) {
+        flex-basis: 50%;
+        .dz-Card__title {
+          font-size: px-to-rem(32);
+        }
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(14);
+        }
+      }
+      @include element(Col3, true) {
+        display: flex;
+        flex-basis: 100%;
+        .dz-Card__title {
+          font-size: px-to-rem(32);
+        }
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(14);
+        }
+      }
+    }
+
+    @include modifier(XI) {
+      .dz-Card_V {
+        .dz-Card__title {
+          font-size: px-to-rem(42);
+        }
+      }
+      @include element(section, true) {
+        @include element(cell, true) {
+          @include element(item, true) {
+            .dz-Card_I {
+              .dz-Card__body {
+                font-weight: 300;
+                font-size: px-to-rem(14);
+              }
+            }
+          }
+        }
+      }
+      .dz-Card_III {
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(14);
+        }
+      }
+    }
+
+    @include modifier(XII) {
+      @include element(Col1, true) {
+        .dz-Card_V {
+          .dz-Card__title {
+            font-size: px-to-rem(32);
+          }
+          .dz-Card__body {
+            font-weight: 300;
+            font-size: px-to-rem(16);
+          }
+        }
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(14);
+        }
+      }
+      @include element(Col2, true) {
+        .dz-Card__body {
+          font-weight: 300;
+          font-size: px-to-rem(14);
+        }
+      }
+    }
+
+    @include modifier(XIII) {
+      .dz-Card__title {
+        font-size: px-to-rem(28);
+        line-height: 1.2;
+      }
+      .dz-Card__body {
+        font-weight: 300;
+        font-size: px-to-rem(14);
+      }
+      // .dz-Card__avatar {
+      //   margin-top: px-to-rem(20);
+      // }
+    }
+    .dz-Card_placeholder {
+      flex-grow: 1;
+    }
+    .dz-Card__title {
+      word-wrap: break-word;
+    }
+  }
+}
+// Screen ==============================
+@media screen and (max-width: 700px) {
+  @include block(ns(FeedTemplate)) {
+    @include modifier(I) {
+      display: grid;
+      @include element(Col2, true) {
+        .dz-Card_III {
+          .dz-Card__title {
+            font-size: px-to-rem(32);
+            line-height: 1.2;
+          }
+          .dz-Card__body {
+            font-size: px-to-rem(14);
+            font-weight: 300;
+          }
+        }
+      }
+      @include element(Col3, true) {
+        display: grid;
+      }
+    }
+    @include modifier(III) {
+      display: block;
+      margin-left: px-to-rem(-8);
+      margin-right: px-to-rem(-8);
+
+      @include element(Col1, true) {
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      @include element(Col2, true) {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+    @include modifier(V) {
+      display: block;
+      margin-left: px-to-rem(-8);
+      margin-right: px-to-rem(-8);
+
+      @include block(ns(FlexCell)) {
+        @include modifier(8of24) {
+          flex-basis: 100%;
+          max-width: 100%;
+        }
+      }
+    }
+    @include modifier(VII) {
+      display: block;
+      margin-left: px-to-rem(-8);
+      margin-right: px-to-rem(-8);
+
+      @include element(Col1, true) {
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      @include element(Col2, true) {
+        padding-left: 0;
+        padding-right: 0;
+        .ft-FlexRow {
+          margin-left: 0;
+          margin-right: 0;
+        }
+        .ft-FlexCell {
+          padding-left: 0;
+          padding-right: 0;
+        }
+        @include block(ns(FlexCell)) {
+          @include modifier(12of24) {
+            flex-basis: 100%;
+            max-width: 100%;
+          }
+        }
+      }
+    }
+    @include modifier(VIII) {
+      display: grid;
+      margin-left: px-to-rem(-8);
+      margin-right: px-to-rem(-8);
+
+      @include block(ns(FlexCell)) {
+        @include modifier(6of24) {
+          flex-basis: 100%;
+          max-width: 100%;
+        }
+      }
+    }
+    @include modifier(IX) {
+      display: block;
+      margin-left: px-to-rem(-8);
+      margin-right: px-to-rem(-8);
+      @include element(Col1, true) {
+        padding-left: 0;
+        padding-right: 0;
+      }
+      @include element(Col2, true) {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+    @include modifier(X) {
+      display: block;
+      margin-left: px-to-rem(-8);
+      margin-right: px-to-rem(-8);
+
+      @include element(Col1, true) {
+        padding-left: 0;
+        padding-right: 0;
+      }
+      @include element(Col2, true) {
+        padding-left: 0;
+        padding-right: 0;
+      }
+      @include element(Col3, true) {
+        padding-left: 0;
+        padding-right: 0;
+        display: block;
+      }
+    }
+    @include modifier(XI) {
+      display: grid;
+      margin-left: px-to-rem(-8);
+      margin-right: px-to-rem(-8);
+
+      .dz-Card {
+        margin-left: 0;
+        margin-right: 0;
+      }
+      @include element(section, true) {
+        display: block;
+        margin-left: 0;
+        margin-right: 0;
+      }
+      @include element(cell, true) {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+    @include modifier(XII) {
+      display: grid;
+      @include element(Col1, true) {
+        display: block;
+        padding: 0;
+        margin-left: px-to-rem(-8);
+        margin-right: px-to-rem(-8);
+
+        .dz-Card {
+          margin-left: 0;
+          margin-right: 0;
+        }
+      }
+      @include element(Col2, true) {
+        padding: 0;
+        margin-left: px-to-rem(-8);
+        margin-right: px-to-rem(-8);
+
+        .dz-Card {
+          margin-left: 0;
+          margin-right: 0;
+        }
+      }
+    }
+    @include modifier(XIII) {
+      display: grid;
+    }
+    .dz-Card_III {
+      .dz-Card__title {
+        font-size: px-to-rem(24);
+        line-height: 1.2;
+      }
+      .dz-Card__body {
+        font-size: px-to-rem(14);
+        font-weight: 300;
+      }
+    }
+    .dz-Card__title {
+      font-size: px-to-rem(24) !important;
+      line-height: 1.2;
+    }
+  }
+}
+
+.dz-Card {
+  .ft-AvatarStamp {
+    overflow: hidden;
+  }
+}

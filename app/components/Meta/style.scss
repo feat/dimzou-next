@@ -1,0 +1,13 @@
+@import 'base.scss';
+
+@include block(ns(Meta, t)) {
+  color: $color-tertiary;
+  font-family: $sans-serif-text-font;
+}
+
+
+@include block(ns(MetaSeparator, t)) {
+  &::before {
+    content: " · ";
+  }
+}

@@ -1,0 +1,231 @@
+@import "../../style/utils/index.scss";
+@import "../../style/mixins/index.scss";
+@import "../../style/themes/default.scss";
+
+@import "./variables.scss";
+
+@mixin dimzou-card-padding {
+  padding: px-to-rem(8) px-to-rem(8) px-to-rem(24) px-to-rem(8);
+}
+
+@mixin default-layer-shadow {
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+@include block(ns(Card, dz)) {
+  @include dimzou-card-padding;
+  @include clearfix();
+  font-family: $dimzou-card-text-font;
+  font-size: px-to-rem($dimzou-card-text-font-size);
+  line-height: 1.5;
+  transition: box-shadow 0.3s;
+
+  &:hover {
+    background-color: white;
+    @include default-layer-shadow();
+  }
+
+  @include element(title) {
+    font-family: $dimzou-card-title-font;
+    font-size: px-to-rem($dimzou-card-title-font-size);
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    text-transform: capitalize;
+    line-height: 1;
+    overflow: hidden;
+
+    a {
+      color: inherit;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    }
+    @include modifier(king) {
+      font-size: px-to-rem($dimzou-title-king-size);
+    }
+    @include modifier(queen) {
+      font-size: px-to-rem($dimzou-title-queen-size);
+    }
+    @include modifier(jack) {
+      font-size: px-to-rem($dimzou-title-jack-size);
+    }
+  }
+
+  @include element(avatar) {
+    // margin-top: 1em;
+    display: flex;
+    margin-bottom: 0.75em;
+    zoom: 1;
+    overflow: hidden;
+  }
+
+  @include element(image) {
+    width: 100%;
+    padding-top: percentage(9 / 16);
+    background-color: $gray-2;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+  }
+
+  @include element(body) {
+    @include modifier(king) {
+      font-size: px-to-rem($dimzou-text-king-size);
+    }
+    @include modifier(queen) {
+      font-size: px-to-rem($dimzou-text-queen-size);
+    }
+    @include modifier(jack) {
+      font-size: px-to-rem($dimzou-text-jack-size);
+    }
+    overflow: hidden;
+  }
+
+  @include state(draft) {
+    color: $dimzou-draft-theme-color;
+    @include element(imageWrap, true) {
+      position: relative;
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        top: 0;
+        background-color: $dimzou-draft-theme-color;
+        mix-blend-mode: screen;
+      }
+    }
+    @include element(image, true) {
+      filter: grayscale(100%);
+    }
+
+    @include state(translation) {
+      color: $dimzou-translation-theme-color;
+      @include element(imageWrap, true) {
+        position: relative;
+        &::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          top: 0;
+          background-color: $dimzou-translation-theme-color;
+          mix-blend-mode: screen;
+        }
+      }
+      @include element(image, true) {
+        filter: grayscale(100%);
+      }
+    }
+  }
+
+
+  @include modifier(I) {
+    @include element(imageWrap, true) {
+      width: 50%;
+      max-width: 200px;
+      margin-bottom: 0.5em;
+      &.pull-left {
+        margin-right: 1.5em;
+      }
+      &.pull-right {
+        margin-left: 1.5em;
+      }
+    }
+    @include element(title, true) {
+      margin-top: 0.25em;
+    }
+  }
+
+  @include modifier(II) {
+    @include element(imageWrap, true) {
+      width: 45%;
+      max-width: 200px;
+
+      &.pull-left {
+        margin-right: 0.5em;
+      }
+      &.pull-right {
+        margin-left: 0.5em;
+      }
+    }
+  }
+
+  @include modifier(III) {
+  }
+
+  @include modifier(IV) {
+    display: flex;
+    padding-bottom: px-to-rem(8);
+    @include element(imageWrap, true) {
+      flex-basis: percentage(15 / 24);
+    }
+    @include element(content, true) {
+      flex-basis: percentage(9 / 24);
+      padding-left: px-to-rem(24);
+      box-sizing: border-box;
+    }
+  }
+
+  @include modifier(V) {
+    position: relative;
+    padding-bottom: px-to-rem(12);
+    color: white;
+    text-shadow: 2px 2px 4px rgba(128, 128, 128, 0.2);
+    @include element(title, true) {
+      margin-top: 0;
+    }
+
+    @include element(contentWrap, true) {
+      width: 100%;
+    }
+
+    @include element(content, true) {
+      padding: px-to-rem(24 + 8);
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+    }
+  }
+
+  @include modifier(top) {
+    @include element(title, true) {
+      font-size: px-to-rem($dimzou-title-king-size);
+    }
+    @include element(body, true) {
+      font-size: px-to-rem($dimzou-text-king-size);
+    }
+  }
+
+  @include modifier(VI) {
+    padding: px-to-rem(12);
+    @include element(content, true) {
+      display: flex;
+    }
+    @include element(metaWrap, true) {
+      flex-basis: percentage(5 / 12);
+      flex-shrink: 0;
+    }
+    @include element(body, true) {
+      width: 100%;
+      margin-left: px-to-rem(10);
+    }
+    @include state(draft) {
+      background-color: transparentize($dimzou-draft-theme-color, 0.8);
+      color: $dimzou-draft-theme-color;
+    }
+    @include state(translation) {
+      background-color: transparentize($dimzou-translation-theme-color, 0.8);
+      color: $dimzou-translation-theme-color;
+    }
+  }
+
+  .ft-Placeholder_title {
+    margin-bottom: 0;
+  }
+}

@@ -1,0 +1,63 @@
+
+.demo {
+  max-width: 800px;
+  margin: 0 auto;
+
+  .buttons {
+    border-bottom: 1px solid #333;
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+}
+
+
+$line-height: 22px;
+
+.public-DraftStyleDefault-unstyled {
+    margin-bottom: 12px;
+}
+
+.public-DraftStyleDefault-codeBlock {
+    background-color: #f3f3f3;
+    counter-reset: code-line;
+    white-space: pre-wrap;
+    
+    .public-DraftStyleDefault-codeBlock-content {
+        margin-left: 2.75em;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        border-left: 3px solid #aaa;
+        line-height: $line-height;
+      }
+    .line {
+        counter-increment: code-line;
+        position: relative;
+        &::before {
+            content: counter(code-line);
+            position: absolute;
+            margin-left: -4.25em;
+            width: 3em;
+            text-align: right;
+            user-select: none;
+          }
+    }
+    .is-empty::before {
+        margin-top: -$line-height;
+      }
+    .public-DraftStyleDefault-codeBlock-hint {
+      padding: 3px;
+      color: #aaa;
+    }
+}
+
+  
+// annotation
+[data-entity-type='annotation:add'] {
+  background-color: rgba(152, 247, 136, 1);
+}
+[data-entity-type='annotation:delete'] {
+  background-color: rgba(239, 100, 105, 1);
+}
+[data-entity-type='annotation:style'] {
+  background-color: rgba(247, 213, 136, 1);
+}

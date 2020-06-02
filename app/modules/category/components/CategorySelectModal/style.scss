@@ -1,0 +1,139 @@
+@import 'base.scss';
+
+@include block(CategorySelect) {
+  @include element(main) {
+    display: flex;
+  }
+  @include element(rootSelect) {
+    position: relative;
+    margin-top: px-to-rem(32);
+    right: px-to-rem(-24);
+  }
+  @include element(secondarySelect) {
+    text-align: right;
+    .ft-Button {
+      margin-bottom: px-to-rem(8);
+      @include text-truncate();
+      max-width: 100%;
+      &:hover {
+        box-shadow: 0 6px 0 0 white;
+      }
+      &.is-selected {
+        box-shadow: 0 6px 0 0 white;
+      }
+    }
+  }
+  @include element(secondaryOption) {
+    text-align: right;
+    height: 1.7*($btn-sm-size);
+  }
+  @include element(secondaryPanel) {
+    padding-right: px-to-rem(36);
+    padding-top: px-to-rem(36);
+    width: 180px;
+    overflow: auto;
+  }
+  @include element(tertiaryPanel) {
+    overflow: auto;
+    flex: 1;
+    background-color: $gray-1;
+    padding-top: px-to-rem(36);
+    padding-left: px-to-rem(40);
+    padding-right: px-to-rem(24);
+  }
+  @include element(tertiarySelect) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    grid-template-rows: repeat(auto-fill, #{1.7*($btn-sm-size)});
+    grid-column-gap: 8px;
+
+    height: 100%;
+
+    .ft-Button {
+      &:hover {
+        background-color: $gray-2;
+        box-shadow: 0 6px 0 0 $gray-1;
+        &.is-selected {
+          background-color: $gray-10;
+        }
+      }
+      &.is-selected {
+        // box-shadow: 0 6px 0 0 $color-secondary;
+        box-shadow: 0 6px 0 0 $gray-1;
+      }
+    }
+  }
+
+  @include element(category) {
+    height: 1.7*$btn-sm-size;
+  }
+
+  .ft-Button {
+    text-align: left;
+    @include text-truncate;
+    max-width: 100%;
+
+    &:hover {
+      height: auto;
+      white-space: initial;
+      line-height: 1.6;
+      z-index: 10;
+    }
+  }
+  .ft-Button.is-selected {
+    height: auto;
+    white-space: initial;
+    line-height: 1.6;
+    min-height: px-to-rem($btn-sm-size);
+    z-index: 8;
+  }
+
+  .ft-FeatModal__subHeader {
+    margin-left: auto;
+  }
+
+  // Landscape Phones
+  @media(min-width: $screen-xs-min){
+
+  }
+
+  // Portrait Tablets & Small Desktop
+  @media(min-width: $screen-sm-min){
+
+  }
+  // Landscape Tablets & Medium Desktop
+  @media(min-width: $screen-md-min){
+
+  }
+  // Large Desktop
+  @media(min-width: $screen-lg-min){
+    @include element(main) {
+      margin-left: -20px;
+      margin-right: -40px;
+    }
+    @include element(secondaryPanel) {
+      width: 180px;
+    }
+  }
+  // Extra Large Desktop
+  @media(min-width: $screen-xl-min){
+    @include element(main) {
+      margin-left: -24px;
+      margin-right: -48px;
+    }
+    @include element(secondaryPanel) {
+      width: 200px;
+    }
+  }
+  // Extreme Large Desktop
+  @media(min-width: $screen-xxl-min){
+    @include element(main) {
+      margin-left: px-to-rem(-24);
+      margin-right: px-to-rem(-48);
+    }
+    @include element(secondaryPanel) {
+      width: px-to-rem(200);
+    }
+  }
+
+}

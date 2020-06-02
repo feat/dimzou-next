@@ -1,0 +1,142 @@
+@import "../../style/utils/index.scss";
+@import "../../style/mixins/index";
+@import "../../style/themes/default.scss";
+
+@include block(ns(SearchBox)) {
+  position: relative;
+  display: inline-block;
+  min-width: 300px;
+
+  @include element(inputWrap) {
+    display: flex;
+    align-items: center;
+  }
+  @include element(input) {
+    display: block;
+    flex: 1;
+    border-color: transparent;
+    font-size: px-to-rem(14);
+    padding: px-to-rem(3) px-to-rem(5);
+
+    &:focus {
+      outline: 1px solid $gray-10;
+    }
+  }
+  @include element(dropdown) {
+    display: none;
+    @include poplayer-style;
+    position: absolute;
+    width: 100%;
+    margin-top: 2px;
+    z-index: 1;
+    @include state(visible) {
+      display: block;
+    }
+  }
+  @include element(list) {
+    margin: 0;
+    padding-left: 0;
+
+  }
+  @include element(option) {
+    list-style: none;
+    padding-top: px-to-rem(4);
+    padding-bottom: px-to-rem(5);
+    padding-left: px-to-rem($poplayer-padding);
+    padding-right: px-to-rem($poplayer-padding);
+    margin-left: px-to-rem(-$poplayer-padding);
+    margin-right: px-to-rem(-$poplayer-padding);
+
+    cursor: pointer;
+    &:hover {
+      background-color: $gray-2;
+    }
+  }
+  @include element(clearBtn) {
+    display: block;
+    margin: px-to-rem(5) auto 0;
+  }
+  @include element(searchBtn) {
+    margin-left: px-to-rem(5);
+  }
+}
+
+// @include block(ns(SearchBox)) {
+//   position: absolute;
+//   width: 500px;
+
+//   @include modifier(topLeft) {
+//   }
+//   @include modifier(topCenter) {
+//   }
+//   @include modifier(topRight) {
+//   }
+//   @include modifier(bottomLeft) {
+//   }
+//   @include modifier(bottomCenter) {
+//   }
+//   @include modifier(bottomRight) {
+//   }
+
+//   @include modifier(hidden) {
+//     display: none;
+//   }
+// }
+// ul {
+//   padding: 0;
+// }
+// li {
+//   list-style: none;
+// }
+// .ant-input {
+//   &:focus .displayNone {
+//     display: block;
+//   }
+// }
+// .displayNone {
+//   display: none;
+// }
+// .searchBox {
+//   width: 200px;
+//   // max-height: 250px;
+//   background: #fff;
+//   .h-list {
+//     height: 100%;
+//     padding-bottom: 5px;
+//     border: 1px solid #eee;
+//     border-radius: 2px;
+//     .clearBtn {
+//       width: 60%;
+//       display: block;
+//       margin: 0 auto;
+//     }
+//     ul {
+//       // height: 150px;
+//       // overflow-y: scroll;
+
+//       margin: 5px 0;
+//       .historyList {
+//         padding: 0 5px;
+//         &:hover {
+//           background: #eee;
+//         }
+//       }
+//     }
+//   }
+//   .search-posi {
+//     position: relative;
+//     .search-icon {
+//       position: absolute;
+//       top: 0;
+//       right: 0;
+//     }
+//   }
+//   input {
+//     width: 80%;
+//     height: 22px;
+//     border-radius: 4px;
+//     border: 1px solid #aaa;
+//     padding-left: 8px;
+//     padding-right: 30px;
+//   }
+// }

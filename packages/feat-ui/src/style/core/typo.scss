@@ -1,0 +1,65 @@
+@font-face {
+  font-family: HelveticaNeueCondensedBold;
+  src: local("Helvetica Neue Condensed Bold"),
+      local("HelveticaNeue-CondensedBold");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: HelveticaNeueMedium;
+  src: local("Helvetica Neue Medium"),
+      local("HelveticaNeue-Medium");
+  font-weight: normal;
+}
+
+@font-face {
+    font-family: HelveticaNeueLight;
+    src: local("Helvetica Nenu Light"),
+        local('HelveticaNeue-Light');
+    font-weight: lighter;
+}
+
+@include block(ns(left, t)) {
+    text-align: left !important;
+}
+
+@include block(ns(right, t)) {
+    text-align: right !important;
+}
+
+@include block(ns(center, t)) {
+    text-align: center !important;
+};
+
+@include block(ns(label, t)) {
+  @include label-text();
+}
+
+@include block(ns(light, t)) {
+    font-weight: 300;
+}
+
+@include block(ns(italic, t)) {
+    font-style: italic;
+}
+
+@include block(ns(bold, t)) {
+    font-weight: 700;
+}
+
+@include block(ns(danger, t)) {
+    color: $color-danger !important;
+};
+
+@include block(ns(warning, t)) {
+    color: $color-warning !important;
+};
+
+@include block(ns(success, t)) {
+    color: $color-success !important;
+};
+
+@include block(ns(info, t)) {
+    color: $color-info !important;
+};
+
