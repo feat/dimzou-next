@@ -6,16 +6,68 @@ Dimzou Feature related pages
 
 1. 拉取仓库
 
+  ```bash
+  git clone https://github.com/feat/dimzou-next.git
+  ```
+
 2. 安装依赖包
 
   ```
   npm install
   ```
 
-3. 通过环境配置模版创建环境配置文件，并编辑环境配置文件, `.env` 中需要填入 FEAT_CLIENT_ID 以及 FEAT_CLIENT_SECRET。具体内容可联系我们获取。
+3. 通过环境配置模版创建环境配置文件，并编辑环境配置文件。`.env` 中需要填入 FEAT_CLIENT_ID 以及 FEAT_CLIENT_SECRET。具体内容可联系我们获取。
 
   ```bash
   cp .env.example .env
+  ```
+
+  ```
+  ## API proxy
+  # ==========
+  API_ENDPOINT=https://www.featapi.com
+  SOCKET_ENDPOINT=
+  STORAGE_ENDPOINT=
+  # 需要在 feat.com 上创建 Application。https://www.feat.com/application
+  FEAT_CLIENT_ID=
+  FEAT_CLIENT_SECRET=
+
+  PORT=3100
+
+  ## APP config
+  # ==========
+  # HTTPS=true
+  # NEXT_ASSET_PREFIX=
+  # SENTRY_DSN=
+  SESSION_SECRET=random_string
+  # seconds, 86400 --> 24h
+  SESSION_TTL=86400
+
+  REDIS_HOST=127.0.0.1
+  REDIS_PASSWORD=
+  REDIS_PORT=6379
+  REDIS_DB=0
+  REDIS_PREFIX=feat_web_
+
+  # Services
+  # ==========
+  FACEBOOK_APP_ID=
+  WEIBO_APP_KEY=
+
+  # 开发用
+  DEBUG=feat-web:*
+  # 生产用
+  # DEBUG=feat-web:request,feat-web:server,proxy:*
+
+
+  ## Dev related
+  # ==========
+  # GOOGLE_API_KEY=
+  # SENTRY_AUTH_TOKEN=
+  # SENTRY_ORG=
+  # SENTRY_PROJECT=
+  # SENTRY_URL=
+
   ```
 
 4. 将开发证书放到 `server/cert`，证书命名规则，详见目录中的 `README.md`。当`.env` 中未设置 `HTTPS` 时，可忽略这个步骤
