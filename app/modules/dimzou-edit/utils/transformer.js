@@ -360,6 +360,7 @@ function _updateRewording(rewordings, rewording) {
   });
 }
 
+// { structure, blockId, rewording }
 function updateRewording(dimzou, payload) {
   let updated;
   let key;
@@ -398,7 +399,7 @@ function updateRewording(dimzou, payload) {
       key = 'content';
       updated = dimzou.content.map(
         (block) =>
-          block.id === payload.block_id
+          block.id === payload.blockId
             ? {
               ...block,
               rewordings: _updateRewording(
@@ -810,6 +811,8 @@ export function patchDimzouNode(node, patch, method, structure) {
       return tailingInsertContent(node, patch);
     case 'reorder':
       return reorderContent(node, patch);
+    case 'update-rewording':
+      return updateRewording(node, patch);
     default:
       return node;
   }

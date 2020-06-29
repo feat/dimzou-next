@@ -1,17 +1,19 @@
-import { useContext, useCallback } from 'react';
+import { useContext } from 'react';
 import Router from 'next/router'
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import NodeDropzone from './NodeDropzone';
 import DraggableNodeLabel from './DraggableNodeLabel';
-import NodeOutline from '../NodeOutline';
-import NodeContextProvider from '../../providers/NodeContextProvider';
+// import NodeOutline from '../NodeOutline';
+// import NodeContextProvider from '../../providers/NodeContextProvider';
 import RoleIcon from '../RoleIcon'
 import { NODE_TYPE_COVER, NODE_STATUS_PUBLISHED } from '../../constants'
 import { getUserRole } from '../../utils/collaborators';
 import { WorkspaceContext, ScrollContext } from '../../context';
-import ScrollButton from '../ScrollButton';
+import { LabelButton } from '../ScrollButton';
 import { getAsPath } from '../../utils/router';
+import Outline from './Outline';
+
 
 export default function Node(props) {
   const { data, index, bundleId, currentUser, onSort, type } = props;
@@ -31,14 +33,7 @@ export default function Node(props) {
       isPublicationView: isPublication,
     },
   };
-  const asPath = getAsPath(href);
   // const shouldSpy = String(bundleId) === String(workspace.bundleId); // bundle active;
-  const onClick = useCallback(() => {
-    Router.push(href, asPath).then(() => {
-      window.scrollTo(0, 0);
-    });
-    scrollContext.setActiveHash('');
-  }, [bundleId, data.id, type]);
   const isActive = isCurrent && !scrollContext.activeHash;
   return (
     <div
@@ -56,31 +51,31 @@ export default function Node(props) {
           index={index} 
           data={data} 
           name={
-            <ScrollButton
-              to={`node-${data.id}`} 
+            <LabelButton
               key={data.id}
-              spy={!scrollContext.scrollHash}
-              offset={-120}
               className={isActive ? 'is-active' : undefined}
-              onClick={onClick}
-              onSetActive={(to) => {
-                const nodeId = to.replace('node-', '');
-                if (workspace.nodeId !== nodeId) {
-                  Router.replace(href, asPath)
-                }
+              onClick={() => {
+                window.scrollTo(0, 0);
+                Router.push(href, getAsPath(href));
               }}
               data-node-level='node'
             >
               {data.text_title}
-            </ScrollButton>
+            </LabelButton>
           } 
           subTitle={role !== false && <RoleIcon role={role} />}
         />
-        {type === 'draft' && isCurrent && (
+        {type === 'draft' && (
+          <Outline 
+            data={data} 
+            href={href}
+          />
+        )}
+        {/* {type === 'draft' && isCurrent && (
           <NodeContextProvider bundleId={workspace.bundleId} nodeId={workspace.nodeId}>
             <NodeOutline />
           </NodeContextProvider>
-        )}
+        )} */}
       </div>
       {!isCoverNode && (
         <NodeDropzone type="node" bundleId={bundleId} index={index} nodeId={data.id} position="after" handleDrop={onSort} />

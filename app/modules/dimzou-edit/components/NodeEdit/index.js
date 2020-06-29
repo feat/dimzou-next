@@ -1,10 +1,10 @@
-import { useContext } from 'react'
-import get from 'lodash/get'
+import { useContext } from 'react';
+import get from 'lodash/get';
 
 import TranslatableMessage from '@/modules/language/containers/TranslatableMessage';
 import SplashView from '@/components/SplashView';
 
-import { NodeContext } from '../../context'
+import { NodeContext } from '../../context';
 import { getChapterRender, CoverRender } from '../AppRenders';
 import AppSidebarFirst from '../AppSidebarFirst';
 import NodeCover from './NodeCover';
@@ -30,30 +30,24 @@ function NodeEdit() {
     let content;
     if (!nodeState || (nodeState.isFetchingEditInfo && !nodeState.data)) {
       content = (
-        <SplashView 
-          hint={
-            <ProgressBar value={get(nodeState, 'loadingProgress', 0)} />
-          } 
+        <SplashView
+          hint={<ProgressBar value={get(nodeState, 'loadingProgress', 0)} />}
         />
-      )
-    } 
-    else if (nodeState && nodeState.fetchError) {
-      content = <div style={{ paddingTop: 56, paddingBottom: 56 }}>{nodeState.fetchError.message}</div>
+      );
+    } else if (nodeState && nodeState.fetchError) {
+      content = (
+        <div style={{ paddingTop: 56, paddingBottom: 56 }}>
+          {nodeState.fetchError.message}
+        </div>
+      );
     }
-    return (
-      <Render 
-        content={content}
-        sidebarFirst={
-          <AppSidebarFirst />
-        }
-      />
-    )
+    return <Render content={content} sidebarFirst={<AppSidebarFirst />} />;
   }
-  
+
   const node = nodeState && nodeState.data;
   if (node && node.type === NODE_TYPE_COVER) {
     return (
-      <CoverRender 
+      <CoverRender
         title={<NodeTitle />}
         summary={<NodeSummary />}
         cover={<NodeCover template="IV" />}
@@ -81,34 +75,24 @@ function NodeEdit() {
           </>
         }
       />
-    )
+    );
   }
 
   if (node) {
     return (
-      <Render 
+      <Render
         id={`node-${node.id}`}
-        title={
-          <NodeTitle />
-        }
-        summary={
-          <NodeSummary />
-        }
-        content={(
+        title={<NodeTitle />}
+        summary={<NodeSummary />}
+        content={
           <>
             <NodeContent className="dz-Edit__chapterContent" />
             <Docker />
             <NodeNavAnchor />
           </>
-        )}
-        cover={
-          (
-            <NodeCover template={template} />
-          )
         }
-        sidebarFirst={
-          <AppSidebarFirst />
-        }
+        cover={<NodeCover template={template} />}
+        sidebarFirst={<AppSidebarFirst />}
         sidebarSecond={
           <>
             <CollaboratorBlock />
@@ -116,9 +100,8 @@ function NodeEdit() {
           </>
         }
       />
-    )
+    );
   }
-  
 }
 
 export default NodeEdit;

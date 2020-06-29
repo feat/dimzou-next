@@ -6,7 +6,7 @@ import Router from 'next/router';
 import ApiError from '@/errors/ApiError';
 import notification from '@feat/feat-ui/lib/notification';
 import { hasAuthedUser } from '@/modules/auth/selectors';
-import { 
+import {
   rewordingComment as rewordingCommentSchema,
   dimzouBundleDesc as dimzouBundleDescSchema,
   dimzouPublication as publicationSchema,
@@ -17,9 +17,9 @@ import configTemplates from '@/components/FeedTemplate/configTemplates';
 import {
   createOriginBundle as createOriginBundleRequest,
   createCopyBundle as createCopyBundleRequest,
-
   getBundleEditInfo as getBundleEditInfoRequest,
-  
+  getParagraphRange as getParagraphRangeRequest,
+  getParagraphType as getParagraphTypeRequest,
   insertContent as insertContentRequest,
   submitCover as submitCoverRequest,
   createNode as createNodeRequest,
@@ -28,7 +28,6 @@ import {
   createBundleInvitation as createInvitationRequest,
   updateBundleConfig as updateBundleConfigRequest,
   createTranslationBundle as createTranslationBundleRequest,
-
   updateNodeVisibility as updateNodeVisibilityRequest,
   markRewordShared as markRewordSharedRequest,
   prePublish as prePublishRequest,
@@ -61,8 +60,8 @@ import {
 
 // import { selectBundleState } from '../selectors';
 import { BUNDLE_STATUS_PUBLISHED } from '../constants';
-import { 
-  selectNodeState, 
+import {
+  selectNodeState,
   selectNodePublication,
   selectPlainDimzouReports,
   selectPlainReaderTaste,
@@ -72,23 +71,19 @@ export const setSidebarHasFocus = createAction('DZ/UI/SIDEBAR_HAS_FOCUS');
 
 // --- Bundle
 export const initBundle = createAction('DZ/BUNDLE/INIT');
-export const fetchBundleEditInfo = createAction(
-  'DZ/BUNDLE/FETCH_EDIT_INFO',
-);
+export const fetchBundleEditInfo = createAction('DZ/BUNDLE/FETCH_EDIT_INFO');
 export const loadBundleEditInfo = createAction('DZ/BUNDLE/LOAD_EDIT_INFO');
 export const fetchBundleEditInfoFailure = createAction(
   'DZ/BUNDLE/FETCH_EDIT_INFO_FAILURE',
 );
 export const updateBundleDesc = createAction('DZ/BUNDLE/UPDATE_DESC');
-export const updateNodeSort = createRoutine('DZ/BUNDLE/UPDATE_NODE_SORT')
+export const updateNodeSort = createRoutine('DZ/BUNDLE/UPDATE_NODE_SORT');
 export const patchNodes = createAction('DZ/BUNDLE/PATCH_NODES');
 export const receiveBundleConfigPatch = createAction(
   'DZ/BUNDLE/RECEIVE_CONFIG_PATCH',
 );
 export const receiveNewNode = createAction('DZ/BUNDLE/CREATE_NEW_NODE');
-export const receiveNodeDescInfo = createAction(
-  'DZ/BUNDLE/NODE_DESC_UPDATED',
-);
+export const receiveNodeDescInfo = createAction('DZ/BUNDLE/NODE_DESC_UPDATED');
 export const resetBundle = createAction('DZ/BUNDLE/RESET');
 
 export const deleteBundle = createRoutine('DZ/BUNDLE/DELETE');
@@ -110,60 +105,64 @@ export const asyncCreateCopyBundle = (payload) => async (dispatch) => {
   } finally {
     dispatch(createCopyBundle.fulfill(payload));
   }
-}
+};
 
 export const asyncSetBundleCategory = (payload) => async (dispatch) => {
   const { bundleId, category } = payload;
   try {
     await updateBundleConfigRequest(bundleId, {
       category: category.id,
-    })
-    dispatch(setBundleCategory.success({
-      bundleId,
-      category,
-      entityMutators: [
-        {
-          [dimzouBundleDescSchema.key]: {
-            [bundleId]: {
-              category: {
-                $set: category,
+    });
+    dispatch(
+      setBundleCategory.success({
+        bundleId,
+        category,
+        entityMutators: [
+          {
+            [dimzouBundleDescSchema.key]: {
+              [bundleId]: {
+                category: {
+                  $set: category,
+                },
               },
             },
           },
-        },
-      ],
-    }))
+        ],
+      }),
+    );
   } catch (err) {
     logging.error(err);
     throw err;
   }
-}
+};
 export const asyncSetBundleLanguage = (payload) => async (dispatch) => {
   const { bundleId, language } = payload;
   try {
     await updateBundleConfigRequest(bundleId, {
       language,
-    })
-    dispatch(setBundleLanguage.success({
-      bundleId,
-      language,
-      entityMutators: [
-        {
-          [dimzouBundleDescSchema.key]: {
-            [bundleId]: {
-              language: {
-                $set: language,
+    });
+    dispatch(
+      setBundleLanguage.success({
+        bundleId,
+        language,
+        entityMutators: [
+          {
+            [dimzouBundleDescSchema.key]: {
+              [bundleId]: {
+                language: {
+                  $set: language,
+                },
               },
             },
           },
-        },
-      ],
-    }))
+        ],
+      }),
+    );
   } catch (err) {
     logging.error(err);
     throw err;
   }
-}
+};
 
 export const asyncDeleteBundle = (payload) => async (dispatch) => {
   const { bundleId } = payload;
@@ -176,24 +175,28 @@ export const asyncDeleteBundle = (payload) => async (dispatch) => {
       description: err.message,
     });
   }
-}
+};
 
 // Node signal
 export const editPatchSignal = createAction('DZ/NODE/EDIT_PATCH_SIGNAL');
 
-
 // Node Admin
 export const deleteNode = createRoutine('DZ/BUNDLE/DELETE_NODE');
 export const restoreNode = createRoutine('DZ/BUNDLE/RESTORE_NODE');
-export const updateNodeVisibility = createRoutine('DZ/BUNDLE/UPDATE_NODE_VISIBILITY');
+export const updateNodeVisibility = createRoutine(
+  'DZ/BUNDLE/UPDATE_NODE_VISIBILITY',
+);
 export const receiveNodeUpdateSignal = createAction(
   'DZ/NODE/RECEIVE_NODE_UPDATE_SIGNAL',
 );
 export const setLoadingProgress = createRoutine('DZ/NODE/SET_LOADING_PROGRESS');
 
-export const asyncFetchNodeEditInfo = (payload) => async (dispatch, getState) => {
-  const { bundleId, nodeId } = payload;
-  const nodeState = selectNodeState(getState(), payload)
+export const asyncFetchNodeEditInfo = (payload) => async (
+  dispatch,
+  getState,
+) => {
+  const { bundleId, nodeId, limit } = payload;
+  const nodeState = selectNodeState(getState(), payload);
   if (nodeState && nodeState.isFetchingEditInfo) {
     return;
   }
@@ -202,40 +205,84 @@ export const asyncFetchNodeEditInfo = (payload) => async (dispatch, getState) =>
     dispatch(fetchNodeEditInfo.request(payload));
     const {
       data: { node },
-    } = await getBundleEditInfoRequest(bundleId, {
-      node: nodeId,
-    }, (e) => {
+    } = await getBundleEditInfoRequest(bundleId, { node: nodeId }, (e) => {
       // shouldDisplayProgressBar = e.total && e.loaded && e.total > 1024 * 500;
-      const total = e.total || e.srcElement.getResponseHeader('x-actual-content-length')
+      const total =
+        e.total || e.srcElement.getResponseHeader('x-actual-content-length');
       const progress = e.loaded / total;
-      dispatch(setLoadingProgress({
-        nodeId,
-        progress,
-      }))
+      dispatch(
+        setLoadingProgress({
+          nodeId,
+          progress,
+        }),
+      );
     });
-    // const normalized = normalize(bundleData, dimzouBundleDescSchema);
-    // dispatch(loadBundleEditInfo({
-    //   bundleId: bundleData.id,
-    //   userId: bundleData.user ? bundleData.user.uid : bundleData.user_id,
-    //   data: bundleData,
-    //   entities: normalized.entities,
-    // }));
-    await dispatch(loadNodeEditInfo({
-      bundleId,
-      nodeId,
-      data: node,
-    }))
+    const { data: content } = await getParagraphRangeRequest({
+      node_id: nodeId,
+      limit: limit || 20,
+    });
+    const { data: title } = await getParagraphTypeRequest({
+      node: nodeId,
+      type: 0,
+    });
+    const { data: summary } = await getParagraphTypeRequest({
+      node: nodeId,
+      type: 100,
+    });
+    const { data: cover } = await getParagraphTypeRequest({
+      node: nodeId,
+      type: 300,
+    });
+
+    await dispatch(
+      loadNodeEditInfo({
+        bundleId,
+        nodeId,
+        data: {
+          ...node,
+          content,
+          title: title[0],
+          summary: summary[0],
+          cover: cover[0] || {},
+        },
+      }),
+    );
     await delay(100); // force progress bar to render
   } catch (err) {
-    dispatch(fetchNodeEditInfo.failure({
-      bundleId,
-      nodeId,
-      data: err,
-    }));
+    dispatch(
+      fetchNodeEditInfo.failure({
+        bundleId,
+        nodeId,
+        data: err,
+      }),
+    );
   } finally {
-    dispatch(fetchNodeEditInfo.fulfill(payload))
+    dispatch(fetchNodeEditInfo.fulfill(payload));
   }
-}
+};
+
+// 分页加载段落数据；
+export const asyncUpdateNodeInfo = (payload) => async (dispatch) => {
+  const { nodeId, paragraphId } = payload;
+  try {
+    const { data: content } = await getParagraphRangeRequest({
+      node_id: nodeId,
+      paragraph_id: paragraphId,
+      limit: 20,
+    });
+    await dispatch(
+      updateNodeInfo({
+        nodeId,
+        data: {
+          content,
+        },
+      }),
+    );
+    await delay(100);
+  } catch (err) {
+    logging.error(err);
+  }
+};
 
 export const asyncDeleteNode = (payload) => async (dispatch) => {
   const { bundleId, nodeId } = payload;
@@ -247,47 +294,47 @@ export const asyncDeleteNode = (payload) => async (dispatch) => {
   try {
     const { data } = await deleteNodeRequest(bundleId, {
       node_id: nodeId,
-    })
+    });
     logging.debug(data);
   } catch (err) {
     logging.debug(err);
   } finally {
     dispatch(deleteNode.fulfill(payload));
   }
-}
+};
 export const asyncRestoreNode = (payload) => async (dispatch) => {
   const { bundleId, nodeId } = payload;
   dispatch(restoreNode.request(payload));
   try {
     const { data } = await restoreNodeRequest(bundleId, {
       node_id: nodeId,
-    })
+    });
     logging.debug(data);
   } catch (err) {
     logging.debug(err);
   } finally {
     dispatch(restoreNode.fulfill(payload));
   }
-}
+};
 export const asyncUpdateNodeVisibility = (payload) => async (dispatch) => {
   const { bundleId, nodeId, visibility } = payload;
   try {
     const { data } = await updateNodeVisibilityRequest(bundleId, {
       node_id: nodeId,
       visibility,
-    })
+    });
     logging.debug(data);
   } catch (err) {
     logging.debug(err);
   } finally {
     dispatch(updateNodeVisibility.fulfill(payload));
   }
-}
-
+};
 
 // --- Node
 export const fetchNodeEditInfo = createRoutine('DZ/NODE/FETCH_EDIT_INFO');
 export const loadNodeEditInfo = createAction('DZ/NODE/LOAD_EDIT_INFO');
+export const updateNodeInfo = createAction('DZ/NODE/UPDATE_INFO');
 // cover
 export const updateAppendImagePivot = createAction(
   'DZ/NODE/CONTENT/APPEN_IMAGE_PIVOT',
@@ -336,13 +383,9 @@ export const changeEditPermission = createRoutine(
 export const changeTemplate = createRoutine(`DZ/NODE/CHANGE_TEMPLATE`);
 
 // -- Collaborators
-export const patchCollaborators = createAction(
-  `DZ/COLLABORATOR/PATCH`,
-);
+export const patchCollaborators = createAction(`DZ/COLLABORATOR/PATCH`);
 export const addCollaborator = createRoutine(`DZ/COLLABORATOR/ADD`);
-export const updateCollaborator = createRoutine(
-  `DZ/COLLABORATOR/UPDATE`,
-);
+export const updateCollaborator = createRoutine(`DZ/COLLABORATOR/UPDATE`);
 export const removeCollaborator = createRoutine(`DZ/COLLABORATOR/REMOVE`);
 export const receiveCollaboratorPatch = createRoutine(
   `DZ/COLLABORATOR/RECEIVE_PATCH`,
@@ -354,36 +397,35 @@ export const asyncFetchCollaborators = (payload) => async (dispatch) => {
     const { data } = await fetchCollaboratorsRequest({
       node: payload.nodeId,
     });
-    dispatch(fetchCollaborators.success({
-      ...payload,
-      data,
-    }))
+    dispatch(
+      fetchCollaborators.success({
+        ...payload,
+        data,
+      }),
+    );
   } catch (err) {
-    dispatch(fetchCollaborators.failure({
-      ...payload,
-      data: err,
-    }))
+    dispatch(
+      fetchCollaborators.failure({
+        ...payload,
+        data: err,
+      }),
+    );
   } finally {
-    dispatch(fetchCollaborators.fulfill(payload))
+    dispatch(fetchCollaborators.fulfill(payload));
   }
-}
+};
 
 // --- Invitation
 export const openInvitation = createAction('DZ/WORKSPACE/OPEN_INVITATION');
 export const closeInvitation = createAction('DZ/WORKSPACE/CLOSE_INVITATION');
-export const createInvitation = createRoutine(
-  'DZ/WORKSPACE/CREATE_INVITATION',
-);
+export const createInvitation = createRoutine('DZ/WORKSPACE/CREATE_INVITATION');
 export const asyncCreateInvitation = (payload) => async (dispatch) => {
   const { bundleId, nodeId } = payload;
   dispatch(createInvitation.request(payload));
   try {
-    const { data: invitation } = await createInvitationRequest(
-      bundleId,
-      {
-        node_id: nodeId,
-      }
-    );
+    const { data: invitation } = await createInvitationRequest(bundleId, {
+      node_id: nodeId,
+    });
     dispatch(
       createInvitation.success({
         bundleId,
@@ -407,7 +449,7 @@ export const asyncCreateInvitation = (payload) => async (dispatch) => {
       }),
     );
   }
-}
+};
 
 export const markRewordShared = createRoutine('DZ/BUNDLE/MARK_REWORD_SHARED');
 export const asyncMarkRewordShared = (payload) => async (dispatch) => {
@@ -420,7 +462,7 @@ export const asyncMarkRewordShared = (payload) => async (dispatch) => {
   } catch (err) {
     logging.debug(err);
   }
-}
+};
 
 // --- Like
 export const initLikeWidget = createAction(`DZ/REWORDING/INIT_LIKE_WIDGET`);
@@ -434,7 +476,9 @@ export const updateRewordingLikesCount = createAction(
 export const fetchRewordingCommentTree = createRoutine(
   `DZ/COMMENT/GET_COMMENT_TREE`,
 );
-export const getRewordingComment = createRoutine(`DZ/COMMENT/GET_REWORDING_COMMENT`);
+export const getRewordingComment = createRoutine(
+  `DZ/COMMENT/GET_REWORDING_COMMENT`,
+);
 export const createRewordingComment = createRoutine(
   `DZ/COMMENT/CREATE_REWORDING_COMMENT`,
 );
@@ -462,7 +506,10 @@ export const receiveUpdatedRewordingComment = createAction(
 export const increaseRootCount = createAction(`DZ/COMMENT/INCREASE_ROOT_COUNT`);
 export const decreaseRootCount = createAction(`DZ/COMMENT/DECREASE_ROOT_COUNT`);
 
-export const asyncCreateRewordingComment = (payload) => async (dispatch, getState) => {
+export const asyncCreateRewordingComment = (payload) => async (
+  dispatch,
+  getState,
+) => {
   const hasAuthed = hasAuthedUser(getState());
   if (!hasAuthed) {
     Router.push({
@@ -471,7 +518,7 @@ export const asyncCreateRewordingComment = (payload) => async (dispatch, getStat
         redirect: window.location.pathname,
         action: true,
       },
-    })
+    });
     return undefined;
   }
   const { nodeId, rewordingId, parentId, content } = payload;
@@ -508,7 +555,7 @@ export const asyncCreateRewordingComment = (payload) => async (dispatch, getStat
     );
     throw err;
   }
-}
+};
 
 export const asyncUpdateRewordingComment = (payload) => async (dispatch) => {
   const { nodeId, rewordingId, id, content } = payload;
@@ -519,7 +566,7 @@ export const asyncUpdateRewordingComment = (payload) => async (dispatch) => {
       id,
       content,
     });
-    
+
     const normalized = normalize(comment, rewordingCommentSchema);
     dispatch(
       updateRewordingComment.success({
@@ -537,7 +584,7 @@ export const asyncUpdateRewordingComment = (payload) => async (dispatch) => {
     );
     throw err;
   }
-}
+};
 
 export const asyncDeleteRewordingComment = (payload) => async (dispatch) => {
   try {
@@ -545,13 +592,13 @@ export const asyncDeleteRewordingComment = (payload) => async (dispatch) => {
       node_id: payload.nodeId,
       id: payload.id,
     });
-    
+
     const info = {
       commentId: payload.id,
       rewordingId: payload.rewordingId,
       parentId: payload.parentId,
     };
-    
+
     dispatch(deleteRewordingComment.success(info));
   } catch (err) {
     dispatch(
@@ -561,15 +608,20 @@ export const asyncDeleteRewordingComment = (payload) => async (dispatch) => {
       }),
     );
   }
-}
-  
+};
 
 // --- Appending block
 export const initAppendBlock = createAction(`DZ/APPENDING/INIT_APPEND_BLOCK`);
-export const createAppendBlock = createAction(`DZ/APPENDING/CREATE_APPEND_BLOCK`);
-export const updateAppendBlock = createAction(`DZ/APPENDING/UPDATE_APPEND_BLOCK`);
+export const createAppendBlock = createAction(
+  `DZ/APPENDING/CREATE_APPEND_BLOCK`,
+);
+export const updateAppendBlock = createAction(
+  `DZ/APPENDING/UPDATE_APPEND_BLOCK`,
+);
 export const postAppendBlock = createAction(`DZ/APPENDING/POST_APPEND_BLOCK`);
-export const removeAppendBlock = createAction(`DZ/APPENDING/REMOVE_APPEND_BLOCK`);
+export const removeAppendBlock = createAction(
+  `DZ/APPENDING/REMOVE_APPEND_BLOCK`,
+);
 
 // --- Block
 export const registerBlock = createAction(`DZ/BLOCK/REGISTER`);
@@ -583,46 +635,62 @@ export const toggleBlockExpanded = createAction(`DZ/BLOCK/TOGGLE_EXPANDED`);
 export const updateBlockEditor = createAction(`DZ/BLOCK/UPDATE_EDITOR`);
 export const updateBlockState = createAction(`DZ/BLOCK/UPDATE_BLOCK_STATE`);
 
-// --- Rewording 
+// --- Rewording
 export const openCommentPanel = createAction(
   'DIMZOU_REWORDING/OPEN_COMMENT_PANEL',
 );
 export const closeCommentPanel = createAction(
   'DIMZOU_REWORDING/CLOSE_COMMENT_PANEL',
 );
-export const initRewordingEdit = createAction(`DZ/REWORDING/INIT_REWORDING_EDIT`);
-export const exitRewordingEdit = createAction(`DZ/REWORDING/EXIT_REWORDING_EDIT`);
-export const updateRewordingEditor = createAction(`DZ/REWORDING/UPDATE_REWORDING_EDITOR`);
+export const initRewordingEdit = createAction(
+  `DZ/REWORDING/INIT_REWORDING_EDIT`,
+);
+export const exitRewordingEdit = createAction(
+  `DZ/REWORDING/EXIT_REWORDING_EDIT`,
+);
+export const updateRewordingEditor = createAction(
+  `DZ/REWORDING/UPDATE_REWORDING_EDITOR`,
+);
 
 // -- User Drafts (Workspace Explore)
 export const fetchUserDrafts = createRoutine('DZ/WORKSPACE/FETCH_USER_DRAFTS');
 export const createBundle = createRoutine(`DZ/WORKSPACE/CREATE_BUNDLE`);
 export const createNode = createRoutine(`DZ/WORKSPACE/CREATE_NODE`);
-export const bundleUpdateSingal = createRoutine(`DZ/WORKSPACE/BUNDLE_UPDATE_SIGNAL`);
+export const bundleUpdateSingal = createRoutine(
+  `DZ/WORKSPACE/BUNDLE_UPDATE_SIGNAL`,
+);
 export const mergeBundle = createRoutine('DZ/WORKSPACE/MERGE_BUNDLE');
 export const mergeBundlePatch = createAction('DZ/WORKSPACE/MERGE_BUNDLE_PATCH');
-export const separateChapterPatch = createAction('DZ/WORKSPACE/SEPARATE_CHAPTER_PATCH');
+export const separateChapterPatch = createAction(
+  'DZ/WORKSPACE/SEPARATE_CHAPTER_PATCH',
+);
 export const newBundlePatch = createAction('DZ/WORKSPACE/NEW_BUNDLE_PATCH');
 // export const fetchUserCreated = createRoutine('DZ/WORKSPACE/FETCH_USER_CREATED');
-export const fetchUserRelated = createRoutine('DZ/WORKSPACE/FETCH_USER_RELATED');
+export const fetchUserRelated = createRoutine(
+  'DZ/WORKSPACE/FETCH_USER_RELATED',
+);
 
 export const initCreateChapter = createAction(
-  `DZ/WORKSPACE/INIT_CREATE_CHAPTER`
+  `DZ/WORKSPACE/INIT_CREATE_CHAPTER`,
 );
 export const exitCreateChapter = createAction(
   `DZ/WORKSPACE/EXIT_CREATE_CHAPTER`,
 );
 export const initCreateCover = createAction(`DZ/WORKSPACE/INIT_CREATE_COVER`);
 export const exitCreateCover = createAction(`DZ/WORKSPACE/EXIT_CREATE_COVER`);
-export const resetWorkspaceCreation = createAction(`DZ/WORKSPACE/RESET_CREATION`);
-  
+export const resetWorkspaceCreation = createAction(
+  `DZ/WORKSPACE/RESET_CREATION`,
+);
+
 export const initRelease = createAction(`DZ/WORKSPACE/INIT_RELEASE`);
 export const exitRelease = createAction(`DZ/WORKSPACE/EXIT_RELEASE`);
 export const setReleaseStep = createAction(`DZ/WORKSPACE/SET_RELEASE_STEP`);
 export const setReleaseData = createAction(`DZ/WORKSPACE/SET_RELEASE_DATA`);
 
-export const showCurrentUserDrafts = createAction(`DZ/WORKSPACE/SHOW_CURRENT_USER_DRAFTS`);
-  
+export const showCurrentUserDrafts = createAction(
+  `DZ/WORKSPACE/SHOW_CURRENT_USER_DRAFTS`,
+);
+
 export const asyncFetchUserDrafts = (payload) => async (dispatch) => {
   dispatch(fetchUserDrafts.trigger());
   try {
@@ -632,24 +700,30 @@ export const asyncFetchUserDrafts = (payload) => async (dispatch) => {
       ...(payload.next || {}),
     });
     const normalized = normalize(data, [dimzouBundleDescSchema]);
-    dispatch(fetchUserDrafts.success({
-      refresh: !payload,
-      raw: data,
-      data: normalized.result,
-      entities: normalized.entities,
-      next: pagination.next ? {
-        page: pagination.next,
-        page_size: pagination.page_size,
-      } : null,
-    }));
+    dispatch(
+      fetchUserDrafts.success({
+        refresh: !payload,
+        raw: data,
+        data: normalized.result,
+        entities: normalized.entities,
+        next: pagination.next
+          ? {
+            page: pagination.next,
+            page_size: pagination.page_size,
+          }
+          : null,
+      }),
+    );
   } catch (err) {
-    dispatch(fetchUserDrafts.failure({
-      data: err,
-    }));
+    dispatch(
+      fetchUserDrafts.failure({
+        data: err,
+      }),
+    );
   } finally {
     dispatch(fetchUserDrafts.fulfill());
   }
-}
+};
 
 export const asyncFetchUserRelated = (payload) => async (dispatch) => {
   dispatch(fetchUserRelated.trigger(payload));
@@ -661,26 +735,32 @@ export const asyncFetchUserRelated = (payload) => async (dispatch) => {
       ...(payload.next || {}),
     });
     const normalized = normalize(data, [dimzouBundleDescSchema]);
-    dispatch(fetchUserRelated.success({
-      userId: payload.userId,
-      raw: data,
-      data: normalized.result,
-      entities: normalized.entities,
-      next: pagination.next ? {
-        page: pagination.next,
-        page_size: pagination.page_size,
-      } : null,
-    }));
+    dispatch(
+      fetchUserRelated.success({
+        userId: payload.userId,
+        raw: data,
+        data: normalized.result,
+        entities: normalized.entities,
+        next: pagination.next
+          ? {
+            page: pagination.next,
+            page_size: pagination.page_size,
+          }
+          : null,
+      }),
+    );
   } catch (err) {
-    dispatch(fetchUserRelated.failure({
-      userId: payload.userId,
-      data: err,
-    }));
+    dispatch(
+      fetchUserRelated.failure({
+        userId: payload.userId,
+        data: err,
+      }),
+    );
   } finally {
     dispatch(fetchUserRelated.fulfill(payload));
   }
-}
-    
+};
+
 export const asyncMergeBundle = (payload) => async (dispatch) => {
   dispatch(mergeBundle.trigger());
   try {
@@ -688,12 +768,14 @@ export const asyncMergeBundle = (payload) => async (dispatch) => {
     await mergeBundleRequest(payload.bundleId, {
       merged_bundle_id: payload.sourceBundleId,
     });
-    
+
     const { data } = await getBundleDescRequest(payload.bundleId);
-    const normalized = normalize(data, dimzouBundleDescSchema)
-    dispatch(updateBundleDesc({
-      entities: normalized.entities,
-    }))
+    const normalized = normalize(data, dimzouBundleDescSchema);
+    dispatch(
+      updateBundleDesc({
+        entities: normalized.entities,
+      }),
+    );
     // reset nodeState
     // const bundleState = selectBundleState(getState(), { bundleId: payload.sourceBundleId });
     // const nodeId = get(bundleState, 'data.nodes.0.id');
@@ -703,7 +785,7 @@ export const asyncMergeBundle = (payload) => async (dispatch) => {
     //     nodeId,
     //   }))
     // }
-    
+
     // redirect, TODO: new node id required.
     // if (Router.query.bundleId === String(payload.sourceBundleId)) {
     //   Router.replace({
@@ -714,32 +796,35 @@ export const asyncMergeBundle = (payload) => async (dispatch) => {
     //     },
     //   }, `/draft/${payload.bundleId}/${Router.query.nodeId}`)
     // }
-    
   } catch (err) {
     notification.error({
       message: 'Error',
       description: err.message,
     });
-    dispatch(mergeBundle.failure({
-      data: err,
-    }));
+    dispatch(
+      mergeBundle.failure({
+        data: err,
+      }),
+    );
   } finally {
     dispatch(mergeBundle.fulfill());
   }
-}
+};
 
 export const separateNode = createRoutine('DZ/WORKPACE/SEPARATE_NODE');
 export const asyncSeparateNode = (payload) => async (dispatch) => {
   try {
     const { data } = await separateNodeRequest(payload.bundleId, {
       node_id: payload.nodeId,
-    })
+    });
 
     const { data: updated } = await getBundleDescRequest(payload.bundleId);
     const normalized = normalize(updated, dimzouBundleDescSchema);
-    dispatch(updateBundleDesc({
-      entities: normalized.entities,
-    }));
+    dispatch(
+      updateBundleDesc({
+        entities: normalized.entities,
+      }),
+    );
 
     // dispatch(separateNode.success({
     //   bundleId: payload.bundleId,
@@ -747,20 +832,25 @@ export const asyncSeparateNode = (payload) => async (dispatch) => {
     //   data,
     // }))
     if (
-      Router.query.bundleId  === String(payload.bundleId) && 
+      Router.query.bundleId === String(payload.bundleId) &&
       Router.query.nodeId === String(payload.nodeId)
     ) {
-      await dispatch(initBundle({
-        bundleId: data.id,
-        nodeId: Router.query.nodeId,
-      }));
-      Router.replace({
-        pathname: '/dimzou-edit',
-        query: {
+      await dispatch(
+        initBundle({
           bundleId: data.id,
           nodeId: Router.query.nodeId,
+        }),
+      );
+      Router.replace(
+        {
+          pathname: '/dimzou-edit',
+          query: {
+            bundleId: data.id,
+            nodeId: Router.query.nodeId,
+          },
         },
-      }, `/draft/${data.id}/${Router.query.nodeId}`)
+        `/draft/${data.id}/${Router.query.nodeId}`,
+      );
     }
     // dispatch(asyncFetchUserDrafts());
   } catch (err) {
@@ -769,7 +859,7 @@ export const asyncSeparateNode = (payload) => async (dispatch) => {
       description: err.message,
     });
   }
-}
+};
 
 export const asyncCreateBundle = (payload) => async (dispatch) => {
   dispatch(createBundle.trigger(payload));
@@ -781,14 +871,14 @@ export const asyncCreateBundle = (payload) => async (dispatch) => {
       summary_meta: payload.summary,
       is_multi_chapter: payload.isMultiChapter,
       template: payload.template,
-    }
-    const { data } = await createOriginBundleRequest(params)
+    };
+    const { data } = await createOriginBundleRequest(params);
     if (payload.textContent) {
       await insertContentRequest(data.id, data.node_id, {
         content: payload.textContent,
         html_content: payload.htmlContent,
         content_meta: payload.content,
-      })
+      });
     }
     if (data.cover) {
       const template = 'I';
@@ -800,16 +890,19 @@ export const asyncCreateBundle = (payload) => async (dispatch) => {
             cropData: data.cover.data,
           },
         },
-      })
+      });
     }
     dispatch(asyncFetchUserDrafts());
-    Router.replace({
-      pathname: '/dimzou-edit',
-      query: {
-        bundleId: data.id,
-        nodeId: data.node_id,
+    Router.replace(
+      {
+        pathname: '/dimzou-edit',
+        query: {
+          bundleId: data.id,
+          nodeId: data.node_id,
+        },
       },
-    }, `/draft/${data.id}/${data.node_id}`);
+      `/draft/${data.id}/${data.node_id}`,
+    );
     if (payload.isMultiChapter) {
       dispatch(exitCreateCover());
     } else {
@@ -818,12 +911,12 @@ export const asyncCreateBundle = (payload) => async (dispatch) => {
   } catch (err) {
     logging.debug(err);
   }
-}
-  
+};
+
 export const asyncCreateNode = (payload) => async (dispatch) => {
   const { bundleId, data } = payload;
   dispatch(createNode.trigger(payload));
-  
+
   const body = {
     title_meta: data.title,
     html_title: data.htmlTitle,
@@ -834,20 +927,17 @@ export const asyncCreateNode = (payload) => async (dispatch) => {
     },
     permission: data.permission,
   };
-  
+
   try {
     dispatch(createNode.request({ bundleId }));
-    const { data: node } = await createNodeRequest(
-      bundleId,
-      body,
-    );
-  
+    const { data: node } = await createNodeRequest(bundleId, body);
+
     if (data.textContent) {
       await insertContentRequest(bundleId, node.id, {
         content: data.textContent,
         html_content: data.htmlContent,
         content_meta: data.content,
-      })
+      });
     }
     if (data.cover) {
       await submitCoverRequest(bundleId, node.id, {
@@ -858,13 +948,13 @@ export const asyncCreateNode = (payload) => async (dispatch) => {
             cropData: data.cover.data,
           },
         },
-      })
+      });
     }
-  
+
     const nodes = [node];
-  
+
     dispatch(asyncFetchUserDrafts());
-  
+
     dispatch(
       createNode.success({
         bundleId,
@@ -874,48 +964,53 @@ export const asyncCreateNode = (payload) => async (dispatch) => {
         data: nodes,
       }),
     );
-    Router.push({
-      pathname: '/dimzou-edit',
-      query: {
-        bundleId,
-        nodeId: node.id,
+    Router.push(
+      {
+        pathname: '/dimzou-edit',
+        query: {
+          bundleId,
+          nodeId: node.id,
+        },
       },
-    }, `/draft/${bundleId}/${node.id}`);
+      `/draft/${bundleId}/${node.id}`,
+    );
     dispatch(exitCreateChapter());
-      
   } catch (err) {
     dispatch(createNode.failure({ bundleId, data: err }));
     throw err;
   } finally {
     dispatch(createNode.fulfill({ bundleId }));
   }
-}
-
+};
 
 export const setApplyScenes = createRoutine('DZ/BUNDLE/SET_APPLY_SCENES');
 export const release = createRoutine('DZ/BUNDLE/RELEASE');
 export const preRelease = createRoutine('DZ/BUNDLE/PRE_PUBLISH');
 export const asyncSetApplyScenes = (payload) => async (dispatch) => {
   try {
-    const { data } = await setApplyScenesRequest(payload.bundleId, payload.data);
-    dispatch(setApplyScenes.success({
-      bundleId: payload.bundleId,
-      data: data.apply_scenes,
-      entityMutators: [
-        {
-          [dimzouBundleDescSchema.key]: {
-            [payload.bundleId]: {
-              apply_scenes: { $set: data.apply_scenes },
+    const { data } = await setApplyScenesRequest(
+      payload.bundleId,
+      payload.data,
+    );
+    dispatch(
+      setApplyScenes.success({
+        bundleId: payload.bundleId,
+        data: data.apply_scenes,
+        entityMutators: [
+          {
+            [dimzouBundleDescSchema.key]: {
+              [payload.bundleId]: {
+                apply_scenes: { $set: data.apply_scenes },
+              },
             },
           },
-        },
-      ],
-    }))
+        ],
+      }),
+    );
   } catch (err) {
     throw err;
   }
-}
-
+};
 
 export const asyncRelease = (payload) => async (dispatch) => {
   const { bundleId, data } = payload;
@@ -928,20 +1023,22 @@ export const asyncRelease = (payload) => async (dispatch) => {
   dispatch(release.request({ bundleId }));
   try {
     const { data: result } = await publishRequest(bundleId, body);
-    dispatch(release.success({
-      ...payload,
-      entityMutators: [
-        {
-          [dimzouBundleDescSchema.key]: {
-            [bundleId]: {
-              status: {
-                $set: BUNDLE_STATUS_PUBLISHED,
+    dispatch(
+      release.success({
+        ...payload,
+        entityMutators: [
+          {
+            [dimzouBundleDescSchema.key]: {
+              [bundleId]: {
+                status: {
+                  $set: BUNDLE_STATUS_PUBLISHED,
+                },
               },
             },
           },
-        },
-      ],
-    }));
+        ],
+      }),
+    );
     // sync drafts meta;
     dispatch(asyncFetchUserDrafts());
     return result;
@@ -954,19 +1051,18 @@ export const asyncRelease = (payload) => async (dispatch) => {
       }),
     );
   }
-}
-
+};
 
 export const asyncPreRelease = (payload) => async (dispatch) => {
   try {
     await prePublishRequest(payload.bundleId, {
       nodes: payload.data,
-    })
-    dispatch(preRelease.success(payload))
+    });
+    dispatch(preRelease.success(payload));
   } catch (err) {
     throw err;
   }
-}
+};
 
 export const fetchBundleDesc = createRoutine(`DZ/PUBLICATION/BUNDLE_DESC`);
 export const asyncFetchBundleDesc = (payload) => async (dispatch) => {
@@ -974,23 +1070,29 @@ export const asyncFetchBundleDesc = (payload) => async (dispatch) => {
     dispatch(fetchBundleDesc.request(payload));
     const { data } = await getBundleDescRequest(payload.bundleId);
     const normalized = normalize(data, dimzouBundleDescSchema);
-    dispatch(fetchBundleDesc.success({
-      bundleId: data.id,
-      userId: data.user_id,
-      entities: normalized.entities,
-    }))
+    dispatch(
+      fetchBundleDesc.success({
+        bundleId: data.id,
+        userId: data.user_id,
+        entities: normalized.entities,
+      }),
+    );
   } catch (err) {
-    dispatch(fetchBundleDesc.failure({
-      bundleId: payload.bundleId,
-      data: err,
-    }));
+    dispatch(
+      fetchBundleDesc.failure({
+        bundleId: payload.bundleId,
+        data: err,
+      }),
+    );
   } finally {
     dispatch(fetchBundleDesc.fulfill(payload));
   }
-}
+};
 
 // Publication
-export const fetchBundlePublication = createRoutine(`DZ/PUBLICATION/FETCH_OF_BUNDLE`);
+export const fetchBundlePublication = createRoutine(
+  `DZ/PUBLICATION/FETCH_OF_BUNDLE`,
+);
 
 export const asyncFetchBundlePublication = (payload) => async (dispatch) => {
   dispatch(fetchBundlePublication.trigger(payload));
@@ -1001,33 +1103,39 @@ export const asyncFetchBundlePublication = (payload) => async (dispatch) => {
       bundle: payload.bundleId,
       node: payload.nodeId,
       related: false,
-    })
+    });
     const { nodes, related, ...rest } = data;
     const normalized = normalize(rest, publicationSchema);
-    dispatch(fetchBundlePublication.success({
-      bundleId: payload.bundleId,
-      nodeId: payload.nodeId,
-      publicationId: normalized.result,
-      entities: normalized.entities,
-    }));
+    dispatch(
+      fetchBundlePublication.success({
+        bundleId: payload.bundleId,
+        nodeId: payload.nodeId,
+        publicationId: normalized.result,
+        entities: normalized.entities,
+      }),
+    );
   } catch (err) {
-    dispatch(fetchBundlePublication.failure({
-      bundleId: payload.bundleId,
-      nodeId: payload.nodeId,
-      data: err,
-    }));
+    dispatch(
+      fetchBundlePublication.failure({
+        bundleId: payload.bundleId,
+        nodeId: payload.nodeId,
+        data: err,
+      }),
+    );
   } finally {
     dispatch(fetchBundlePublication.fulfill(payload));
   }
+};
 
-}
-
-export const tryToFetchPublication = (payload) => async (dispatch, getState) => {
+export const tryToFetchPublication = (payload) => async (
+  dispatch,
+  getState,
+) => {
   const nodeState = selectNodePublication(getState(), payload);
   if (!nodeState || (!nodeState.data && !nodeState.isFetching)) {
     dispatch(asyncFetchBundlePublication(payload));
   }
-}
+};
 
 // user dimzous
 export const fetchUserDimzous = createRoutine('DZ/USER/FETCH_BUNDLE_LIST');
@@ -1036,17 +1144,18 @@ export const fetchUserDimzous = createRoutine('DZ/USER/FETCH_BUNDLE_LIST');
 // }
 
 // dashboard related
-export const fetchDimzouReports = createRoutine(
-  'DZ/DASH/GET_DIMZOU_REPORTS',
-);
+export const fetchDimzouReports = createRoutine('DZ/DASH/GET_DIMZOU_REPORTS');
 export const fetchReaderReport = createRoutine('DZ/DASH/READER_REPORT');
 export const fetchReaderTaste = createRoutine('DZ/DASH/FETCH_READER_TASTE');
 export const fetchReaderCommented = createRoutine(
   'DZ/DASH/FETCH_READER_COMMENTED',
 );
 
-export const asyncFetchDimzouReportsList = (payload) => async (dispatch, getState) => {
-  const subState = selectPlainDimzouReports(getState())
+export const asyncFetchDimzouReportsList = (payload) => async (
+  dispatch,
+  getState,
+) => {
+  const subState = selectPlainDimzouReports(getState());
   if (!subState.loading) {
     dispatch(fetchDimzouReports.trigger(payload));
     try {
@@ -1075,7 +1184,7 @@ export const asyncFetchDimzouReportsList = (payload) => async (dispatch, getStat
       dispatch(fetchDimzouReports.fulfill());
     }
   }
-}
+};
 
 export const asyncFetchReaderReport = () => async (dispatch) => {
   dispatch(fetchReaderReport.trigger());
@@ -1089,9 +1198,12 @@ export const asyncFetchReaderReport = () => async (dispatch) => {
   } finally {
     dispatch(fetchReaderReport.fulfill());
   }
-}
+};
 
-export const asyncFetchReaderTasteList = (payload) => async (dispatch, getState) => {
+export const asyncFetchReaderTasteList = (payload) => async (
+  dispatch,
+  getState,
+) => {
   const subState = selectPlainReaderTaste(getState());
   if (subState.loading) {
     return;
@@ -1129,34 +1241,34 @@ export const asyncFetchReaderTasteList = (payload) => async (dispatch, getState)
   } finally {
     dispatch(fetchReaderTaste.fulfill());
   }
-}
+};
 
 export const asyncFetchReaderCommented = () => async (dispatch) => {
-  dispatch(fetchReaderCommented.trigger())
+  dispatch(fetchReaderCommented.trigger());
   try {
-    dispatch(fetchReaderCommented.request())
+    dispatch(fetchReaderCommented.request());
     const { data } = await fetchReaderCommentedRequest();
-    dispatch(fetchReaderCommented.success({ data }))
+    dispatch(fetchReaderCommented.success({ data }));
   } catch (err) {
     dispatch(fetchReaderCommented.failure(err));
     throw err;
   } finally {
     dispatch(fetchReaderCommented.fulfill());
   }
-}
+};
 
 export const createTranslation = createRoutine('DZ/BUNDLE/CREATE_TRANSLATION');
 export const asyncCreateTranslation = (payload) => async (dispatch) => {
-  dispatch(createTranslation.trigger())
+  dispatch(createTranslation.trigger());
   try {
-    dispatch(createTranslation.request())
+    dispatch(createTranslation.request());
     const { data } = await createTranslationBundleRequest({
       source_type: 'dimzou_bundle',
       bundle_id: payload.bundleId,
       node_id: payload.nodeId,
       language: payload.language,
     });
-    dispatch(createTranslation.success({ data }))
+    dispatch(createTranslation.success({ data }));
     return data;
   } catch (err) {
     dispatch(createTranslation.failure(err));
@@ -1164,14 +1276,20 @@ export const asyncCreateTranslation = (payload) => async (dispatch) => {
   } finally {
     dispatch(createTranslation.fulfill());
   }
-}
+};
 
-export const initSectionRelease = createAction('DZ/BUNDLE/INIT_SECTION_RELEASE');
-export const exitSectionRelease = createAction('DZ/BUNDLE/EXIT_SECTION_RELEASE');
-export const setSectionReleaseData = createAction('DZ/BUNDLE/UPDATE_SECTION_RELEASE');
+export const initSectionRelease = createAction(
+  'DZ/BUNDLE/INIT_SECTION_RELEASE',
+);
+export const exitSectionRelease = createAction(
+  'DZ/BUNDLE/EXIT_SECTION_RELEASE',
+);
+export const setSectionReleaseData = createAction(
+  'DZ/BUNDLE/UPDATE_SECTION_RELEASE',
+);
 export const sectionRelease = createRoutine('DZ/BUNDLE/SECTION_RELEASE');
 export const asyncSectionRelease = (payload) => async (dispatch) => {
-  dispatch(sectionRelease.trigger(payload))
+  dispatch(sectionRelease.trigger(payload));
   try {
     const { data } = await sectionReleaseRequest(payload.bundleId, {
       title_paragraph_id: payload.titleId,
@@ -1182,14 +1300,16 @@ export const asyncSectionRelease = (payload) => async (dispatch) => {
     });
     return data;
   } catch (err) {
-    dispatch(sectionRelease.failure({
-      bundleId: payload.bundleId,
-      nodeId: payload.nodeId,
-      titleId: payload.titleId,
-      data: err,
-    }))
+    dispatch(
+      sectionRelease.failure({
+        bundleId: payload.bundleId,
+        nodeId: payload.nodeId,
+        titleId: payload.titleId,
+        data: err,
+      }),
+    );
     throw err;
   } finally {
-    dispatch(sectionRelease.fulfill(payload))
+    dispatch(sectionRelease.fulfill(payload));
   }
-}
+};

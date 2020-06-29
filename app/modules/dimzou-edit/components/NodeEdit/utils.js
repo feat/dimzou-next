@@ -24,7 +24,6 @@ export function getActiveHash(outline, renderInfo) {
   const rangeStartIndex = points.findIndex((item) => item.type === 'start');
   const rangeStopIndex = points.findIndex((item) => item.type === 'end');
   const renderHeaders = points.slice(rangeStartIndex+1, rangeStopIndex)
-  
   let activeHeader;
   // logging.debug('getActiveHash', points, rangeStartIndex, rangeStopIndex);
 

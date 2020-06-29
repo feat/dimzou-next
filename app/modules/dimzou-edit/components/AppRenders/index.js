@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useEffect, useRef } from 'react';
-import { 
+import {
   TemplateI,
   TemplateII,
   TemplateIII,
@@ -8,7 +8,7 @@ import {
   TemplateV,
 } from '../Template';
 import CoverTemplate from '../CoverTemplate';
-import SidebarName from '../SidebarName'
+import SidebarName from '../SidebarName';
 
 const renderProps = {
   id: PropTypes.string, // main content header,
@@ -18,26 +18,25 @@ const renderProps = {
   cover: PropTypes.node,
   sidebarFirst: PropTypes.node,
   sidebarSecond: PropTypes.node,
-}
+};
 
 const delta = 15;
-
 
 function setSidebarFirst(dom, wrapper, offsetTop = 0) {
   if (!dom || !wrapper) {
     return;
   }
-  
+
   const header = document.getElementById('header');
   const offset = header ? header.clientHeight : 0;
   const viewportHeight =
-      window.innerHeight || document.documentElement.clientHeight;
+    window.innerHeight || document.documentElement.clientHeight;
   const wrapperBox = wrapper.getBoundingClientRect();
-  const height =  Math.min(wrapperBox.bottom, viewportHeight) - offset - offsetTop - delta;
+  const height =
+    Math.min(wrapperBox.bottom, viewportHeight) - offset - offsetTop - delta;
   // eslint-disable-next-line
   dom.style.height = `${height}px`;
 }
-
 
 function setStickyOffset(doms) {
   const header = document.getElementById('header');
@@ -47,7 +46,7 @@ function setStickyOffset(doms) {
       // eslint-disable-next-line
       dom.style.top = `${offset}px`;
     }
-  })
+  });
 }
 
 function useDimzouLayout(deps) {
@@ -60,36 +59,34 @@ function useDimzouLayout(deps) {
   // set sticky
   useEffect(() => {
     const updateSitckyOffset = () => {
-      setStickyOffset([
-        sidebarFirstRef.current,
-        sidebarSecondRef.current,
-      ])
-    }
+      setStickyOffset([sidebarFirstRef.current, sidebarSecondRef.current]);
+    };
     updateSitckyOffset();
-    window.addEventListener('resize', updateSitckyOffset)
+    window.addEventListener('resize', updateSitckyOffset);
     return () => {
-      window.addEventListener('resize', updateSitckyOffset)
-    }
-  }, deps)
+      window.addEventListener('resize', updateSitckyOffset);
+    };
+  }, deps);
 
   // handle sidebarFirst height;
   useEffect(() => {
     const updateSidebarHeight = () => {
       let offsetTop;
       if (labelRef.current) {
-        const marginBottom = window.getComputedStyle(labelRef.current).marginBottom;
+        const marginBottom = window.getComputedStyle(labelRef.current)
+          .marginBottom;
         offsetTop = labelRef.current.clientHeight + parseInt(marginBottom, 10);
       }
       setSidebarFirst(wrapRef.current, containerRef.current, offsetTop);
-    }
+    };
     updateSidebarHeight();
-    
+
     window.addEventListener('scroll', updateSidebarHeight);
-    window.addEventListener('resize', updateSidebarHeight)
+    window.addEventListener('resize', updateSidebarHeight);
     return () => {
       window.removeEventListener('scroll', updateSidebarHeight);
-      window.removeEventListener('resize', updateSidebarHeight)
-    }
+      window.removeEventListener('resize', updateSidebarHeight);
+    };
   }, deps);
 
   return {
@@ -98,7 +95,7 @@ function useDimzouLayout(deps) {
     labelRef,
     sidebarFirstRef,
     sidebarSecondRef,
-  }
+  };
 }
 
 export function BaseRender({ main, sidebarFirst }) {
@@ -111,7 +108,7 @@ export function BaseRender({ main, sidebarFirst }) {
   } = useDimzouLayout([]);
 
   return (
-    <div className='dz-TemplateBase' ref={containerRef}>
+    <div className="dz-TemplateBase" ref={containerRef}>
       <div className="dz-TemplateBase__sidebarFirst">
         <div ref={sidebarFirstRef} style={{ position: 'sticky' }}>
           <SidebarName ref={labelRef} />
@@ -120,21 +117,19 @@ export function BaseRender({ main, sidebarFirst }) {
           </div>
         </div>
       </div>
-      <div className="dz-TemplateBase__main">
-        {main}
-      </div>
-      <div className="dz-TemplateBase__sidebarSecond" ref={sidebarSecondRef}></div>
+      <div className="dz-TemplateBase__main">{main}</div>
+      <div className="dz-TemplateBase__sidebarSecond" ref={sidebarSecondRef} />
       {/* <div className="dz-TemplateBase__sidebarThird"></div> */}
     </div>
-  )
+  );
 }
 
 BaseRender.propTypes = {
   main: PropTypes.node,
   sidebarFirst: PropTypes.node,
-}
+};
 
-export function BundleRender({ main, sidebarFirst, sidebarSecond}) {
+export function BundleRender({ main, sidebarFirst, sidebarSecond }) {
   const {
     containerRef,
     wrapRef,
@@ -146,27 +141,22 @@ export function BundleRender({ main, sidebarFirst, sidebarSecond}) {
   return (
     <TemplateIV
       ref={containerRef}
-      main={
-        main
-      }
-      sidebarFirst={(
+      main={main}
+      sidebarFirst={
         <div ref={sidebarFirstRef} style={{ position: 'sticky' }}>
           <SidebarName ref={labelRef} />
           <div style={{ overflow: 'hidden' }} ref={wrapRef}>
             {sidebarFirst}
           </div>
         </div>
-      )}
-      sidebarSecond={(
-        <div 
-          ref={sidebarSecondRef}
-          style={{ position: 'sticky' }}
-        >
+      }
+      sidebarSecond={
+        <div ref={sidebarSecondRef} style={{ position: 'sticky' }}>
           {sidebarSecond}
         </div>
-      )}
+      }
     />
-  )
+  );
 }
 
 BundleRender.propTypes = {
@@ -174,10 +164,17 @@ BundleRender.propTypes = {
   // extra: PropTypes.node,
   sidebarFirst: PropTypes.node,
   sidebarSecond: PropTypes.node,
-}
+};
 
-
-export function CoverRender({ title, summary, cover, copyright, extra, sidebarFirst, sidebarSecond }) {
+export function CoverRender({
+  title,
+  summary,
+  cover,
+  copyright,
+  extra,
+  sidebarFirst,
+  sidebarSecond,
+}) {
   const {
     containerRef,
     wrapRef,
@@ -201,24 +198,21 @@ export function CoverRender({ title, summary, cover, copyright, extra, sidebarFi
           {extra}
         </>
       }
-      sidebarFirst={(
+      sidebarFirst={
         <div ref={sidebarFirstRef} style={{ position: 'sticky' }}>
           <SidebarName ref={labelRef} />
           <div style={{ overflow: 'hidden' }} ref={wrapRef}>
             {sidebarFirst}
           </div>
         </div>
-      )}
-      sidebarSecond={(
-        <div 
-          ref={sidebarSecondRef}
-          style={{ position: 'sticky' }}
-        >
+      }
+      sidebarSecond={
+        <div ref={sidebarSecondRef} style={{ position: 'sticky' }}>
           {sidebarSecond}
         </div>
-      )}
+      }
     />
-  )
+  );
 }
 
 CoverRender.propTypes = {
@@ -229,9 +223,17 @@ CoverRender.propTypes = {
   sidebarFirst: PropTypes.node,
   sidebarSecond: PropTypes.node,
   extra: PropTypes.node,
-}
+};
 
-export function ChapterNodeI({ id, title, summary, content, cover, sidebarFirst, sidebarSecond }) {
+export function ChapterNodeI({
+  id,
+  title,
+  summary,
+  content,
+  cover,
+  sidebarFirst,
+  sidebarSecond,
+}) {
   const {
     containerRef,
     wrapRef,
@@ -241,38 +243,41 @@ export function ChapterNodeI({ id, title, summary, content, cover, sidebarFirst,
   } = useDimzouLayout([]);
 
   return (
-    <TemplateI 
+    <TemplateI
       ref={containerRef}
-      sidebarFirst={(
+      sidebarFirst={
         <div ref={sidebarFirstRef} style={{ position: 'sticky' }}>
           <SidebarName ref={labelRef} />
-          <div ref={wrapRef}>
-            {sidebarFirst}
-          </div>
+          <div ref={wrapRef}>{sidebarFirst}</div>
         </div>
-      )}
-      sidebarSecond={(
-        <div 
-          ref={sidebarSecondRef}
-          style={{ position: 'sticky' }}
-        >
+      }
+      sidebarSecond={
+        <div ref={sidebarSecondRef} style={{ position: 'sticky' }}>
           {sidebarSecond}
         </div>
-      )}
+      }
       cover={cover}
       main={
-        <div id={id} className='dz-Edit__main'>
+        <div id={id} className="dz-Edit__main">
           {title}
           {summary}
           {content}
         </div>
       }
     />
-  )
+  );
 }
 ChapterNodeI.propTypes = renderProps;
 
-export function ChapterNodeII({ id, title, summary, content, cover, sidebarFirst, sidebarSecond }) {
+export function ChapterNodeII({
+  id,
+  title,
+  summary,
+  content,
+  cover,
+  sidebarFirst,
+  sidebarSecond,
+}) {
   const {
     containerRef,
     wrapRef,
@@ -284,22 +289,17 @@ export function ChapterNodeII({ id, title, summary, content, cover, sidebarFirst
   return (
     <TemplateII
       ref={containerRef}
-      sidebarFirst={(
+      sidebarFirst={
         <div ref={sidebarFirstRef} style={{ position: 'sticky' }}>
           <SidebarName ref={labelRef} />
-          <div ref={wrapRef}>
-            {sidebarFirst}
-          </div>
+          <div ref={wrapRef}>{sidebarFirst}</div>
         </div>
-      )}
-      sidebarSecond={(
-        <div 
-          ref={sidebarSecondRef}
-          style={{ position: 'sticky' }}
-        >
+      }
+      sidebarSecond={
+        <div ref={sidebarSecondRef} style={{ position: 'sticky' }}>
           {sidebarSecond}
         </div>
-      )}
+      }
       cover={cover}
       main={
         <div id={id} className="dz-Edit__main">
@@ -309,11 +309,19 @@ export function ChapterNodeII({ id, title, summary, content, cover, sidebarFirst
         </div>
       }
     />
-  )
+  );
 }
 ChapterNodeII.propTypes = renderProps;
 
-export function ChapterNodeIII({ id, title, summary, content, cover, sidebarFirst, sidebarSecond }) {
+export function ChapterNodeIII({
+  id,
+  title,
+  summary,
+  content,
+  cover,
+  sidebarFirst,
+  sidebarSecond,
+}) {
   const {
     containerRef,
     wrapRef,
@@ -321,26 +329,21 @@ export function ChapterNodeIII({ id, title, summary, content, cover, sidebarFirs
     sidebarFirstRef,
     sidebarSecondRef,
   } = useDimzouLayout([]);
-      
+
   return (
     <TemplateIII
       ref={containerRef}
-      sidebarFirst={(
+      sidebarFirst={
         <div ref={sidebarFirstRef} style={{ position: 'sticky' }}>
           <SidebarName ref={labelRef} />
-          <div ref={wrapRef}>
-            {sidebarFirst}
-          </div>
+          <div ref={wrapRef}>{sidebarFirst}</div>
         </div>
-      )}
-      sidebarSecond={(
-        <div 
-          ref={sidebarSecondRef}
-          style={{ position: 'sticky' }}
-        >
+      }
+      sidebarSecond={
+        <div ref={sidebarSecondRef} style={{ position: 'sticky' }}>
           {sidebarSecond}
         </div>
-      )}
+      }
       cover={cover}
       content={
         <div id={id} className="dz-Edit__main">
@@ -354,11 +357,19 @@ export function ChapterNodeIII({ id, title, summary, content, cover, sidebarFirs
         </div>
       }
     />
-  )
+  );
 }
 ChapterNodeIII.propTypes = renderProps;
 
-export function ChapterNodeIV({ id, title, summary, content, cover, sidebarFirst, sidebarSecond }) {
+export function ChapterNodeIV({
+  id,
+  title,
+  summary,
+  content,
+  cover,
+  sidebarFirst,
+  sidebarSecond,
+}) {
   const {
     containerRef,
     wrapRef,
@@ -367,24 +378,19 @@ export function ChapterNodeIV({ id, title, summary, content, cover, sidebarFirst
     sidebarSecondRef,
   } = useDimzouLayout([]);
   return (
-    <TemplateIV 
+    <TemplateIV
       ref={containerRef}
-      sidebarFirst={(
+      sidebarFirst={
         <div ref={sidebarFirstRef} style={{ position: 'sticky' }}>
           <SidebarName ref={labelRef} />
-          <div ref={wrapRef}>
-            {sidebarFirst}
-          </div>
+          <div ref={wrapRef}>{sidebarFirst}</div>
         </div>
-      )}
-      sidebarSecond={(
-        <div 
-          ref={sidebarSecondRef}
-          style={{ position: 'sticky' }}
-        >
+      }
+      sidebarSecond={
+        <div ref={sidebarSecondRef} style={{ position: 'sticky' }}>
           {sidebarSecond}
         </div>
-      )}
+      }
       cover={cover}
       main={
         <div id={id} className="dz-Edit__main">
@@ -394,11 +400,19 @@ export function ChapterNodeIV({ id, title, summary, content, cover, sidebarFirst
         </div>
       }
     />
-  )
+  );
 }
 ChapterNodeIV.propTypes = renderProps;
 
-export function ChapterNodeV({id, title, summary, content, cover, sidebarFirst, sidebarSecond }) {
+export function ChapterNodeV({
+  id,
+  title,
+  summary,
+  content,
+  cover,
+  sidebarFirst,
+  sidebarSecond,
+}) {
   const {
     containerRef,
     wrapRef,
@@ -406,26 +420,21 @@ export function ChapterNodeV({id, title, summary, content, cover, sidebarFirst, 
     sidebarFirstRef,
     sidebarSecondRef,
   } = useDimzouLayout([]);
-      
+
   return (
-    <TemplateV 
+    <TemplateV
       ref={containerRef}
-      sidebarFirst={(
+      sidebarFirst={
         <div ref={sidebarFirstRef} style={{ position: 'sticky' }}>
           <SidebarName ref={labelRef} />
-          <div ref={wrapRef}>
-            {sidebarFirst}
-          </div>
+          <div ref={wrapRef}>{sidebarFirst}</div>
         </div>
-      )}
-      sidebarSecond={(
-        <div 
-          ref={sidebarSecondRef}
-          style={{ position: 'sticky' }}
-        >
+      }
+      sidebarSecond={
+        <div ref={sidebarSecondRef} style={{ position: 'sticky' }}>
           {sidebarSecond}
         </div>
-      )}
+      }
       cover={cover}
       main={
         <div id={id} className="dz-Edit__main">
@@ -435,7 +444,7 @@ export function ChapterNodeV({id, title, summary, content, cover, sidebarFirst, 
         </div>
       }
     />
-  )
+  );
 }
 ChapterNodeV.propTypes = renderProps;
 
@@ -451,7 +460,7 @@ export const getChapterRender = (template) => {
       return ChapterNodeIV;
     case 'V':
       return ChapterNodeV;
-    default: 
+    default:
       return ChapterNodeI;
   }
-}
+};

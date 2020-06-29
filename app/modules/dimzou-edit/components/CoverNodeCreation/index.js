@@ -2,20 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {  useSelector } from 'react-redux';
 import { selectCurrentUser } from '@/modules/auth/selectors';
-import Sticky from '@feat/feat-ui/lib/sticky';
-import {
-  TemplateI,
-} from "../Template"
+import { BundleRender } from '../AppRenders'
 
 import CoverCreate from "../CoverCreate";
-import UsersDraftsPanel from '../UserDraftsPanel';
+import AppSidebarFirst from '../AppSidebarFirst';
 
 function CoverNodeCreation(props) {
   const currentUser = useSelector(selectCurrentUser);
   
   return (
-    <TemplateI
-      cover={null}
+    <BundleRender
       main={
         <CoverCreate 
           cacheKey={props.cacheKey}
@@ -27,10 +23,7 @@ function CoverNodeCreation(props) {
         />
       }
       sidebarFirst={
-        <Sticky top="#header" bottomBoundary="#dimzou-edit">
-          <div className="dz-Edit__pageTitle">Draft</div>
-          <UsersDraftsPanel />
-        </Sticky>
+        <AppSidebarFirst />
       }
       sidebarSecond={null}
     />

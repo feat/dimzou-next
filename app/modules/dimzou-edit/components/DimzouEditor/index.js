@@ -163,11 +163,6 @@ DimzouEditor.propTypes = {
 export default DimzouEditor;
 
 export const createFromRawData = (raw) => _createFromRawData(raw, decorator);
-export const createWithOrigin = (origin) =>
-  createFromRawData({
-    blocks: [{ type: 'unstyled', text: '', data: { origin } }],
-    entityMap: {},
-  });
 export const createEmpty = () => createFromRawData(emptyRaw);
 export const createEmptyWithFocus = () => {
   const editorState = createEmpty();
@@ -182,21 +177,6 @@ export const createFromHTMLWithFocus = (html) => {
 
 export const getHTML = (contentState) =>
   contentStateToHTML(contentState, stateToHTMLConfig);
-
-export const getParagraphsFromHTML = (html) => {
-  const dom = document.createElement('div');
-  dom.innerHTML = html;
-  const paragraphs = [];
-  Array.prototype.forEach.call(dom.children, (el) => {
-    paragraphs.push(el.outerHTML);
-  });
-  return paragraphs;
-};
-
-export const getParagraphs = (contentState) => {
-  const htmlContent = getHTML(contentState);
-  return getParagraphsFromHTML(htmlContent);
-};
 
 export const getTextContent = (contentState) => contentState.getPlainText();
 

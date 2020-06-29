@@ -25,6 +25,7 @@ import {
   updateMediaRewording,
   patchContent,
   removeBlock,
+  updateNodeInfo,
 } from '../actions';
 
 import {
@@ -35,19 +36,19 @@ import {
 } from '../constants';
 import { createFromRawData, createFromHTML } from '../components/DimzouEditor';
 import { extractWidgetInfo } from '../utils/rewordings';
+import { getNodeCache } from '../utils/cache';
 
 export const initialBlockState = {
-  expandedType: undefined,
+  expandedType: undefined, // 'versions' | 'comments',
   isEditModeEnabled: false,
   isEditModeForced: false,
   editorState: null,
   editorBaseId: undefined,
-  editorMode: undefined,
+  editorMode: undefined, // 'create' | 'update'
   editorInitialContent: null,
   editorInitWithTranslation: false,
   isFetchingTranslation: false,
   updateRewording: false,
-  editType: undefined, // ???
   isVersions: true,
 };
 
@@ -103,12 +104,15 @@ export const getBlockKey = ({ structure, blockId }) =>
   `${structure}${BLOCK_KEY_SEPARATOR}${blockId}`;
 
 const initBlockWithNodeInfo = (state, action) => {
-  const newState = { ...state };
+  let newState = { ...state };
   const {
     payload: { data, contentType },
   } = action;
   if (data.title) {
-    const blockKey = getBlockKey({ structure: 'title', blockId: data.title.id });
+    const blockKey = getBlockKey({
+      structure: 'title',
+      blockId: data.title.id,
+    });
     if (!newState[blockKey]) {
       newState[blockKey] = {
         ...getInitialBlockState(data.title, 'title', contentType),
@@ -121,11 +125,12 @@ const initBlockWithNodeInfo = (state, action) => {
     }
   }
   if (data.summary) {
-    const blockKey = getBlockKey({ structure: 'summary', blockId: data.summary.id });
+    const blockKey = getBlockKey({
+      structure: 'summary',
+      blockId: data.summary.id,
+    });
     if (!newState[blockKey]) {
-      newState[
-        blockKey
-      ] = {
+      newState[blockKey] = {
         ...getInitialBlockState(data.summary, 'summary', contentType),
         structure: 'summary',
         bundleId: data.bundle_id,
@@ -136,7 +141,10 @@ const initBlockWithNodeInfo = (state, action) => {
     }
   }
   if (data.cover) {
-    const blockKey = getBlockKey({ structure: 'cover', blockId: data.cover.id });
+    const blockKey = getBlockKey({
+      structure: 'cover',
+      blockId: data.cover.id,
+    });
     if (!newState[blockKey]) {
       newState[blockKey] = {
         ...initialBlockState,
@@ -160,12 +168,30 @@ const initBlockWithNodeInfo = (state, action) => {
           // only accepted block has expanded.
           expandedType:
             // index === 0 && // all block should be expanded
-            block.rewordings && block.rewordings.some((item) => item.is_selected)
+            block.rewordings &&
+            block.rewordings.some((item) => item.is_selected)
               ? BLOCK_EXPANDED_SECTION_VERSIONS
               : undefined,
         };
       }
     });
+  }
+  // cache info
+  if (action.type === loadNodeEditInfo.toString()) {
+    const cache = getNodeCache(action.payload.nodeId);
+    if (cache) {
+      const blocks = Object.entries(cache.all()).filter(([key]) =>
+        /^block-/.test(key),
+      );
+      blocks.forEach((cacheInfo) => {
+        if (cacheInfo[1] && !cacheInfo[1].html) {
+          return;
+        }
+        const { html, ...payload } = cacheInfo[1];
+        payload.editorState = createFromHTML(html);
+        newState = baseBlockReducer(newState, initBlockEdit(payload));
+      });
+    }
   }
   return newState;
 };
@@ -230,7 +256,6 @@ const baseBlockReducer = mapHandleActions(
           .getCurrentContent()
           .getBlockMap();
         nextState.isEditModeEnabled = true;
-        nextState.editType = payload.editType;
       }
 
       return nextState;
@@ -341,6 +366,14 @@ const baseBlockReducer = mapHandleActions(
       return {
         ...blockState,
         isEditModeEnabled: false,
+        editorState: null,
+        editorMode: undefined,
+        editorInitialContent: null,
+        editorInitWithTranslation: false,
+        editorBaseId: undefined,
+        updateBaseHTML: undefined,
+        rewordBaseHTML: undefined,
+        updateRewording: false,
         isEditModeForced: false,
       };
     },
@@ -449,7 +482,8 @@ const baseBlockReducer = mapHandleActions(
 const blockReducer = (state = {}, action) => {
   if (
     action.type === loadNodeEditInfo.toString() ||
-    action.type === patchContent.toString()
+    action.type === patchContent.toString() ||
+    action.type === updateNodeInfo.toString()
   ) {
     return initBlockWithNodeInfo(state, action);
   }

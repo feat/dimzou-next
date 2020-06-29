@@ -28,7 +28,7 @@
     @include element(paraNum, true) {
       font-family: $serif-title-font;
       color: $color-secondary;
-      font-size: px-to-rem(18);
+      font-size: px-to-rem(14);
       line-height: 1.5;
       font-style: italic;
       position: absolute;

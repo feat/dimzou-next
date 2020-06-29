@@ -13,11 +13,12 @@ export const ScrollContext = createContext({});
 export const MeasureContext = createContext();
 
 export const useMeasure = (deps) => {
-  const measureContext = useContext(MeasureContext);
+  const measure = useContext(MeasureContext);
   useEffect(() => {
-    if (!measureContext) {
-      return;
+    if (!measure) {
+      return undefined;
     }
-    measureContext.measure();
+    measure();
+    return measure.cancel;
   }, deps)
 }

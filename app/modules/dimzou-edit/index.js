@@ -31,7 +31,6 @@ function DimzouEdit(props) {
     invitationCode,
     isPublicationView: isTrue(isPublicationView),
   }), [workspace, bundleId, nodeId, userId, hash, isCreate, invitationCode, isPublicationView]);
-
   return (
     <WorkspaceContext.Provider value={combined}>
       <ScrollContextProvider>

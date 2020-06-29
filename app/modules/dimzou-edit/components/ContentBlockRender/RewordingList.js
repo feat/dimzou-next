@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Rewording from '../../containers/Rewording';
+import Rewording from '../RewordingWrap';
 
 export default function RewordingList({
   data,

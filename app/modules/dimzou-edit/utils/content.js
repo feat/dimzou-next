@@ -61,6 +61,25 @@ function createConfirmedDom(html) {
       unwrap(el);
     },
   );
+
+  if (dom.children.length === 1) {
+    const node = dom.children[0];
+    const mayEmptyBlock = {
+      'H1': 1,
+      'H2': 1,
+      'H3': 1,
+      'H4': 1,
+      'H5': 1,
+      'H6': 1,
+      'P': 1,
+    }
+    if (
+      mayEmptyBlock[node.tagName] && node.innerText === ''
+    ) {
+      node.innerHTML = '<br/>';
+    }
+  }
+
   return dom;
 }
 

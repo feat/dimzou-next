@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { useDispatch } from 'react-redux';
 import IconButton from '@feat/feat-ui/lib/button/IconButton';
 import DimzouEditor, { getHTML, convertToRaw } from '../DimzouEditor';
 import { 
@@ -9,52 +10,38 @@ import {
   removeAppendBlock, 
   updateAppendBlock,
 } from '../../actions';
-import { getNodeCache, appendingBlockKey } from '../../utils/cache'
-import { MeasureContext } from '../../context'
+import { appendingBlockKey } from '../../utils/cache'
+import { useMeasure } from '../../context'
+import { TAILING_PIVOT } from '../../constants';
 
-class EditorBlock extends React.PureComponent {
-  componentDidUpdate(prevProps) {
-    if (
-      this.shouldTryToRemove &&
-      !this.props.editorState.getCurrentContent().hasText()
-    ) {
-      this.removeBlock();
-    }
-    this.shouldTryToRemove = false;
-    if (this.props.editorState !== prevProps.editorState && this.context) {
-      this.context.measure();
-    }
-  }
+function EditorBlock(props) {
+  const { 
+    editorState, 
+    submitting, 
+    placeholder, 
+    currentUser, 
+    editorMode, 
+    style, 
+    isTailing, 
+    lastBlockId,
+    bundleId,
+    nodeId,
+    pivotId,
+  } = props;
+  const dispatch = useDispatch();
+  const hasText = editorState.getCurrentContent().hasText();
 
-  removeBlock = () => {
-    const cache = getNodeCache(this.props.nodeId);
-    cache.set(appendingBlockKey({
-      nodeId: this.props.nodeId,
-      pivotId: this.props.pivotId,
-    }), '');
-    this.props.dispatch(
-      removeAppendBlock({
-        bundleId: this.props.bundleId,
-        nodeId: this.props.nodeId,
-        pivotId: this.props.pivotId,
-      }),
-    );
-  };
+  useMeasure([editorState]);
 
-  handleConfirm = (e) => {
+  const handleConfirm = (e) => {
     e.preventDefault();
-    const {
-      editorState,
-      bundleId,
-      nodeId,
-      pivotId,
-      isTailing,
-      lastBlockId,
-    } = this.props;
-
     // is empty.
     if (!editorState.getCurrentContent().hasText()) {
-      this.removeBlock();
+      dispatch(removeAppendBlock({
+        bundleId,
+        nodeId,
+        pivotId,
+      }))
       return;
     }
     const contentState = editorState.getCurrentContent();
@@ -72,92 +59,83 @@ class EditorBlock extends React.PureComponent {
         pivotId,
       }),
     };
-    if (this.props.userCapabilities.canElect) {
-      this.props.dispatch(commitBlock(data));
+    if (props.userCapabilities.canElect) {
+      dispatch(commitBlock(data));
     } else {
-      this.props.dispatch(submitBlock(data));
+      dispatch(submitBlock(data));
     }
-  };
+  }
 
-  handleCancel = (e) => {
-    e.preventDefault();
-    this.removeBlock();
-  };
-
-  handleChange = (editorState) => {
-    this.props.dispatch(
-      updateAppendBlock({
-        bundleId: this.props.bundleId,
-        nodeId: this.props.nodeId,
-        pivotId: this.props.pivotId,
-        editorState,
-      }),
-    );
-    const cache = getNodeCache(this.props.nodeId);
-    const contentState = editorState.getCurrentContent();
-    cache.set(appendingBlockKey({
-      nodeId: this.props.nodeId,
-      pivotId: this.props.pivotId,
-    }), contentState.hasText() ? getHTML(contentState) : '');
-  };
-
-  handleBlur = () => {
-    this.shouldTryToRemove = true;
-  };
-
-  render() {
-    const { editorState, submitting, placeholder, currentUser, style } = this.props;
-    const hasText = editorState.getCurrentContent().hasText();
-    return (
-      <div
-        className={classNames(
-          'dz-BlockSection',
-          'dz-BlockSection_content',
-          'dz-BlockSection_appending',
-        )}
-        style={style}
-      >
-        <div className="dz-BlockSection__paraNum"></div>
-        <DimzouEditor
-          className="typo-Article"
-          placeholder={placeholder}
-          editorState={editorState}
-          onChange={this.handleChange}
-          mode={this.props.editorMode}
-          onBlur={this.handleBlur}
-          currentUser={currentUser}
-        />
-        <div className="dz-BlockSection__footer">
-          <div className="dz-BlockSectionFooter">
-            <div className="dz-BlockSectionFooter__left" />
-            <div className="dz-BlockSectionFooter__right">
-              <IconButton
-                svgIcon="no-btn"
-                size="md"
-                disabled={!hasText || submitting}
-                className={classNames('dz-BlockSectionFooter__btn', {
-                  'is-invisible': !hasText,
-                })}
-                onClick={this.handleCancel}
-              />
-              <IconButton
-                svgIcon="ok-btn"
-                size="md"
-                disabled={!hasText || submitting}
-                className={classNames('dz-BlockSectionFooter__btn',{
-                  'is-invisible': !hasText,
-                })}
-                onClick={this.handleConfirm}
-              />
-            </div>
+  return (
+    <div
+      className={classNames(
+        'dz-BlockSection',
+        'dz-BlockSection_content',
+        'dz-BlockSection_appending',
+      )}
+      style={style}
+    >
+      <div className="dz-BlockSection__paraNum"></div>
+      <DimzouEditor
+        className="typo-Article"
+        placeholder={placeholder}
+        editorState={editorState}
+        onChange={(editorState) => {
+          dispatch(updateAppendBlock({
+            bundleId,
+            nodeId,
+            pivotId,
+            editorState,
+          }));
+        }}
+        mode={editorMode}
+        onBlur={() => {
+          if (props.pivotId !== TAILING_PIVOT && !props.editorState.getCurrentContent().hasText()) {
+            dispatch(removeAppendBlock({
+              bundleId,
+              nodeId,
+              pivotId,
+            }))
+          }
+        }}
+        currentUser={currentUser}
+      />
+      <div className="dz-BlockSection__footer">
+        <div className="dz-BlockSectionFooter">
+          <div className="dz-BlockSectionFooter__left" />
+          <div className="dz-BlockSectionFooter__right">
+            <IconButton
+              svgIcon="no-btn"
+              size="md"
+              disabled={!hasText || submitting}
+              className={classNames('dz-BlockSectionFooter__btn', {
+                'is-invisible': !hasText,
+              })}
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(removeAppendBlock({
+                  bundleId,
+                  nodeId,
+                  pivotId,
+                }),)
+              }}
+            />
+            <IconButton
+              svgIcon="ok-btn"
+              size="md"
+              disabled={!hasText || submitting}
+              className={classNames('dz-BlockSectionFooter__btn',{
+                'is-invisible': !hasText,
+              })}
+              onClick={handleConfirm}
+            />
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+  
 }
-
-EditorBlock.contextType = MeasureContext;
 
 EditorBlock.propTypes = {
   bundleId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -169,7 +147,6 @@ EditorBlock.propTypes = {
   editorMode: PropTypes.string,
   editorState: PropTypes.object,
   isTailing: PropTypes.bool,
-  dispatch: PropTypes.func,
   placeholder: PropTypes.node,
   currentUser: PropTypes.object,
   style: PropTypes.object,

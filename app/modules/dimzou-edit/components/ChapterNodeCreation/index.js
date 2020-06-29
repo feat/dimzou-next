@@ -1,12 +1,8 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import update from 'immutability-helper';
-import {
-  EditorState,
-  Modifier,
-  convertToRaw,
-} from '@feat/draft-js';
+import { EditorState, Modifier, convertToRaw } from '@feat/draft-js';
 
 // import Button from '@feat/feat-ui/lib/button';
 // import SvgIcon from '@feat/feat-ui/lib/svg-icon';
@@ -16,7 +12,7 @@ import notification from '@feat/feat-ui/lib/notification';
 import IconButton from '@feat/feat-ui/lib/button/IconButton';
 
 import DragDropBoard from '@/components/DragDropBoard';
-import { selectCurrentUser } from '@/modules/auth/selectors'
+import { selectCurrentUser } from '@/modules/auth/selectors';
 import SimpleCache from '@/services/cache';
 import { formatMessage } from '@/services/intl';
 import { getText } from '@/utils/content';
@@ -28,13 +24,13 @@ import DimzouEditor, {
 } from '../DimzouEditor';
 import DimzouEditorToolbar from '../DimzouEditorToolbar';
 import TemplateSwitchButton from '../TemplateSwitchButton';
-import UserDraftsPanel from '../UserDraftsPanel';
+import AppSidebarFirst from '../AppSidebarFirst';
 import ImageDropzone from '../ImageDropzone';
 
 import { getTemplateCoverRatio } from '../../utils/template';
 import { getChapterRender } from '../AppRenders';
 import { EDIT_PERMISSION_PUBLIC } from '../../constants';
-import  { validation as vMessages } from '../../messages';
+import { validation as vMessages } from '../../messages';
 
 const initTitleRaw = {
   blocks: [{ type: 'header-one', text: '' }],
@@ -47,35 +43,51 @@ const initSummaryRaw = {
 };
 
 const initContentRaw = {
-  blocks: [{ type: 'unstyled', text: ''}],
+  blocks: [{ type: 'unstyled', text: '' }],
   entityMap: {},
-}
+};
 
 function ChapterNodeCreation(props) {
   const currentUser = useSelector(selectCurrentUser);
   const titleEditorRef = useRef(null);
   const summaryEditorRef = useRef(null);
   const contentEditorRef = useRef(null);
-  const cache = useMemo(() => new SimpleCache({
-    cacheKey: props.cacheKey,
-    userId: currentUser.uid,
-  }), [props.cacheKey, currentUser.uid]);
-  
+  const cache = useMemo(
+    () =>
+      new SimpleCache({
+        cacheKey: props.cacheKey,
+        userId: currentUser.uid,
+      }),
+    [props.cacheKey, currentUser.uid],
+  );
+
   const [state, setState] = useState({
     template: props.defaultTemplate,
-    titleEditorState: cache.get('title') ? createFromHTML(cache.get('title')) : createFromRawData(initTitleRaw),
-    summaryEditorState: cache.get('summary') ? createFromHTML(cache.get('summary')) : createFromRawData(initSummaryRaw),
-    contentEditorState: cache.get('content') ? createFromHTML(cache.get('content')) : createFromRawData(initContentRaw),
+    titleEditorState: cache.get('title')
+      ? createFromHTML(cache.get('title'))
+      : createFromRawData(initTitleRaw),
+    summaryEditorState: cache.get('summary')
+      ? createFromHTML(cache.get('summary'))
+      : createFromRawData(initSummaryRaw),
+    contentEditorState: cache.get('content')
+      ? createFromHTML(cache.get('content'))
+      : createFromRawData(initContentRaw),
     cover: null,
   });
   const Render = getChapterRender(state.template);
 
   const handleTitlePastedText = () => {
     // TODO:handleTitlePastedText
-  }; 
+  };
 
-  const titleHasText = state.titleEditorState.getCurrentContent().getPlainText().trim();
-  const summaryHasText = state.summaryEditorState.getCurrentContent().getPlainText().trim();
+  const titleHasText = state.titleEditorState
+    .getCurrentContent()
+    .getPlainText()
+    .trim();
+  const summaryHasText = state.summaryEditorState
+    .getCurrentContent()
+    .getPlainText()
+    .trim();
 
   const isReady = titleHasText && summaryHasText;
   const footerStyle = !props.canCancel && !isReady ? { opacity: 0 } : undefined;
@@ -87,21 +99,24 @@ function ChapterNodeCreation(props) {
     currentEditor = 'titleEditorState';
   } else if (state.summaryEditorState.getSelection().getHasFocus()) {
     structure = 'summary';
-    currentEditor = 'summaryEditorState'
+    currentEditor = 'summaryEditorState';
   } else if (state.contentEditorState.getSelection().getHasFocus()) {
     structure = 'content';
     currentEditor = 'contentEditorState';
   }
 
-  useEffect(() => {
-    const dom = document.querySelector('.dz-BlockSection_title');
-    if (dom) {
-      // TODO: getScrollY
-      const box = dom.getBoundingClientRect();
-      window.scrollTo(0, (box.top + window.scrollY) - 80);
-    }
-    titleEditorRef.current && titleEditorRef.current.focus();
-  }, [state.template])
+  useEffect(
+    () => {
+      const dom = document.querySelector('.dz-BlockSection_title');
+      if (dom) {
+        // TODO: getScrollY
+        const box = dom.getBoundingClientRect();
+        window.scrollTo(0, box.top + window.scrollY - 80);
+      }
+      titleEditorRef.current && titleEditorRef.current.focus();
+    },
+    [state.template],
+  );
 
   const actionButtons = [];
   if (props.canSelectTemplate) {
@@ -110,14 +125,16 @@ function ChapterNodeCreation(props) {
         key="template"
         initialValue={state.template}
         onChange={(value) => {
-          setState(update(state, {
-            template: {
-              $set: value,
-            },
-          }))
+          setState(
+            update(state, {
+              template: {
+                $set: value,
+              },
+            }),
+          );
         }}
-      />
-    )
+      />,
+    );
   }
   // if (props.canCancel) {
   //   actionButtons.push(
@@ -134,18 +151,20 @@ function ChapterNodeCreation(props) {
   // }
 
   return (
-    <Render 
-      sidebarFirst={<UserDraftsPanel />}
+    <Render
+      sidebarFirst={<AppSidebarFirst />}
       cover={
-        <ImageDropzone 
+        <ImageDropzone
           data={state.cover}
           ratio={getTemplateCoverRatio(state.template)}
           onConfirm={(data) => {
-            setState(update(state, {
-              cover: {
-                $set: data,
-              },
-            }))
+            setState(
+              update(state, {
+                cover: {
+                  $set: data,
+                },
+              }),
+            );
           }}
         />
       }
@@ -181,11 +200,13 @@ function ChapterNodeCreation(props) {
             }}
             editorState={state.titleEditorState}
             onChange={(titleEditorState) => {
-              setState(update(state, {
-                titleEditorState: {
-                  $set: titleEditorState,
-                },
-              }))
+              setState(
+                update(state, {
+                  titleEditorState: {
+                    $set: titleEditorState,
+                  },
+                }),
+              );
               cache.set('title', getHTML(titleEditorState.getCurrentContent()));
             }}
             currentUser={currentUser}
@@ -209,19 +230,32 @@ function ChapterNodeCreation(props) {
                     content.getFirstBlock().getText().length === 0
                   ) {
                     if (content.getFirstBlock().getType() !== 'unstyled') {
-                      const summaryEditorState =  EditorState.push(editorState, Modifier.setBlockType(content, editorState.getSelection(), 'unstyled'));
-                      setState(update(state, {
-                        summaryEditorState: {
-                          $set: summaryEditorState,
-                        },
-                      }))
+                      const summaryEditorState = EditorState.push(
+                        editorState,
+                        Modifier.setBlockType(
+                          content,
+                          editorState.getSelection(),
+                          'unstyled',
+                        ),
+                      );
+                      setState(
+                        update(state, {
+                          summaryEditorState: {
+                            $set: summaryEditorState,
+                          },
+                        }),
+                      );
                     } else {
-                      const titleEditorState = EditorState.moveFocusToEnd(state.titleEditorState);
-                      setState(update(state, {
-                        titleEditorState: {
-                          $set: titleEditorState,
-                        },
-                      }))
+                      const titleEditorState = EditorState.moveFocusToEnd(
+                        state.titleEditorState,
+                      );
+                      setState(
+                        update(state, {
+                          titleEditorState: {
+                            $set: titleEditorState,
+                          },
+                        }),
+                      );
                     }
                     return 'handled';
                   }
@@ -237,12 +271,17 @@ function ChapterNodeCreation(props) {
                 return 'not-handled';
               }}
               onChange={(summaryEditorState) => {
-                setState(update(state, {
-                  summaryEditorState: {
-                    $set: summaryEditorState,
-                  },
-                }))
-                cache.set('summary', getHTML(summaryEditorState.getCurrentContent()));
+                setState(
+                  update(state, {
+                    summaryEditorState: {
+                      $set: summaryEditorState,
+                    },
+                  }),
+                );
+                cache.set(
+                  'summary',
+                  getHTML(summaryEditorState.getCurrentContent()),
+                );
               }}
               currentUser={currentUser}
             />
@@ -258,12 +297,17 @@ function ChapterNodeCreation(props) {
               placeholder={props.contentPlaceholder}
               editorState={state.contentEditorState}
               onChange={(contentEditorState) => {
-                setState(update(state, {
-                  contentEditorState: {
-                    $set: contentEditorState,
-                  },
-                }))
-                cache.set('content', getHTML(contentEditorState.getCurrentContent()));
+                setState(
+                  update(state, {
+                    contentEditorState: {
+                      $set: contentEditorState,
+                    },
+                  }),
+                );
+                cache.set(
+                  'content',
+                  getHTML(contentEditorState.getCurrentContent()),
+                );
               }}
               currentUser={currentUser}
               handleKeyCommand={(editorState, onChange, command) => {
@@ -274,19 +318,32 @@ function ChapterNodeCreation(props) {
                     content.getFirstBlock().getText().length === 0
                   ) {
                     if (content.getFirstBlock().getType() !== 'unstyled') {
-                      const contentEditorState =  EditorState.push(editorState, Modifier.setBlockType(content, editorState.getSelection(), 'unstyled'));
-                      setState(update(state, {
-                        contentEditorState: {
-                          $set: contentEditorState,
-                        },
-                      }));
+                      const contentEditorState = EditorState.push(
+                        editorState,
+                        Modifier.setBlockType(
+                          content,
+                          editorState.getSelection(),
+                          'unstyled',
+                        ),
+                      );
+                      setState(
+                        update(state, {
+                          contentEditorState: {
+                            $set: contentEditorState,
+                          },
+                        }),
+                      );
                     } else {
-                      const summaryEditorState = EditorState.moveFocusToEnd(state.summaryEditorState);
-                      setState(update(state, {
-                        summaryEditorState: {
-                          $set: summaryEditorState,
-                        },
-                      }));
+                      const summaryEditorState = EditorState.moveFocusToEnd(
+                        state.summaryEditorState,
+                      );
+                      setState(
+                        update(state, {
+                          summaryEditorState: {
+                            $set: summaryEditorState,
+                          },
+                        }),
+                      );
                     }
                     return 'handled';
                   }
@@ -295,30 +352,35 @@ function ChapterNodeCreation(props) {
               }}
             />
           </div>
-          <div
-            className="dz-DimzouCreation__footer"
-            style={footerStyle}
-          >
+          <div className="dz-DimzouCreation__footer" style={footerStyle}>
             <IconButton
               svgIcon="no-btn"
               size="md"
-              disabled={props.canCancel ? state.isSubmitting : (!isReady || state.isSubmitting)}
+              disabled={
+                props.canCancel
+                  ? state.isSubmitting
+                  : !isReady || state.isSubmitting
+              }
               onClick={() => {
                 cache.flush();
                 if (props.onCancel) {
                   props.onCancel();
                 } else {
-                  setState(update(state, {
-                    titleEditorState: {
-                      $set: EditorState.moveFocusToEnd(createFromRawData(initTitleRaw)),
-                    },
-                    summaryEditorState: {
-                      $set: createFromRawData(initSummaryRaw),
-                    },
-                    contentEditorState: {
-                      $set: createFromRawData(initContentRaw),
-                    },
-                  }))
+                  setState(
+                    update(state, {
+                      titleEditorState: {
+                        $set: EditorState.moveFocusToEnd(
+                          createFromRawData(initTitleRaw),
+                        ),
+                      },
+                      summaryEditorState: {
+                        $set: createFromRawData(initSummaryRaw),
+                      },
+                      contentEditorState: {
+                        $set: createFromRawData(initContentRaw),
+                      },
+                    }),
+                  );
                 }
               }}
             />
@@ -334,7 +396,7 @@ function ChapterNodeCreation(props) {
                 const title = convertToRaw(titleContentState);
                 const htmlSummary = getHTML(summaryContentState);
                 const summary = convertToRaw(summaryContentState);
-                
+
                 const data = {
                   title,
                   htmlTitle,
@@ -363,54 +425,61 @@ function ChapterNodeCreation(props) {
                   message.error(formatMessage(vMessages.summaryRequired));
                   return;
                 }
-                setState(update(state, {
-                  isSubmitting: {
-                    $set: true,
-                  },
-                }))
-                props.onSubmit(data).then(() => {
-                  cache.flush();
-                }).catch((err) => {
-                  setState(update(state, {
+                setState(
+                  update(state, {
                     isSubmitting: {
-                      $set: false,
+                      $set: true,
                     },
-                  }))
-                  notification.error({
-                    message: 'Error',
-                    description: err.message,
+                  }),
+                );
+                props
+                  .onSubmit(data)
+                  .then(() => {
+                    cache.flush();
+                  })
+                  .catch((err) => {
+                    setState(
+                      update(state, {
+                        isSubmitting: {
+                          $set: false,
+                        },
+                      }),
+                    );
+                    notification.error({
+                      message: 'Error',
+                      description: err.message,
+                    });
                   });
-                })
               }}
               disabled={!isReady || state.isSubmitting}
             />
           </div>
           <DragDropBoard>
             <div className="dz-EditDocker">
-              <DimzouEditorToolbar 
+              <DimzouEditorToolbar
                 className="dz-EditDocker__section"
                 structure={structure}
                 editorState={state[currentEditor]}
                 onChange={(editorState) => {
-                  setState(update(state, {
-                    [currentEditor]: {
-                      $set: editorState,
-                    },
-                  }))
+                  setState(
+                    update(state, {
+                      [currentEditor]: {
+                        $set: editorState,
+                      },
+                    }),
+                  );
                 }}
                 mode="create"
               />
               {!!actionButtons.length && (
-                <div className="dz-EditDocker__section">
-                  {actionButtons}
-                </div>
+                <div className="dz-EditDocker__section">{actionButtons}</div>
               )}
             </div>
           </DragDropBoard>
         </>
       }
     />
-  )
+  );
 }
 
 ChapterNodeCreation.propTypes = {
@@ -423,10 +492,9 @@ ChapterNodeCreation.propTypes = {
   onSubmit: PropTypes.func,
   canCancel: PropTypes.bool,
   canSelectTemplate: PropTypes.bool,
-}
+};
 
 export default ChapterNodeCreation;
-
 
 // handleSubmit = (data) => {
 //   const { workspace: { chapterCreationContext }, dispatch } = this.props;
@@ -437,7 +505,7 @@ export default ChapterNodeCreation;
 //       template: chapterCreationContext.template,
 //       data,
 //     }))
-//   } 
+//   }
 //   // create bundle;
 //   return dispatch(asyncCreateBundle(data));
 // }

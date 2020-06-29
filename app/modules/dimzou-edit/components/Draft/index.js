@@ -1,7 +1,10 @@
 import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
-import SplashView from '@/components/SplashView';
 import Router from 'next/router'
+import get from 'lodash/get'
+
+import SplashView from '@/components/SplashView';
+
 import NodeEdit from '../NodeEdit';
 // import BundleEdit from '../BundleEdit';
 import ReleaseModal from '../ReleaseModal';
@@ -43,14 +46,18 @@ function Draft() {
       return;
     }
     if (!workspace.nodeId && bundleState && bundleState.data) {
-      const nodeId = bundleState.data.nodes[0].id;
-      Router.replace({
-        pathname: Router.pathname,
-        query: {
-          ...Router.query,
-          nodeId,
-        },
-      }, `/draft/${workspace.bundleId}/${nodeId}`)
+      const nodeId = get(bundleState, 'data.nodes[0].id');
+      if (nodeId) {
+        Router.replace({
+          pathname: Router.pathname,
+          query: {
+            ...Router.query,
+            nodeId,
+          },
+        }, `/draft/${workspace.bundleId}/${nodeId}`)
+      } else {
+        logging.warn('FAILED_TO_GET_NODE_ID_FROM_BUNDLE_DATA', bundleState.data);
+      }
     }
   }, [bundleState, workspace.bundleId, workspace.nodeId])
 

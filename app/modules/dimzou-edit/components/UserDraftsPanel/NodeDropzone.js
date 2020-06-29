@@ -14,7 +14,7 @@ function Slot({ connectDropTarget, children, position, isOver, canDrop, type }) 
 
 const withDrop = DropTarget(
   [
-    'EXP_NODE',
+    'EXP_NODE', // explorer_node
   ],
   {
     drop(props, monitor) {

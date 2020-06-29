@@ -58,6 +58,13 @@ import {
   // link
   likeRewording,
   unlikeRewording,
+  updateAppendBlock,
+  removeAppendBlock,
+  updateRewordingEditor,
+  initRewordingEdit,
+  exitRewordingEdit,
+  updateBlockEditor,
+  exitBlockEdit,
 } from '../actions';
 
 
@@ -90,7 +97,7 @@ import {
   handleCommentDeleted,
 } from './comment';
 
-import { createFromHTML } from '../components/DimzouEditor';
+import { createFromHTML, getHTML } from '../components/DimzouEditor';
 import {
   // BEGINNING_PIVOT,
   ACTION_SUBMIT_BLOCK,
@@ -124,7 +131,7 @@ import {
 } from '../utils/content';
 import { getRewordType } from '../utils/rewordings';
 import { dimzouTransformer, patchDimzouNode } from '../utils/transformer';
-import { getNodeCache, initNodeCache } from '../utils/cache';
+import { getNodeCache, appendingBlockKey, rewordingKey, blockKey } from '../utils/cache';
 
 import dimzouSocket from '../socket';
 
@@ -430,7 +437,7 @@ function* insertContentFlow(action, routine) {
     const { data } = yield call(insertContentRequest, bundleId, nodeId, params);
     if (cacheKey) {
       const cache = getNodeCache(nodeId);
-      cache.set(cacheKey, '');
+      cache.remove(cacheKey);
     }
     const node = yield select((state) =>
       selectNodeData(state, { bundleId, nodeId }),
@@ -577,11 +584,6 @@ function* submitEditFlow(action, routine, method) {
         data: updatedDimzou,
       }),
     );
-    // reset cache
-    if (payload.cacheKey) {
-      const cache = getNodeCache(payload.nodeId);
-      cache.set(payload.cacheKey, '');
-    }
     yield put(routine.success(payload));
   } catch (err) {
     notification.error({
@@ -675,10 +677,6 @@ function* removeRewordingAsync(action) {
         data: updatedNode,
       }),
     );
-    if (payload.cacheKey) {
-      const cache = getNodeCache(payload.nodeId);
-      cache.set(payload.cacheKey, '');
-    }
     yield put(removeRewording.success(payload));
   } catch (err) {
     notification.error({
@@ -694,7 +692,12 @@ function* removeRewordingAsync(action) {
 function* updateRewordingAsync(action) {
   const { payload } = action;
   if (payload.structure === 'cover') {
-    // TODO cover request
+    yield call(submitCoverFlow, 
+      action, 
+      updateRewording,
+      ACTION_UPDATE_REWORDING,
+    )
+    
   } else {
     yield call(
       submitEditFlow,
@@ -733,19 +736,36 @@ function* checkEditFlow(action, routine, method) {
     yield put(routine.success(payload));
     logging.debug(data);
   } catch (err) {
-    notification.error({
-      message: 'Error',
-      description: err.message,
-    });
-    if (!(err instanceof ApiError)) {
-      logging.error(err);
+    if (err.code === 'INVALID_REWORD_STATUS') {
+      const data = yield select((state) => selectNodeData(state, payload));
+      const patched = patchDimzouNode(data, {
+        structure: payload.structure,
+        blockId: payload.blockId,
+        rewording: err.data,
+      }, 'update-rewording');
+      notification.error({
+        message: 'Warning',
+        description: err.message,
+      })
+      yield put(
+        patchContent({
+          bundleId: payload.bundleId,
+          nodeId: payload.nodeId,
+          data: patched,
+        }),
+      );
+    } else {
+      notification.error({
+        message: 'Error',
+        description: err.message,
+      });
+      yield put(
+        routine.failure({
+          ...payload,
+          data: err,
+        }),
+      );  
     }
-    yield put(
-      routine.failure({
-        ...payload,
-        data: err,
-      }),
-    );
   } finally {
     yield put(routine.fulfill(payload));
   }
@@ -1332,10 +1352,6 @@ function* changeEditPermissionAsync(action) {
   }
 }
 
-function* nodeEditInitFlow(action) {
-  const currentUser = yield select(selectCurrentUser);
-  initNodeCache(action.payload.nodeId, currentUser.uid);
-}
 
 function* handleEditPatchSingal(action) {
   const { payload } = action;
@@ -1353,6 +1369,108 @@ function* handleEditPatchSingal(action) {
       data: updatedNode,
     }),
   );
+}
+
+const patchCache = (nodeId, cacheKey, patch) => {
+  const cache = getNodeCache(nodeId);
+  if (!cache) {
+    return;
+  }
+  const blockCache = cache.get(cacheKey) || {};
+  cache.set(cacheKey, {
+    ...blockCache,
+    ...patch,
+  })
+}
+
+function* initAppendEditCache(action) {
+  const { payload } = action;
+  if (payload.type === 'upload') {
+    return;
+  }
+  const cacheKey = appendingBlockKey(payload);
+  const { editorState, ...cacheInfo } = payload;
+  const html = getHTML(editorState.getCurrentContent());
+  cacheInfo.html = html;
+  patchCache(payload.nodeId, cacheKey, cacheInfo);
+}
+
+function* updateAppendCache(action) {
+  const { payload } = action;
+  
+  const cacheKey = appendingBlockKey(payload);
+  const html = payload.editorState.getCurrentContent().hasText() ? 
+    getHTML(payload.editorState.getCurrentContent())
+    : '';
+  patchCache(payload.nodeId, cacheKey, {
+    html,
+  })
+}
+
+function removeAppendCache(action) {
+  const { payload } = action;
+  const cache = getNodeCache(payload.nodeId);
+  cache.remove(appendingBlockKey(payload));
+}
+
+function updateRewordingEditCache(action) {
+  const { payload } = action;
+  const cacheKey = rewordingKey(payload);
+  const html = getHTML(payload.editorState.getCurrentContent());
+  patchCache(payload.nodeId, cacheKey, {
+    html,
+  })
+}
+
+function initRewordingEditCache(action) {
+  const { payload } = action;
+  const cacheKey = rewordingKey(payload);
+  const { editorState, ...cacheInfo } = payload;
+  const html = getHTML(editorState.getCurrentContent());
+  cacheInfo.html = html;
+  patchCache(payload.nodeId, cacheKey, cacheInfo);
+}
+
+function removeRewordingEditCache(action) {
+  const { payload } = action;
+  const cacheKey = rewordingKey(payload);
+  const cache = getNodeCache(payload.nodeId);
+  cache.remove(cacheKey);
+}
+
+function initBlockEditCache(action) {
+  const { payload } = action;
+  const cacheKey = blockKey(payload);
+  const { editorState, ...cacheInfo } = payload;
+  const html = getHTML(editorState.getCurrentContent());
+  cacheInfo.html = html;
+  patchCache(payload.nodeId, cacheKey, cacheInfo);
+}
+
+function updateBlockEditCache(action) {
+  const { payload } = action;
+  const cacheKey = blockKey(payload);
+  const html = getHTML(payload.editorState.getCurrentContent());
+  patchCache(payload.nodeId, cacheKey, { html });
+}
+
+function cleanBlockEditCache(action) {
+  const { payload } = action;
+  const cacheKey = blockKey(payload);
+  const cache = getNodeCache(payload.nodeId);
+  cache.remove(cacheKey);
+}
+
+function removeEditCache(action) {
+  const { payload } = action;
+  const cache = getNodeCache(payload.nodeId);
+  if (payload.cacheKey) {
+    cache.remove(payload.cacheKey);
+  } else if (payload.trigger === 'block') {
+    cache.remove(blockKey(payload));
+  } else if (payload.trigger === 'rewording') {
+    cache.remove(rewordingKey(payload));
+  }
 }
 
 export default function* nodeEditSaga() {
@@ -1405,6 +1523,20 @@ export default function* nodeEditSaga() {
   yield takeEvery(removeCollaborator, removeCollaboratorAsync);
   yield takeEvery(updateCollaborator, updateCollaboratorSaga);
 
-  // -- cace
-  yield takeEvery(loadNodeEditInfo, nodeEditInitFlow);
+  // cache
+  yield takeEvery(createAppendBlock, initAppendEditCache);
+  yield takeEvery(updateAppendBlock, updateAppendCache);
+  yield takeEvery(removeAppendBlock, removeAppendCache);
+
+  yield takeEvery(initRewordingEdit, initRewordingEditCache);
+  yield takeEvery(updateRewordingEditor, updateRewordingEditCache);
+  yield takeEvery(exitRewordingEdit, removeRewordingEditCache);
+
+  yield takeEvery(initBlockEdit, initBlockEditCache);
+  yield takeEvery(updateBlockEditor, updateBlockEditCache);
+  yield takeEvery(exitBlockEdit, cleanBlockEditCache);
+  yield takeEvery(commitRewording.SUCCESS, removeEditCache);
+  yield takeEvery(submitRewording.SUCCESS, removeEditCache);
+  yield takeEvery(updateRewording.SUCCESS, removeEditCache);
+  yield takeEvery(removeBlock.SUCCESS, removeEditCache);
 }

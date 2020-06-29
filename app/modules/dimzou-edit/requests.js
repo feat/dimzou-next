@@ -21,24 +21,27 @@ export const createTranslationBundle = (data) => {
   const preData = {
     type: BUNDLE_TYPE_TRANSLATE,
     payload: data,
-  }
+  };
   return createBundle(preData);
-}
+};
 
-export const createCopyBundle = (bundleId) => request({
-  url: `/api/dimzou/bundle/${bundleId}/create-copy/`,
-  method: 'POST',
-})
+export const createCopyBundle = (bundleId) =>
+  request({
+    url: `/api/dimzou/bundle/${bundleId}/create-copy/`,
+    method: 'POST',
+  });
 
-export const getBundleDesc = (bundleId) => request({
-  url: `/api/dimzou/bundle/${bundleId}/`,
-  method: 'GET',
-})
+export const getBundleDesc = (bundleId) =>
+  request({
+    url: `/api/dimzou/bundle/${bundleId}/`,
+    method: 'GET',
+  });
 
-export const deleteBundle = (bundleId) => request({
-  url: `/api/dimzou/bundle/${bundleId}/`,
-  method: 'DELETE',
-});
+export const deleteBundle = (bundleId) =>
+  request({
+    url: `/api/dimzou/bundle/${bundleId}/`,
+    method: 'DELETE',
+  });
 
 export const insertContent = (bundleId, nodeId, data) =>
   request({
@@ -144,6 +147,20 @@ export const getBundleEditInfo = (id, params, onDownloadProgress) =>
     onDownloadProgress,
   });
 
+export const getParagraphRange = (params) =>
+  request({
+    url: '/api/dimzou/paragraph/paragraph-range/',
+    method: 'GET',
+    params,
+  });
+
+export const getParagraphType = (params) =>
+  request({
+    url: '/api/dimzou/paragraph/',
+    method: 'GET',
+    params,
+  });
+
 export const updateBundleConfig = (id, data) =>
   request({
     url: `/api/dimzou/bundle/${id}/`,
@@ -158,12 +175,12 @@ export const addCollaborator = (id, data) =>
     data,
   });
 
-export const removeCollaborator = (id, data) => 
+export const removeCollaborator = (id, data) =>
   request({
     url: `/api/dimzou/bundle/${id}/collaborator-delete/`,
     method: 'DELETE',
     data,
-  })
+  });
 
 export const updateCollaborator = (id, data) =>
   request({
@@ -172,11 +189,11 @@ export const updateCollaborator = (id, data) =>
     data,
   });
 
-export const fetchCollaborators = (params) => 
+export const fetchCollaborators = (params) =>
   request({
     url: '/api/dimzou/collaborator/',
     params,
-  })
+  });
 
 export const createBundleInvitation = (id, data) =>
   request({
@@ -203,7 +220,7 @@ export const sectionRelease = (bundleId, data) => {
   const form = new FormData();
   Object.entries(data).forEach(([key, value]) => {
     form.append(key, value);
-  })
+  });
   return request({
     url: `/api/dimzou/bundle/${bundleId}/publish-node-section/`,
     method: 'POST',
@@ -211,8 +228,8 @@ export const sectionRelease = (bundleId, data) => {
     headers: {
       'Content-Type': false,
     },
-  })
-}
+  });
+};
 
 // node
 export const getDimzouEditInfo = (id, params) =>
@@ -285,7 +302,7 @@ export const getRewordingCommentList = ({ rewording_id, page, page_size }) =>
     url: `/api/activity/comment/comment-list/`,
     method: 'GET',
     params: {
-      target_type: 400, // 
+      target_type: 400, //
       object_id: rewording_id,
       page,
       page_size,
@@ -297,7 +314,11 @@ export const getRewordingComment = ({ id }) =>
     url: `/api/dimzou/reword-comment/${id}/`,
   });
 
-export const createRewordingComment = ({ rewording_id, parent_id, content }) => {
+export const createRewordingComment = ({
+  rewording_id,
+  parent_id,
+  content,
+}) => {
   if (parent_id) {
     return request({
       url: `/api/activity/comment/${parent_id}/reply/`,
@@ -307,7 +328,7 @@ export const createRewordingComment = ({ rewording_id, parent_id, content }) => 
         object_id: rewording_id,
         content,
       },
-    })
+    });
   }
   return request({
     url: '/api/activity/comment/',
@@ -317,8 +338,8 @@ export const createRewordingComment = ({ rewording_id, parent_id, content }) => 
       object_id: rewording_id,
       content,
     },
-  })
-}
+  });
+};
 
 export const updateRewordingComment = ({ id, content }) =>
   request({
@@ -374,107 +395,117 @@ export const setApplyScenes = (id, data) =>
     },
   });
 
-export const updateNodeSort = (bundleId, data) => 
+export const updateNodeSort = (bundleId, data) =>
   request({
     url: `/api/dimzou/bundle/${bundleId}/sort-chapter/`,
     method: 'POST',
     data,
-  })
+  });
 
-export const setChapterNode = (bundleId, data) => 
+export const setChapterNode = (bundleId, data) =>
   request({
     url: `/api/dimzou/bundle/${bundleId}/set-general-chapter/`,
     method: 'POST',
     data,
-  })
+  });
 
-export const setCoverNode = (bundleId, data) => 
+export const setCoverNode = (bundleId, data) =>
   request({
     url: `/api/dimzou/bundle/${bundleId}/set-cover-chapter/`,
     method: 'POST',
     data,
-  })
+  });
 
-export const deleteNode = (bundleId, data) => 
+export const deleteNode = (bundleId, data) =>
   request({
     url: `/api/dimzou/bundle/${bundleId}/remove-chapter/`,
     method: 'POST',
     data,
-  })
+  });
 
-export const restoreNode = (bundleId, data) => 
+export const restoreNode = (bundleId, data) =>
   request({
     url: `/api/dimzou/bundle/${bundleId}/restore-chapter/`,
     method: 'POST',
     data,
-  })
+  });
 
-export const updateNodeVisibility = (bundleId, data) => 
+export const updateNodeVisibility = (bundleId, data) =>
   request({
     url: `/api/dimzou/bundle/${bundleId}/set-chapter-visibility/`,
     method: 'POST',
     data,
-  })
+  });
 
-export const updateManuscript = (bundleId, data) => request({
-  url: `/api/dimzou/bundle/${bundleId}/set-chapter-manuscript/`,
-  method: 'POST',
-  data,
-})
+export const updateManuscript = (bundleId, data) =>
+  request({
+    url: `/api/dimzou/bundle/${bundleId}/set-chapter-manuscript/`,
+    method: 'POST',
+    data,
+  });
 
-export const updateBlockSort = (bundleId, data) => request({
-  url: `/api/dimzou/bundle/${bundleId}/sort-paragraph/`,
-  method: 'POST',
-  data,
-})
+export const updateBlockSort = (bundleId, data) =>
+  request({
+    url: `/api/dimzou/bundle/${bundleId}/sort-paragraph/`,
+    method: 'POST',
+    data,
+  });
 
-export const markRewordShared = (bundleId, data) => request({
-  url: `/api/dimzou/bundle/${bundleId}/mark-shared/`,
-  method: 'POST',
-  data,
-})
+export const markRewordShared = (bundleId, data) =>
+  request({
+    url: `/api/dimzou/bundle/${bundleId}/mark-shared/`,
+    method: 'POST',
+    data,
+  });
 
-export const fetchUserDrafts = (params) => request({
-  url: `/api/dimzou/bundle/user-related-drafts/`,
-  method: 'GET',
-  params,
-})
+export const fetchUserDrafts = (params) =>
+  request({
+    url: `/api/dimzou/bundle/user-related-drafts/`,
+    method: 'GET',
+    params,
+  });
 
-export const mergeBundle = (bundleId, data) => request({
-  url: `/api/dimzou/bundle/${bundleId}/merge-bundle/`,
-  method: 'POST',
-  data,
-})
+export const mergeBundle = (bundleId, data) =>
+  request({
+    url: `/api/dimzou/bundle/${bundleId}/merge-bundle/`,
+    method: 'POST',
+    data,
+  });
 
-export const separateNode = (bundleId, data) => request({
-  url: `/api/dimzou/bundle/${bundleId}/separate-chapter/`,
-  method: 'POST',
-  data,
-})
+export const separateNode = (bundleId, data) =>
+  request({
+    url: `/api/dimzou/bundle/${bundleId}/separate-chapter/`,
+    method: 'POST',
+    data,
+  });
 
-export const updateChapter = (bundleId, data) => request({
-  url: `/api/dimzou/bundle/${bundleId}/update-chapter/`,
-  method: 'POST',
-  data,
-})
+export const updateChapter = (bundleId, data) =>
+  request({
+    url: `/api/dimzou/bundle/${bundleId}/update-chapter/`,
+    method: 'POST',
+    data,
+  });
 
-export const fetchUserCreated = (params) => request({
-  url: `/api/dimzou/bundle/user-created-drafts/`,
-  method: 'GET',
-  params,
-})
+export const fetchUserCreated = (params) =>
+  request({
+    url: `/api/dimzou/bundle/user-created-drafts/`,
+    method: 'GET',
+    params,
+  });
 
-export const fetchUserRelated = (params) => request({
-  url: '/api/dimzou/bundle/target-user-related-drafts/',
-  method: 'GET',
-  params,
-})
+export const fetchUserRelated = (params) =>
+  request({
+    url: '/api/dimzou/bundle/target-user-related-drafts/',
+    method: 'GET',
+    params,
+  });
 
-export const fetchBundlePublication = (params) => request({
-  url: '/api/dimzou/publication/',
-  method: 'GET',
-  params,
-})
+export const fetchBundlePublication = (params) =>
+  request({
+    url: '/api/dimzou/publication/',
+    method: 'GET',
+    params,
+  });
 
 // dashboard
 export function fetchDimzouReports(params) {

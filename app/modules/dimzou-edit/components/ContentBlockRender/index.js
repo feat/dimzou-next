@@ -1,13 +1,14 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { FormattedMessage } from 'react-intl';
 
 import IconButton from '@feat/feat-ui/lib/button/IconButton';
 import Avatar from '@feat/feat-ui/lib/avatar/Avatar';
 
 import { formatMessage } from '@/services/intl';
 import { getAvatar, getUsername } from '@/utils/user';
-import PubDate from '@/components/PubDate';
+
 
 import {
   EDIT_MODE_ORIGIN,
@@ -23,6 +24,7 @@ import {
 import DraggableBlockContent from '../DraggableBlockContent';
 import BlockSectionFooter from '../BlockSectionFooter';
 import DimzouEditor from '../DimzouEditor';
+import PubDate from '../PubDate';
 import RewordingList from './RewordingList';
 // import BlockTailingWidget from '../BlockTailingWidget';
 import RewordingCommentBundle from '../RewordingCommentBundle';
@@ -145,6 +147,7 @@ export default function ContentBlockRender(props) {
                   <span className="dz-BlockSectionCurrent__expertise">
                     {currentUser.expertise}
                   </span>
+                  <FormattedMessage {...intlMessages.editing} />
                 </div>
                 <DimzouEditor
                   className="typo-Article"

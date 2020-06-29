@@ -61,7 +61,7 @@ class RewordingCommentBundle extends React.Component {
       });
     }
     if (preProps.bundleState !== bundleState && this.context) {
-      this.context.measure();
+      this.context();
     }
 
   }

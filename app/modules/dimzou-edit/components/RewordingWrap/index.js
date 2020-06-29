@@ -40,11 +40,11 @@ import {
   getHTML,
   convertToRaw,
   tryToSyncFocus,
-} from '../../components/DimzouEditor';
+} from "../DimzouEditor";
 
 import { getConfirmedHTML, getConfirmedText, getBaseHTML } from '../../utils/content';
 
-import Rewording from '../../components/Rewording';
+import Rewording from "../Rewording";
 import { extractWidgetInfo, noInteration } from '../../utils/rewordings';
 import { getNodeCache, rewordingKey } from '../../utils/cache';
 import intlMessages from '../../messages';
@@ -53,7 +53,7 @@ import { MeasureContext } from '../../context';
 class RewordingWrap extends React.PureComponent {
   componentDidUpdate(prevProps) {
     if (this.context && this.props.uiState !== prevProps.uiState) {
-      this.context.measure();
+      this.context();
     }
   }
 
@@ -147,7 +147,7 @@ class RewordingWrap extends React.PureComponent {
           });
         } else {
           const cache = getNodeCache(this.props.nodeId);
-          const cacheHTML = cache.get(rewordingKey(this.props));
+          const blockCache = cache.get(rewordingKey(this.props));
           const initialHTML = data.html_content;
 
           dispatch(
@@ -157,7 +157,7 @@ class RewordingWrap extends React.PureComponent {
               rewordingId: this.props.rewordingId,
               structure: this.props.structure,
               editorState: tryToSyncFocus(
-                createFromHTML(cacheHTML || initialHTML),
+                createFromHTML(get(blockCache, 'html', initialHTML)),
               ),
               updateBaseHTML: initialHTML,
               rewordBaseHTML: getBaseHTML(initialHTML),
@@ -189,14 +189,14 @@ class RewordingWrap extends React.PureComponent {
       });
     } else {
       const cache = getNodeCache(this.props.nodeId);
-      const cacheHTML = cache.get(rewordingKey(this.props));
+      const blockCache = cache.get(rewordingKey(this.props));
       const userUpdate =
         data.user.uid === currentUser.uid && noInteration(data);
       const initialHTML = userUpdate
         ? data.html_content
         : getConfirmedHTML(data.html_content);
       const editorState = tryToSyncFocus(
-        createFromHTML(cacheHTML || initialHTML),
+        createFromHTML(get(blockCache, 'html', initialHTML)),
       );
       dispatch(
         initRewordingEdit({
@@ -217,11 +217,11 @@ class RewordingWrap extends React.PureComponent {
   exitEditMode = () => {
     this.props.dispatch(
       exitRewordingEdit({
+        bundleId: this.props.bundleId,
+        nodeId: this.props.nodeId,
         rewordingId: this.props.rewordingId,
       }),
     );
-    const cache = getNodeCache(this.props.nodeId);
-    cache && cache.set(rewordingKey(this.props), '');
   };
 
   updateEditor = (editorState) => {
@@ -233,10 +233,6 @@ class RewordingWrap extends React.PureComponent {
         editorState,
       }),
     );
-    // cache
-    const cache = getNodeCache(this.props.nodeId);
-    const htmlContent = getHTML(editorState.getCurrentContent());
-    cache && cache.set(rewordingKey(this.props), htmlContent);
   };
 
   removeRewording = () => {
@@ -268,7 +264,6 @@ class RewordingWrap extends React.PureComponent {
       blockId,
       rewordingId,
       structure,
-      baseId,
       userCapabilities,
       dispatch,
     } = this.props;
@@ -305,9 +300,9 @@ class RewordingWrap extends React.PureComponent {
       trigger: 'rewording',
     };
     const shouldUpdateRewording = data.status === REWORDING_STATUS_PENDING;
-
+    
     if (!shouldUpdateRewording) {
-      payload.baseId = baseId;
+      payload.baseId = data.base_on;
     }
     if (shouldUpdateRewording && !contentState.hasText()) {
       dispatch(removeRewording(payload));

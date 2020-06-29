@@ -22,15 +22,15 @@ import { getNodeCache, appendingBlockKey } from '../utils/cache';
 
 export const getAppendingKey = ({ nodeId }) => nodeId;
 
-const createTailingState = ({ bundleId, nodeId, shouldFocus }) => {
+const createTailingState = ({ bundleId, nodeId, shouldFocus, reset }) => {
   const cache = getNodeCache(nodeId);
   let editorState;
   const blockCache = cache && cache.get(appendingBlockKey({
     nodeId,
     pivotId: TAILING_PIVOT,
   }));
-  if (blockCache) {
-    editorState = shouldFocus ? createFromHTMLWithFocus(blockCache) : createFromHTML(blockCache);
+  if (blockCache && blockCache.html && !reset) {
+    editorState = shouldFocus ? createFromHTMLWithFocus(blockCache.html) : createFromHTML(blockCache.html);
   } else {
     editorState = shouldFocus ? createEmptyWithFocus() : createEmpty();
   }
@@ -98,6 +98,7 @@ const reducer = mapHandleActions(
               return createTailingState({
                 bundleId: payload.bundleId,
                 nodeId: payload.nodeId,
+                reset: true,
               });
             }
             return blockState;

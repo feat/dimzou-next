@@ -17,7 +17,6 @@ import {
 import {
   EDIT_MODE_ORIGIN,
   EDIT_MODE_TRANSLATION,
-  BLOCK_STATUS_ACCEPTED,
   REWORDING_STATUS_PENDING,
   REWORDING_WIDGET_IMAGE,
 } from '../../constants';
@@ -30,7 +29,6 @@ import {
   commitMediaRewording,
   updateMediaRewording,
   removeBlock,
-
   initBlockEdit,
   exitBlockEdit,
   updateBlockEditor,
@@ -46,7 +44,11 @@ import {
   getHTML,
   applyRemoveAnnotation,
 } from '../DimzouEditor';
-import { getConfirmedHTML, getConfirmedText, getBaseHTML } from '../../utils/content';
+import {
+  getConfirmedHTML,
+  getConfirmedText,
+  getBaseHTML,
+} from '../../utils/content';
 
 import preparePreview from '../../utils/preparePreview';
 import intlMessages from '../../messages';
@@ -75,7 +77,6 @@ class RewordableSection extends React.Component {
     return !!diffProps.length;
   }
 
-
   initBlockEdit = (data) => {
     const { dispatch } = this.props;
     dispatch(initBlockEdit(data));
@@ -95,8 +96,6 @@ class RewordableSection extends React.Component {
         structure: this.props.structure,
       }),
     );
-    const cache = getNodeCache(this.props.nodeId);
-    cache.set(blockKey(this.props), '');
   };
 
   updateBlockEditor = (editorState) => {
@@ -109,12 +108,6 @@ class RewordableSection extends React.Component {
         editorState,
       }),
     );
-
-    // cache block editor
-    const contentState = editorState.getCurrentContent();
-    const htmlContent = getHTML(contentState);
-    const cache = getNodeCache(this.props.nodeId);
-    cache.set(blockKey(this.props), htmlContent);
   };
 
   updateBlockState = (data) => {
@@ -171,7 +164,7 @@ class RewordableSection extends React.Component {
       return undefined;
     }
 
-    // should has diff 
+    // should has diff
     if (rewordBaseHTML === htmlContent) {
       message.info(formatMessage(intlMessages.diffFromRewordBase));
       if (!blockState.isEditModeForced) {
@@ -180,7 +173,7 @@ class RewordableSection extends React.Component {
       return undefined;
     }
 
-    // 
+    //
     if (structure === 'title' && !getConfirmedText(htmlContent)) {
       message.info(formatMessage(intlMessages.titleTextRequired));
       return undefined;
@@ -193,7 +186,10 @@ class RewordableSection extends React.Component {
 
     const content = convertToRaw(contentState);
 
-    if (blockState.editorMode === 'create' && !contentState.getPlainText().trim()) {
+    if (
+      blockState.editorMode === 'create' &&
+      !contentState.getPlainText().trim()
+    ) {
       return this.removeFreeBlock();
     }
 
@@ -366,7 +362,6 @@ class RewordableSection extends React.Component {
       blockId,
       mode,
       info,
-      status,
       blockState,
       blockUserMeta,
       currentUser,
@@ -391,9 +386,13 @@ class RewordableSection extends React.Component {
           editorState: createFromHTML(
             blockUserMeta.pendingRewording.html_content,
           ),
-          rewordBaseHTML: getBaseHTML(blockUserMeta.pendingRewording.html_content),
+          rewordBaseHTML: getBaseHTML(
+            blockUserMeta.pendingRewording.html_content,
+          ),
           updateBaseHTML: blockUserMeta.pendingRewording.html_content,
-          editorMode: status !== BLOCK_STATUS_ACCEPTED ? 'create' : 'update',
+          editorMode: !blockUserMeta.pendingRewording.base_on
+            ? 'create'
+            : 'update',
         });
       } else {
         message.error({
@@ -402,7 +401,7 @@ class RewordableSection extends React.Component {
       }
     } else if (currentVersion) {
       const cache = getNodeCache(this.props.nodeId);
-      const cacheHTML = cache.get(blockKey(this.props));
+      const blockCache = cache && cache.get(blockKey(this.props));
       // const hasNoInteration = noInteration(currentVersion) && !rewordings.some((r) => r.base_on === currentVersion.id);
       const hasNoInteration = noInteration(currentVersion);
       const isRewordAuthor = currentVersion.user.uid === currentUser.uid;
@@ -412,7 +411,7 @@ class RewordableSection extends React.Component {
         ? currentVersion.html_content
         : getConfirmedHTML(currentVersion.html_content);
       const editorState = tryToSyncFocus(
-        createFromHTML(cacheHTML || initialHTML),
+        createFromHTML(get(blockCache, 'html', initialHTML)),
       );
 
       let editorMode = 'update';
@@ -425,7 +424,9 @@ class RewordableSection extends React.Component {
         blockId: this.props.blockId,
         basedOn: canUpdate ? currentVersion.base_on : currentVersion.id,
         editorState,
-        rewordBaseHTML: canUpdate ? getBaseHTML(currentVersion.html_content) : getConfirmedHTML(currentVersion.html_content),
+        rewordBaseHTML: canUpdate
+          ? getBaseHTML(currentVersion.html_content)
+          : getConfirmedHTML(currentVersion.html_content),
         updateBaseHTML: initialHTML,
         editorMode,
       });
@@ -491,11 +492,11 @@ class RewordableSection extends React.Component {
           postCoverRewording={this.postCoverRewording}
           updateBlockState={this.updateBlockState}
         />
-      )
+      );
     }
 
     return (
-      <Render 
+      <Render
         {...props}
         enterEditMode={this.enterEditMode}
         exitEditMode={this.exitBlockEditMode}
@@ -505,7 +506,7 @@ class RewordableSection extends React.Component {
         postRewording={this.postRewording}
         postMediaRewording={this.postMediaRewording}
       />
-    )
+    );
   }
 }
 

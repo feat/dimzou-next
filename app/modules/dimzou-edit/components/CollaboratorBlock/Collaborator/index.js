@@ -85,6 +85,9 @@ const collaboratorSource = {
     if (props.collaborator.is_deleted) {
       return;
     }
+    if (!props.canRemove) {
+      return;
+    }
     const offset = monitor.getDifferenceFromInitialOffset();
     if (Math.abs(offset.x) > 200 || Math.abs(offset.y) > 50) {
       Modal.confirm({

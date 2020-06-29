@@ -10,7 +10,7 @@ import { getOwner, getTemplate }  from '../../utils/workspace';
 import { selectPublicationBundleState } from '../../selectors'
 import { asyncFetchBundleDesc } from '../../actions';
 import PublicationContextProvider from '../../providers/PublicationContextProvider';
-import BookRender from './BookRender';
+// import BookRender from './BookRender';
 import ArticleRender from './ArticleRender';
 import { getAsPath } from '../../utils/router';
 
@@ -70,8 +70,9 @@ function Publication() {
     )
   }
 
-  const isMultiChapter = pBundleState.data.is_multi_chapter;
-  const ContentRender = isMultiChapter ? BookRender : ArticleRender;
+  const ContentRender = ArticleRender;
+  // const isMultiChapter = pBundleState.data.is_multi_chapter;
+  // // const ContentRender = isMultiChapter ? BookRender : ArticleRender;
   const ownerUser = getOwner(pBundleState.data);
   return (
     <PublicationBundleContext.Provider value={pBundleState}>

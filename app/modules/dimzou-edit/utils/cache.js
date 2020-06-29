@@ -11,14 +11,14 @@ export function initNodeCache(nodeId, userId, reinit) {
   }, reinit)
 }
 
-export function appendingBlockKey ({ nodeId, pivotId }) {
-  return `appending_${nodeId}_${pivotId}`
+export function appendingBlockKey ({ pivotId }) {
+  return `appending-${pivotId}`
 }
 
-export function blockKey({ nodeId, blockId }) {
-  return `block_${nodeId}_${blockId}`
+export function blockKey({ blockId, structure }) {
+  return `block-${structure}-${blockId}`
 }
 
-export function rewordingKey({ nodeId, rewordingId }) {
-  return `rewording_${nodeId}_${rewordingId}`;
+export function rewordingKey({ rewordingId }) {
+  return `rewording-${rewordingId}`;
 }

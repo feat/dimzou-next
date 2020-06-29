@@ -36,7 +36,7 @@ class TailingWidget extends Component {
       nodeId: this.props.nodeId,
       pivotId: this.props.blockId,
     }));
-    const editorState = appendingCache ? createFromHTMLWithFocus(appendingCache) : createEmptyWithFocus();
+    const editorState = appendingCache && appendingCache.html ? createFromHTMLWithFocus(appendingCache.html) : createEmptyWithFocus();
 
     this.props.createAppendBlock({
       type: 'editor',

@@ -24,14 +24,13 @@ export const selectBundleState = createSelector(
     'dimzouBundles',
     props.bundleId,
   ]),
-  (_, props) => props.bundleId,
   selectEntities,
-  (bundleState, id, entities) => {
+  (bundleState, entities) => {
     if (!bundleState) {
       return bundleState;
     }
-    const data = denormalize(id, dimzouBundleDescSchema, entities);
-    if (typeof data === 'object') {
+    if (bundleState.data) {
+      const data = denormalize(bundleState.data, dimzouBundleDescSchema, entities);
       return {
         ...bundleState,
         data,

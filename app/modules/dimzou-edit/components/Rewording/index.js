@@ -8,7 +8,7 @@ import commonMessages from '@/messages/common';
 
 import Avatar from '@feat/feat-ui/lib/avatar/Avatar';
 import IconButton from '@feat/feat-ui/lib/button/IconButton';
-import PubDate from '@/components/PubDate';
+
 
 import RewordingCommentBundle from '../RewordingCommentBundle';
 import DimzouEditor from '../DimzouEditor';
@@ -16,9 +16,11 @@ import RewordingLikeWidget from '../RewordingLike';
 import RewordingCommentTrigger from '../RewordingCommentTrigger';
 import RewordingVersion from '../RewordingVersion';
 import InvitationTrigger from '../InvitationTrigger';
+import PubDate from '../PubDate';
 
 import { REWORDING_STATUS_PENDING } from '../../constants';
 import RewordingPreviewWidget from '../RewordingPreviewWidget';
+import intlMessages from '../../messages';
 
 import './style.scss';
 
@@ -60,6 +62,7 @@ class Rewording extends React.Component {
                   <span className="margin_l_12 dz-Rewording__expertise">
                     {currentUser.expertise}
                   </span>
+                  <FormattedMessage {...intlMessages.editing} />
                 </div>
                 <DimzouEditor
                   className="typo-Article"
@@ -298,7 +301,6 @@ Rewording.defaultProps = {
   modifier: 'pending',
   uiState: {
     isCommentPanelOpened: false,
-    isSubmittingUpdate: false,
     editorState: null,
     editorInitialContent: undefined,
   },

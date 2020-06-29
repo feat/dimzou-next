@@ -2,7 +2,7 @@ import { useState, useMemo, useContext, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import classNames from 'classnames';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 
 import { dimzouBundleDesc as dimzouBundleDescSchema } from '@/schema';
 import { formatMessage } from '@/services/intl';
@@ -15,9 +15,9 @@ import Modal from '@feat/feat-ui/lib/modal';
 import Node from './Node';
 import NodeDropzone from './NodeDropzone';
 import DraggableNodeLabel from './DraggableNodeLabel';
-import NodeOutline from '../NodeOutline';
+import Outline from './Outline';
 import PopMenu from '../PopMenu';
-import ScrollButton from '../ScrollButton';
+import { LabelButton } from '../ScrollButton';
 import RoleIcon from '../RoleIcon';
 
 import { NODE_TYPE_CHAPTER, BUNDLE_STATUS_PUBLISHED } from '../../constants';
@@ -51,17 +51,23 @@ export default function BundleNode(props) {
   const dispatch = useDispatch();
   const workspace = useContext(WorkspaceContext);
   const scrollContext = useContext(ScrollContext);
+  const router = useRouter();
   const isPublication = type === 'publication';
   const isCurrent = workspace.bundleId === String(data.id) && (
     workspace.isPublicationView === isPublication
   );
-  const [ expanded, setExpanded ] = useState(isCurrent);
+  const [ expanded, setExpanded ] = useState(props.expanded);
 
   useEffect(() => {
-    if (isCurrent && !expanded) {
-      setExpanded(true);
-    }
-  }, [isCurrent])
+    props.cacheExpanded && props.cacheExpanded(expanded);
+  }, [expanded]);
+
+  // const [ expanded, setExpanded ] = useState(isCurrent);
+  // useEffect(() => {
+  //   if (isCurrent && !expanded) {
+  //     setExpanded(true);
+  //   }
+  // }, [isCurrent])
   const firstNode = data.nodes[0];
   const chapterNodes = useMemo(() => data.nodes.filter((item) => item.node_type === NODE_TYPE_CHAPTER), [data.nodes]);
   const handleDrop = (source, place) => {
@@ -154,7 +160,7 @@ export default function BundleNode(props) {
                       bundleId: data.id,
                       userId: data.user ? data.user.uid : data.user_id,
                     })).then(() => {
-                      Router.replace({
+                      router.replace({
                         pathname: '/dimzou-edit',
                         query: {
                           isCreate: true,
@@ -235,42 +241,33 @@ export default function BundleNode(props) {
             data={data} 
             disabled={isMulti || !isOwner} 
             name={
-              <ScrollButton 
-                offset={-120} 
-                spy={isCurrent}
+              <LabelButton 
                 className={classNames({
                   'is-active': isCurrent && String(workspace.nodeId) === String(firstNode.id) && !scrollContext.activeHash,
                 })}
-                to={`node-${firstNode.id}`} 
                 title={displayTitle}
                 onClick={() => {
-                  Router.push(linkInfo.href, linkInfo.as)
-                    .then(() => {
-                      window.scrollTo(0, 0);
-                    })
-                  scrollContext.setActiveHash('');
+                  window.scrollTo(0, 0);
+                  router.push(linkInfo.href, linkInfo.as);
                 }}
                 data-node-level='bundle'
                 data-is-multi-chapter={isMulti}
                 data-is-expanded={expanded}
-                onSetActive={(to) => {
-                  const nodeId = to.replace('node-', '');
-                  if (String(workspace.nodeId) !== nodeId) {
-                    Router.replace(linkInfo.href, linkInfo.as)
-                  }
-                }}
               >
                 {data.title}
                 {versionLabel && (
                   <span style={{ marginLeft: '.5em'}}>{versionLabel}</span>
                 )}
-              </ScrollButton>
+              </LabelButton>
             }
             subTitle={role !== false && <RoleIcon role={role} />}
             extra={isCurrent && extra}
           />
-          {!isMulti && isCurrent && (
-            <NodeOutline />
+          {!isMulti && !isPublication && (
+            <Outline 
+              data={firstNode} 
+              href={href}
+            />
           )}
           {expanded && isMulti && (
             <div>
@@ -307,8 +304,11 @@ BundleNode.propTypes = {
     'publication',
     'draft',
   ]),
+  expanded: PropTypes.bool,
+  cacheExpanded: PropTypes.func,
 }
 
 BundleNode.defaultProps = {
   type: 'draft',
+  expanded: true,
 }

@@ -16,16 +16,19 @@ import {
   initRewordingEdit,
   exitRewordingEdit,
   updateRewordingEditor,
+  loadNodeEditInfo,
 } from '../actions';
+import { createFromHTML } from '../components/DimzouEditor';
+import { getNodeCache } from '../utils/cache';
 
 export const initialRewordingState = {
+  isEditModeEnabled: false,
   isCommentPanelOpened: false,
-  isSubmittingUpdate: false,
   editorState: null,
   editorInitialContent: undefined,
 };
 
-const rewordingReducer = mapHandleActions(
+const baseRewordingReducer = mapHandleActions(
   {
     [openCommentPanel]: (rewordingState) => ({
       ...rewordingState,
@@ -87,6 +90,8 @@ const rewordingReducer = mapHandleActions(
       if (trigger === 'rewording') {
         return {
           ...rewordingState,
+          editorState: null,
+          editorInitialContent: undefined,
           isEditModeEnabled: false,
         };
       }
@@ -162,5 +167,30 @@ const rewordingReducer = mapHandleActions(
   initialRewordingState,
   (action) => action.payload.rewordingId,
 );
+
+function initializeWithCache(state, action) {
+  const cache = getNodeCache(action.payload.nodeId);
+  if (!cache) {
+    return state;
+  }
+  let newState = state;
+  const rewordings = Object.entries(cache.all()).filter(([key]) => /^rewording-/.test(key));
+  rewordings.forEach((data) => {
+    if (typeof data[1] !== 'object' && !data.html) {
+      return;
+    }
+    const { html, ...payload } = data[1];
+    payload.editorState = createFromHTML(html);
+    newState = baseRewordingReducer(newState, initRewordingEdit(payload));
+  })
+  return newState;
+}
+
+function rewordingReducer(state = {}, action) {
+  if (action.type === loadNodeEditInfo.toString()) {
+    return initializeWithCache(state, action);
+  }
+  return baseRewordingReducer(state, action);
+}
 
 export default rewordingReducer;

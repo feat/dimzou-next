@@ -12,7 +12,7 @@ Dimzou Feature related pages
   npm install
   ```
 
-3. 通过环境配置模版创建环境配置文件，并编辑环境配置文件
+3. 通过环境配置模版创建环境配置文件，并编辑环境配置文件, `.env` 中需要填入 FEAT_CLIENT_ID 以及 FEAT_CLIENT_SECRET。具体内容可联系我们获取。
 
   ```bash
   cp .env.example .env

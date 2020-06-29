@@ -1,9 +1,8 @@
 import React, { useMemo, useContext, useCallback, useEffect } from 'react';
 import classNames from 'classnames';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { formatMessage } from '@/services/intl';
-import { selectCurrentUserId } from '@/modules/auth/selectors';
 import SvgIcon from '@feat/feat-ui/lib/svg-icon';
 import Block from '@feat/feat-ui/lib/block';
 import Tooltip from '@feat/feat-ui/lib/tooltip';
@@ -44,7 +43,6 @@ function CollaboratorBlock() {
   const nodeState = useContext(NodeContext)
   const userCapabilities = useContext(UserCapabilitiesContext)
   const workspace = useContext(WorkspaceContext)
-  const currentUserId = useSelector(selectCurrentUserId);
   const dispatch = useDispatch();
   const collaborators = nodeState && nodeState.data ? nodeState.data.collaborators : [];
   const nodeWords = useMemo(() => collaborators.reduce((a, b) => a + b.contributing_words, 0), [collaborators]);
@@ -90,14 +88,12 @@ function CollaboratorBlock() {
   })
 
   const handleRemove = useCallback((collaborator) => {
-    if (userCapabilities.isOwner || useCallback.isAdmin) {
-      dispatch(removeCollaborator({
-        bundleId: workspace.bundleId,
-        nodeId: workspace.nodeId,
-        userId: collaborator.user_id,
-      }))
-    }
-  })
+    dispatch(removeCollaborator({
+      bundleId: workspace.bundleId,
+      nodeId: workspace.nodeId,
+      userId: collaborator.user_id,
+    }))
+  }, []);
 
   useEffect(() => {
     if (userCapabilities && userCapabilities.isOwner && !nodeState.collaboratorsOnceFetched) {
@@ -174,9 +170,10 @@ function CollaboratorBlock() {
           <Collaborator 
             nodeWords={nodeWords} 
             onRemove={handleRemove} 
+            canRemove={userCapabilities.isOwner}
             key={c.id} 
             collaborator={c} 
-            disabled={c.user && c.user.uid === currentUserId} 
+            disabled={!userCapabilities.isOwner} // only owner can assign role or remove collaborator
           />
         ))}
       </CollaboratorDropzone>
@@ -192,9 +189,10 @@ function CollaboratorBlock() {
           <Collaborator 
             nodeWords={nodeWords} 
             onRemove={handleRemove} 
+            canRemove={userCapabilities.isOwner}
             key={c.id} 
             collaborator={c} 
-            disabled={c.user && c.user.uid === currentUserId} 
+            disabled={!userCapabilities.isOwner}  // only owner can assign admin role or remove collaborator
           />
         ))}
       </CollaboratorDropzone>
@@ -210,6 +208,7 @@ function CollaboratorBlock() {
           {blocked.map((c) => (
             <Collaborator 
               nodeWords={nodeWords} 
+              canRemove={false}
               key={c.id} 
               collaborator={c} 
             />

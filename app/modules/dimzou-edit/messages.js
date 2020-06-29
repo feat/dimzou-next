@@ -212,6 +212,10 @@ export default defineMessages({
     id: 'dz.dimzou-edit.insert-hint',
     defaultMessage: 'Insert content',
   },
+  editing: {
+    id: 'dz.dimzou-edit.editing',
+    defaultMessage: 'Editing',
+  },
 });
 
 export const collaboratorRole = defineMessages({

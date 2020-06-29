@@ -1,12 +1,9 @@
 import { mapHandleActions } from '@/utils/reducerCreators';
 import {
-  closeInvitation,
   fetchBundleEditInfo,
   fetchBundleEditInfoFailure,
   initBundle,
   loadBundleEditInfo,
-  openInvitation,
-  release,
 } from '../actions';
 
 import {
@@ -24,28 +21,7 @@ export const initialBundleState = {
   fetchError: null,
   data: null, // bundle data
   features: undefined,
-  // config
-  cachedTemplate: undefined,
-  cachedEditPermission: undefined,
-  cachedNewCollaborators: [],
-  cachedUpdatedCollaborators: {},
-
-  // nodes
-  deletingNodes: {},
-
-  // chapter creation
-  isCreatingNode: false,
-  isChapterCreationPanelOpened: false,
-  isCoverNodeCreationPanelOpened: false,
-
-  // release
-  isReleasePanelOpened: false,
-  releaseStep: undefined,
-  releaseTarget: null,
-  releaseValidationProcessing: false,
-  releaseValidationError: null,
-  releaseCategory: undefined,
-  isReleasing: false,
+  mode: undefined,
 };
 
 const getBundleFeatures = (data) => {
@@ -92,34 +68,12 @@ const bundleEditReducer = mapHandleActions(
         isFetchingEditInfo: false,
         isReady: true,
         fetchError: null,
+        data: data.id,
         mode: data.type === CONTENT_TYPE_TRANSLATE ? 
           EDIT_MODE_TRANSLATION : EDIT_MODE_ORIGIN,
         features: getBundleFeatures(data),
       };
     },
-    [openInvitation]: (bundleState, action) => {
-      const {
-        payload: { data },
-      } = action;
-      return {
-        ...bundleState,
-        isInvitationPanelOpened: true,
-        invitationInfo: data,
-      };
-    },
-    [closeInvitation]: (bundleState) => ({
-      ...bundleState,
-      isInvitationPanelOpened: false,
-      invitationInfo: null,
-    }),
-    [release.REQUEST]: (bundleState) => ({
-      ...bundleState,
-      isReleasing: true,
-    }),
-    [release.FULFILL]: (bundleState) => ({
-      ...bundleState,
-      isReleasing: false,
-    }),
   },
   initialBundleState,
   (action) => action.payload.bundleId,

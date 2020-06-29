@@ -28,6 +28,8 @@ export const isParticipator = (userId, collaborators = [], editPermission) => {
   return role === ROLE_PARTICIPATOR;
 };
 
+const collaboratorSort = (a, b) => b.contributing_words - a.contributing_words;
+
 export const classifyCollaborators = (collaborators = []) => {
   let owner;
   const blocked = [];
@@ -46,6 +48,11 @@ export const classifyCollaborators = (collaborators = []) => {
       participators.push(c);
     }
   }
+
+  admins.sort(collaboratorSort);
+  participators.sort(collaboratorSort);
+  blocked.sort(collaboratorSort);
+  
   return {
     owner,
     admins,

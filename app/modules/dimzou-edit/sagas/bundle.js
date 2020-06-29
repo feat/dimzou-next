@@ -1,19 +1,12 @@
 import { eventChannel } from 'redux-saga';
-import {
-  put,
-  call,
-  select,
-  takeEvery,
-  fork,
-  take,
-} from 'redux-saga/effects';
+import { put, call, select, takeEvery, fork, take } from 'redux-saga/effects';
 import get from 'lodash/get';
 import Router from 'next/router';
 import { normalize } from 'normalizr';
 import uniqBy from 'lodash/uniqBy';
 import sortBy from 'lodash/sortBy';
 
-import { 
+import {
   category as categorySchema,
   dimzouBundleDesc as dimzouBundleDescSchema,
   dimzouNodeDesc as dimzouNodeDescSchema,
@@ -24,6 +17,8 @@ import notification from '@feat/feat-ui/lib/notification';
 
 import {
   getBundleEditInfo as getBundleEditInfoRequest,
+  getParagraphRange as getParagraphRangeRequest,
+  getParagraphType as getParagraphTypeRequest,
   updateNodeSort as updateNodeSortRequest,
   setChapterNode as setChapterNodeRequest,
   setCoverNode as setCoverNodeRequest,
@@ -43,7 +38,6 @@ import {
   receiveNodeUpdateSignal,
   receiveNewNode,
   receiveNodeDescInfo,
-
   bundleUpdateSingal,
   mergeBundlePatch,
   separateChapterPatch,
@@ -51,7 +45,6 @@ import {
 
   // node update signal
   editPatchSignal,
-
   commentSignal,
   likeSignal,
   patchContent,
@@ -60,7 +53,6 @@ import {
   fetchNodeEditInfo,
   updateBundleDesc,
 } from '../actions';
-
 
 import {
   selectBundleState,
@@ -98,7 +90,7 @@ function* initBundleFlow(action) {
     const params = nodeId ? { node: nodeId } : {};
     params.invitation = payload.invitationCode;
     const { data } = yield call(getBundleDescRequest, bundleId, params);
-  
+
     // fix category
     if (data.category_id && !data.category) {
       data.category = yield select((state) =>
@@ -144,8 +136,8 @@ function* initBundleFlow(action) {
           bundleId,
           nodeId,
           data: err,
-        })
-      )
+        }),
+      );
     }
   } finally {
     // 定位文章段落位置；
@@ -155,7 +147,6 @@ function* initBundleFlow(action) {
     logging.debug('finished');
   }
 }
-
 
 function* handleBundleConfigPatch(action) {
   const {
@@ -247,10 +238,8 @@ function* listenDimzouSocket() {
           {
             [dimzouBundleDescSchema.key]: {
               [bundleId]: {
-                nodes: (list = []) => 
-                  sortBy(uniqBy([...list, data], 'id'), [
-                    'sort',
-                  ]),
+                nodes: (list = []) =>
+                  sortBy(uniqBy([...list, data], 'id'), ['sort']),
               },
             },
           },
@@ -306,14 +295,19 @@ function* listenDimzouSocket() {
     });
     dimzouSocket.on('dimzou.edit.paragraph-updated', (room, msg) => {
       const nodeId = getNodeId(room);
+      const paragraphType = get(msg, 'paragraphs.0.type');
+      if (paragraphType === undefined) {
+        logging.warn('INVALID dimzou.edit.paragraph-updated', msg);
+        return;
+      }
       emitter(
         editPatchSignal({
           nodeId,
           patch: msg.paragraphs,
           method: 'submit-content',
-          structure: structureMap[msg.paragraphs[0].type],
-        })
-      )
+          structure: structureMap[paragraphType],
+        }),
+      );
     });
     dimzouSocket.on('dimzou.edit.paragraph-sorting', (room, msg) => {
       const nodeId = getNodeId(room);
@@ -326,8 +320,8 @@ function* listenDimzouSocket() {
             newSort: msg.new_sort,
           },
           method: 'reorder',
-        })
-      )
+        }),
+      );
     });
     dimzouSocket.on('dimzou.edit.paragraph-created', (room, msg) => {
       const nodeId = getNodeId(room);
@@ -337,8 +331,8 @@ function* listenDimzouSocket() {
           method: 'insert-content',
           patch: msg.paragraphs,
           structure: 'content',
-        })
-      )
+        }),
+      );
     });
     dimzouSocket.on('dimzou.edit.paragraph-deleted', (room, msg) => {
       const nodeId = getNodeId(room);
@@ -350,8 +344,8 @@ function* listenDimzouSocket() {
             blockId: msg.paragraph_id,
           },
           structure: 'content',
-        })
-      )
+        }),
+      );
     });
 
     dimzouSocket.on('dimzou.edit.comment-signal', (room, data) => {
@@ -387,9 +381,9 @@ function* listenDimzouSocket() {
         bundleUpdateSingal({
           userId,
           data,
-        })
-      )
-    })
+        }),
+      );
+    });
 
     return () => {
       dimzouSocket.disconnect();
@@ -418,10 +412,31 @@ function* tryToFetchUpdatedInfo(action) {
     } = yield call(getBundleEditInfoRequest, payload.bundleId, {
       node: payload.nodeId,
     });
+    const { data: content } = yield call(getParagraphRangeRequest, {
+      node_id: updatedNode.id,
+    });
+    const { data: title } = yield call(getParagraphTypeRequest, {
+      node: payload.nodeId,
+      type: 0,
+    });
+    const { data: summary } = yield call(getParagraphTypeRequest, {
+      node: payload.nodeId,
+      type: 100,
+    });
+    const { data: cover } = yield call(getParagraphTypeRequest, {
+      node: payload.nodeId,
+      type: 300,
+    });
     yield put(
       patchContent({
         ...payload,
-        data: updatedNode,
+        data: {
+          ...updatedNode,
+          content,
+          title: title[0],
+          summary: summary[0],
+          cover: cover[0] || {},
+        },
       }),
     );
   } catch (err) {
@@ -484,8 +499,8 @@ function* updateNodeSortFlow(action) {
             sort: patch.sort,
           },
           entities: normalized.entities,
-        })
-      )
+        }),
+      );
     }
   } catch (err) {
     notification.error({
@@ -501,20 +516,20 @@ function* updateNodeSortFlow(action) {
 function* newBundleFlow(action) {
   const {
     data: {
-      bundle: {
-        id: bundleId,
-      },
+      bundle: { id: bundleId },
     },
     userId,
   } = action.payload;
   try {
     const { data } = yield call(getBundleDescRequest, bundleId);
     const normalized = normalize(data, dimzouBundleDescSchema);
-    yield put(newBundlePatch({
-      userId,
-      bundleId: data.id,
-      entities: normalized.entities,
-    }))
+    yield put(
+      newBundlePatch({
+        userId,
+        bundleId: data.id,
+        entities: normalized.entities,
+      }),
+    );
   } catch (err) {
     logging.debug(err);
   } finally {
@@ -523,7 +538,9 @@ function* newBundleFlow(action) {
 }
 
 function* workshopUpdateFlow(action) {
-  const { data: { action: updateType, bundle }} = action.payload;
+  const {
+    data: { action: updateType, bundle },
+  } = action.payload;
   switch (updateType) {
     case 'merge_bundle':
       yield call(mergeBundleFlow, action);
@@ -535,57 +552,67 @@ function* workshopUpdateFlow(action) {
       yield call(newBundleFlow, action);
       break;
     case 'update_bundle':
-      yield put(updateBundleDesc({
-        entityMutators: [
-          {
-            [dimzouBundleDescSchema.key]: {
-              [bundle.id]: (base) => {
-                if (!base) {
-                  return base;
-                }
-                return ({
-                  ...base,
-                  title: bundle.title,
-                  summary: bundle.summary,
-                })
+      yield put(
+        updateBundleDesc({
+          entityMutators: [
+            {
+              [dimzouBundleDescSchema.key]: {
+                [bundle.id]: (base) => {
+                  if (!base) {
+                    return base;
+                  }
+                  return {
+                    ...base,
+                    title: bundle.title,
+                    summary: bundle.summary,
+                  };
+                },
               },
             },
-          },
-        ],
-      }))
+          ],
+        }),
+      );
       break;
-    default: 
+    default:
       logging.warn(action);
   }
 }
 
 function* mergeBundleFlow(action) {
-  const { data: {
-    node_id: nodeId,
-    merged_bundle_id: mergedBundleId,
-    target_bundle_id: targetBundleId,
-  }, userId } = action.payload;
+  const {
+    data: {
+      node_id: nodeId,
+      merged_bundle_id: mergedBundleId,
+      target_bundle_id: targetBundleId,
+    },
+    userId,
+  } = action.payload;
 
   // if loaded, reload data.
   const nodeState = yield select((state) => selectNodeState(state, { nodeId }));
   const bundles = [];
   if (nodeState) {
-    yield call(initBundleFlow, initBundle({
-      bundleId: targetBundleId,
-      nodeId,
-    }));
+    yield call(
+      initBundleFlow,
+      initBundle({
+        bundleId: targetBundleId,
+        nodeId,
+      }),
+    );
   } else {
     const { data } = yield call(getBundleDescRequest, targetBundleId);
     bundles.push(data);
   }
   const normalized = normalize(bundles, [dimzouBundleDescSchema]);
-  yield put(mergeBundlePatch({
-    userId,
-    nodeId,
-    mergedBundleId,
-    targetBundleId,
-    entities: normalized.entities,
-  }))
+  yield put(
+    mergeBundlePatch({
+      userId,
+      nodeId,
+      mergedBundleId,
+      targetBundleId,
+      entities: normalized.entities,
+    }),
+  );
 
   // try to sync route
   // if (String(Router.query.bundleId) === String(mergedBundleId)) {
@@ -598,7 +625,7 @@ function* mergeBundleFlow(action) {
   //     },
   //   }, `/draft/${targetBundleId}/${nodeId}`);
   // }
-} 
+}
 
 function* separateChapterFlow(action) {
   const {
@@ -606,9 +633,7 @@ function* separateChapterFlow(action) {
     data: {
       node_id: nodeId,
       separate_bundle_id: originBundleId,
-      new_bundle: {
-        id: newBundleId,
-      },
+      new_bundle: { id: newBundleId },
     },
   } = action.payload;
 
@@ -616,10 +641,13 @@ function* separateChapterFlow(action) {
   const nodeState = yield select((state) => selectNodeState(state, { nodeId }));
   const bundles = [];
   if (nodeState) {
-    yield call(initBundleFlow, initBundle({
-      bundleId: newBundleId,
-      nodeId,
-    }));
+    yield call(
+      initBundleFlow,
+      initBundle({
+        bundleId: newBundleId,
+        nodeId,
+      }),
+    );
   } else {
     const { data } = yield call(getBundleDescRequest, newBundleId);
     bundles.push(data);
@@ -633,18 +661,21 @@ function* separateChapterFlow(action) {
       nodeId,
       bundleId: newBundleId,
       entities: normalized.entities,
-    })
-  )
+    }),
+  );
 
   if (String(Router.query.nodeId) === String(nodeId)) {
-    Router.replace({
-      pathname: '/dimzou-edit',
-      query: {
-        ...Router.query,
-        bundleId: newBundleId,
-        nodeId,
+    Router.replace(
+      {
+        pathname: '/dimzou-edit',
+        query: {
+          ...Router.query,
+          bundleId: newBundleId,
+          nodeId,
+        },
       },
-    }, `/draft/${newBundleId}/${nodeId}`);
+      `/draft/${newBundleId}/${nodeId}`,
+    );
   }
 }
 

@@ -2,8 +2,8 @@ import { useContext, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCurrentUser } from '@/modules/auth/selectors';
 
-import { WorkspaceContext, OwnerContext } from '../../context'
-import { setSidebarHasFocus } from '../../actions'
+import { WorkspaceContext, OwnerContext } from '../../context';
+import { setSidebarHasFocus } from '../../actions';
 
 import UserDraftsPanel from '../UserDraftsPanel';
 import UserRelatedDrafts from '../UserRelatedDrafts';
@@ -11,28 +11,49 @@ import UserRelatedDrafts from '../UserRelatedDrafts';
 let sidebarFirst;
 let navigateTimer;
 
+const expandedCaches = {
+  data: {},
+  get (userId) {
+    if (!this.data[userId]) {
+      this.data[userId] = {
+        data: {},
+        get (key) {
+          return this.data[key];
+        },
+        set (key, value) {
+          this.data[key] = value;
+        },
+      };
+    }
+    return this.data[userId];
+  },
+};
+
 const handleSidebarNavigate = (e) => {
-  if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+  if (
+    e.key === 'ArrowUp' ||
+    e.key === 'ArrowDown' ||
+    e.key === 'ArrowLeft' ||
+    e.key === 'ArrowRight'
+  ) {
     e.preventDefault();
     clearTimeout(navigateTimer);
   }
   const labels = [...document.querySelectorAll('.dz-LabelButton')];
   const activeLabel = document.querySelector('.dz-LabelButton.is-active');
   const index = labels.findIndex((n) => n === activeLabel);
-  let nextActiveNode; 
+  let nextActiveNode;
   if (e.key === 'ArrowUp') {
-    nextActiveNode = labels[index-1];
-    
-  } else 
-  if (e.key === 'ArrowDown') {
-    nextActiveNode = labels[index+1];
+    nextActiveNode = labels[index - 1];
+  } else if (e.key === 'ArrowDown') {
+    nextActiveNode = labels[index + 1];
   }
   if (nextActiveNode) {
     requestAnimationFrame(() => {
       activeLabel && activeLabel.classList.remove('is-active');
       nextActiveNode && nextActiveNode.classList.add('is-active');
       // nextActiveNode.scrollIntoView();
-    })
+    });
     // fix off canvas scroll
     const box = nextActiveNode.getBoundingClientRect();
     const container = document.querySelector('.dz-DraftsPanel__content');
@@ -45,7 +66,7 @@ const handleSidebarNavigate = (e) => {
         // console.log('fix_offset delta', delta);
         if (delta < 0) {
           container.scrollTo(0, container.scrollTop - delta);
-        }  
+        }
       }
       if (e.key === 'ArrowUp') {
         // check top edge
@@ -56,20 +77,25 @@ const handleSidebarNavigate = (e) => {
         }
       }
     }
-    
+
     // const bundleNode = nextActiveNode.closest('.dz-DraftsPanelNode_bundle');
     // if (bundleNode) {
-    //   console.log('fix_offset', bundleNode.offsetTop);  
+    //   console.log('fix_offset', bundleNode.offsetTop);
     // }
-    
+
     navigateTimer = setTimeout(() => {
       nextActiveNode.click();
     }, 300);
   }
-  if (e.key === 'ArrowLeft' && activeLabel.dataset.nodeLevel === 'bundle' && activeLabel.dataset.isExpanded === 'true') {
+  if (
+    e.key === 'ArrowLeft' &&
+    activeLabel.dataset.nodeLevel === 'bundle' &&
+    activeLabel.dataset.isExpanded === 'true'
+  ) {
     try {
       const bundleNode = activeLabel.closest('.dz-DraftsPanelNode_bundle');
-      const toggleDom = bundleNode && bundleNode.querySelector('.dz-DraftsPanelNode__toggle');
+      const toggleDom =
+        bundleNode && bundleNode.querySelector('.dz-DraftsPanelNode__toggle');
       toggleDom.click();
       if (!bundleNode.classList.contains('is-current')) {
         navigateTimer = setTimeout(() => {
@@ -80,10 +106,15 @@ const handleSidebarNavigate = (e) => {
       logging.debug(err);
     }
   }
-  if (e.key === 'ArrowRight' && activeLabel.dataset.nodeLevel === 'bundle' && activeLabel.dataset.isExpanded === 'false') {
+  if (
+    e.key === 'ArrowRight' &&
+    activeLabel.dataset.nodeLevel === 'bundle' &&
+    activeLabel.dataset.isExpanded === 'false'
+  ) {
     try {
       const bundleNode = activeLabel.closest('.dz-DraftsPanelNode_bundle');
-      const toggleDom = bundleNode && bundleNode.querySelector('.dz-DraftsPanelNode__toggle');
+      const toggleDom =
+        bundleNode && bundleNode.querySelector('.dz-DraftsPanelNode__toggle');
       toggleDom.click();
       if (!bundleNode.classList.contains('is-current')) {
         navigateTimer = setTimeout(() => {
@@ -94,10 +125,12 @@ const handleSidebarNavigate = (e) => {
       logging.debug(err);
     }
   }
-}
+};
 
-function AppSidebarFirst() {
-  const { displayCurrentUserDrafts, sidebarHasFocus } = useContext(WorkspaceContext);
+function AppSidebarFirst () {
+  const { displayCurrentUserDrafts, sidebarHasFocus } = useContext(
+    WorkspaceContext,
+  );
   const ownerInfo = useContext(OwnerContext);
   const currentUser = useSelector(selectCurrentUser);
   const domRef = useRef(null);
@@ -107,48 +140,65 @@ function AppSidebarFirst() {
   useEffect(() => {
     if (sidebarHasFocus) {
       document.addEventListener('keydown', handleSidebarNavigate);
-      const watchClickOutside = (e) => {
-        // console.log('clicked handling');
-        if (!domRef.current || domRef.current.contains(e.target)) {
-          return;
-        }
-        dispatch(setSidebarHasFocus(false));
-        window.removeEventListener('click', watchClickOutside);
-      }
-      window.addEventListener('click', watchClickOutside);
-    } else {
-      document.removeEventListener('keydown', handleSidebarNavigate);
     }
     return () => {
       document.removeEventListener('keydown', handleSidebarNavigate);
+    };
+  }, [sidebarHasFocus]);
+
+  useEffect(() => {
+    const getFocus = () => {
+      if (!sidebarHasFocus) {
+        dispatch(setSidebarHasFocus(true));
+      }
+    }
+    domRef.current && domRef.current.addEventListener('click', getFocus);
+    const handleClickOutside = (e) => {
+      if (sidebarHasFocus && domRef.current && !domRef.current.contains(e.target)) {
+        dispatch(setSidebarHasFocus(false));
+      } 
+    }
+    window.addEventListener('click', handleClickOutside);
+    return () => {
+      domRef.current && domRef.current.removeEventListener('click', getFocus);
+      window.removeEventListener('click', handleClickOutside);
     }
   }, [sidebarHasFocus]);
 
-  // eslint-disable-next-line consistent-return
-  useEffect(() => {
-    if (domRef.current) {
-      const handleClick = () => {
-        dispatch(setSidebarHasFocus(true));
-      }
-      domRef.current.addEventListener('click', handleClick);
-      return () => {
-        domRef.current.removeEventListener('click', handleClick);
-      }
-    }
-  }, [domRef.current]);
-
-
   if (!ownerInfo) {
-    sidebarFirst = sidebarFirst || <UserDraftsPanel domRef={domRef} />;
+    sidebarFirst = sidebarFirst || (
+      <UserDraftsPanel
+        expandedCache={expandedCaches.get(currentUser.uid)}
+        domRef={domRef}
+      />
+    );
   } else if (ownerInfo && ownerInfo.uid !== currentUser.uid) {
     const ownerUserId = ownerInfo.uid;
     if (displayCurrentUserDrafts) {
-      sidebarFirst = <UserDraftsPanel domRef={domRef} showBackBtn backUserId={ownerUserId} />;
+      sidebarFirst = (
+        <UserDraftsPanel
+          expandedCache={expandedCaches.get(currentUser.uid)}
+          showBackBtn
+          backUserId={ownerUserId}
+          domRef={domRef}
+        />
+      );
     } else {
-      sidebarFirst = <UserRelatedDrafts domRef={domRef} userId={ownerUserId} />;
+      sidebarFirst = (
+        <UserRelatedDrafts
+          expandedCache={expandedCaches.get(ownerInfo.uid)}
+          userId={ownerUserId}
+          domRef={domRef}
+        />
+      );
     }
   } else {
-    sidebarFirst = <UserDraftsPanel domRef={domRef} />;
+    sidebarFirst = (
+      <UserDraftsPanel
+        expandedCache={expandedCaches.get(currentUser.uid)}
+        domRef={domRef}
+      />
+    );
   }
 
   return sidebarFirst;

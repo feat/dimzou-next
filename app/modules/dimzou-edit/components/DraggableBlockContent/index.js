@@ -82,8 +82,15 @@ const rewordingSource = {
     if (monitor.didDrop()) {
       return;
     }
+    if (!component) {
+      return;
+    }
     const box = component.dom.getBoundingClientRect();
     const sourceClientOffset = monitor.getSourceClientOffset();
+    if (!props.rewording.img && !props.rewording.content) {
+      return;
+    }
+
     if (
       sourceClientOffset && (
         sourceClientOffset.x > box.right ||

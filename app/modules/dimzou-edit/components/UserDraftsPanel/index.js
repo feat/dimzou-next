@@ -42,6 +42,7 @@ import './style.scss';
 const PAGE_SIZE = 999;
 
 function UserDraftsPanel(props) {
+  const { expandedCache } = props;
   const userDraftsState = useSelector(selectUserDraftsState);
   // const workspace = useContext(WorkspaceContext);
   const currentUser = useSelector(selectCurrentUser);
@@ -60,22 +61,6 @@ function UserDraftsPanel(props) {
   }, []);
 
   const backUsername = useSelector((state) => selectUsername(state, { userId: props.backUserId }));
-
-  // const toggleCreateChapter = useCallback(() => {
-  //   if (workspace.isChapterCreationPanelOpened && !workspace.chapterCreationContext) {
-  //     dispatch(exitCreateChapter());
-  //   } else {
-  //     dispatch(initCreateChapter(null));
-  //   }
-  // }, []);
-
-  // const toggleCreateCover = useCallback(() => {
-  //   if (workspace.isCoverCreationPanelOpened) {
-  //     dispatch(exitCreateCover());
-  //   } else {
-  //     dispatch(initCreateCover());
-  //   }
-  // }, []);
 
   const { data, loaded, ids } = userDraftsState;
 
@@ -158,7 +143,7 @@ function UserDraftsPanel(props) {
   } 
   return (
     <div 
-      ref={props.domRef} 
+      ref={props.domRef}
       className='dz-DraftsPanel'
     >
       <div
@@ -167,38 +152,7 @@ function UserDraftsPanel(props) {
             'has-border': !!backButton,
           })
         }>
-        {/* <div className="dz-DraftsPanel__title">
-          <TranslatableMessage message={intlMessages.userDraftsPanel} />
-        </div> */}
         <div className="dz-DraftsPanel__actions">
-          {/* <Tooltip
-            placement="top"
-            trigger="hover"
-            title={formatMessage(menuMessages.createPage)}
-            overlayStyle={{ zIndex: 9 }}
-          >
-            <IconButton 
-              className={className({
-                'is-selected': workspace.isChapterCreationPanelOpened && !workspace.chapterCreationContext,
-              })}
-              onClick={toggleCreateChapter}
-              dangerouslySetInnerHTML={{ __html: pageIcon }}
-            />
-          </Tooltip>
-          <Tooltip
-            placement="top"
-            trigger="hover"
-            title={formatMessage(menuMessages.createCover)}
-            overlayStyle={{ zIndex: 9 }}
-          >
-            <IconButton 
-              className={className({
-                'is-selected': workspace.isCoverCreationPanelOpened,
-              })}
-              onClick={toggleCreateCover}
-              dangerouslySetInnerHTML={{ __html: bookIcon }}
-            />
-          </Tooltip> */}
           {backButton}
         </div>
       </div>
@@ -227,7 +181,14 @@ function UserDraftsPanel(props) {
                 </div>
                 <div>
                   {classified.created.published.map((b) => (
-                    <BundleNode type="publication" currentUser={currentUser} data={b} key={b.id} />
+                    <BundleNode 
+                      type="publication" 
+                      currentUser={currentUser} 
+                      data={b} 
+                      key={b.id} 
+                      expanded={expandedCache.get(`publication_${b.id}`)}
+                      cacheExpanded={(expanded) => expandedCache.set(`publication_${b.id}`, expanded)}
+                    />
                   ))}
                 </div>
               </div>
@@ -239,7 +200,13 @@ function UserDraftsPanel(props) {
                 </div>
                 <div>
                   {classified.created.draft.map((b) => (
-                    <BundleNode currentUser={currentUser} data={b} key={b.id} />
+                    <BundleNode 
+                      currentUser={currentUser} 
+                      data={b} 
+                      key={b.id} 
+                      expanded={expandedCache.get(`draft_${b.id}`)}
+                      cacheExpanded={(expanded) => expandedCache.set(`draft_${b.id}`, expanded)}
+                    />
                   ))}
                 </div>
               </div>
@@ -251,7 +218,13 @@ function UserDraftsPanel(props) {
                 </div>
                 <div className="dz-DraftsPanelSubSection__content dz-DraftsPanelSubSection__content_archived">
                   {classified.created.published.map((b) => (
-                    <BundleNode currentUser={currentUser} data={b} key={b.id} />
+                    <BundleNode 
+                      currentUser={currentUser} 
+                      data={b} 
+                      key={b.id} 
+                      expanded={expandedCache.get(`draft_${b.id}`)}
+                      cacheExpanded={(expanded) => expandedCache.set(`draft_${b.id}`, expanded)}
+                    />
                   ))}
                 </div>
               </div>
@@ -270,7 +243,15 @@ function UserDraftsPanel(props) {
                 </div>
                 <div>
                   {classified.participated.published.map((b) => (
-                    <BundleNode type="publication" showRoleOfUser={currentUser.uid} currentUser={currentUser} data={b} key={b.id} />
+                    <BundleNode 
+                      type="publication" 
+                      showRoleOfUser={currentUser.uid} 
+                      currentUser={currentUser} 
+                      data={b} 
+                      key={b.id} 
+                      expanded={expandedCache.get(`publication_${b.id}`)}
+                      cacheExpanded={(expanded) => expandedCache.set(`publication_${b.id}`, expanded)}
+                    />
                   ))}
                 </div>
               </div>
@@ -282,7 +263,14 @@ function UserDraftsPanel(props) {
                 </div>
                 <div>
                   {classified.participated.draft.map((b) => (
-                    <BundleNode showRoleOfUser={currentUser.uid} currentUser={currentUser} data={b} key={b.id} />
+                    <BundleNode 
+                      showRoleOfUser={currentUser.uid} 
+                      currentUser={currentUser} 
+                      data={b} 
+                      key={b.id} 
+                      expanded={expandedCache.get(`draft_${b.id}`)}
+                      cacheExpanded={(expanded) => expandedCache.set(`draft_${b.id}`, expanded)}
+                    />
                   ))}
                 </div>
               </div>
@@ -301,6 +289,7 @@ UserDraftsPanel.propTypes = {
     PropTypes.string,
   ]),
   domRef: PropTypes.object,
+  expandedCache: PropTypes.object,
 }
 
 export default UserDraftsPanel;

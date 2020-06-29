@@ -8,6 +8,7 @@ import {
   resetBundle,
   fetchNodeEditInfo,
   loadNodeEditInfo,
+  updateNodeInfo,
   patchContent,
   commitBlock,
   submitBlock,
@@ -25,7 +26,7 @@ import {
   removeAppendBlock,
   updateAppendBlock,
   // like
-  likeRewording, 
+  likeRewording,
   unlikeRewording,
   // block
   getBlockTranslation,
@@ -35,11 +36,11 @@ import {
   createRewordingComment,
   markRewordShared,
   // rewording
-  initRewordingEdit, 
+  initRewordingEdit,
   updateRewordingEditor,
   separateNode,
   setLoadingProgress,
-} from '../actions'
+} from '../actions';
 
 export const initialNodeState = {
   isFetchingEditInfo: false,
@@ -53,15 +54,16 @@ export const initialNodeState = {
   userInvitations: [],
 };
 
-const markVersionLock = (list, id) => list.map((r) => {
-  if (r.id === id && !r.version_lock) {
-    return ({
-      ...r,
-      version_lock: true,
-    })
-  }
-  return r;
-})
+const markVersionLock = (list, id) =>
+  list.map((r) => {
+    if (r.id === id && !r.version_lock) {
+      return {
+        ...r,
+        version_lock: true,
+      };
+    }
+    return r;
+  });
 
 const nodeEditReducer = mapHandleActions(
   {
@@ -98,6 +100,19 @@ const nodeEditReducer = mapHandleActions(
       ...nodeState,
       isFetchingEditInfo: false,
     }),
+
+    [updateNodeInfo]: (nodeState = initialNodeState, action) => {
+      const {
+        data: { content },
+      } = action.payload;
+      content.shift();
+      return update(nodeState, {
+        data: (data) => ({
+          ...data,
+          content: [...data.content, ...content],
+        }),
+      });
+    },
 
     [patchContent]: (nodeState = initialNodeState, action) => {
       const {
@@ -186,12 +201,7 @@ const nodeEditReducer = mapHandleActions(
       action,
     ) => {
       const {
-        payload: { 
-          rewordingLikes,
-          structure,
-          rewordingId,
-          blockId,
-        },
+        payload: { rewordingLikes, structure, rewordingId, blockId },
       } = action;
       return update(nodeState, {
         data: {
@@ -199,26 +209,29 @@ const nodeEditReducer = mapHandleActions(
             if (Array.isArray(info)) {
               return info.map((b) => {
                 if (b.id === blockId) {
-                  return ({
+                  return {
                     ...b,
                     rewordings: markVersionLock(b.rewordings, rewordingId),
-                  })
+                  };
                 }
                 return b;
-              })
+              });
               // content;
-            } 
-            return ({
+            }
+            return {
               ...info,
               rewordings: markVersionLock(info.rewordings, rewordingId),
-            })
+            };
           },
-          user_rewording_likes: (list) => ([
+          user_rewording_likes: (list) => [
             ...rewordingLikes,
-            ...list.filter((item) => !rewordingLikes.some((updated) => updated.id === item.id)),
-          ]),
+            ...list.filter(
+              (item) =>
+                !rewordingLikes.some((updated) => updated.id === item.id),
+            ),
+          ],
         },
-      })
+      });
     },
 
     [combineActions(
@@ -240,9 +253,7 @@ const nodeEditReducer = mapHandleActions(
           key = `rewordings.${payload.rewordingId}`;
           break;
         case 'APPENDING':
-          key = `appendings.${payload.nodeId}.${
-            payload.pivotId
-          }`;
+          key = `appendings.${payload.nodeId}.${payload.pivotId}`;
           break;
         default:
           logging.warn('Unknown Editor Block Type', type);
@@ -255,49 +266,52 @@ const nodeEditReducer = mapHandleActions(
         };
     },
 
-    [combineActions(
-      updateNodeSort.SUCCESS,
-    )]: (nodeState, action) => {
+    [combineActions(updateNodeSort.SUCCESS)]: (nodeState, action) => {
       if (nodeState && action.payload.patch) {
         return update(nodeState, {
           data: (data) => ({
             ...data,
             ...action.payload.patch,
           }),
-        })
+        });
       }
       return nodeState;
     },
-    [updateBlockSort.SUCCESS]: (nodeState, action) => update(nodeState, {
-      data: {
-        $set: action.payload.data,
-      },
-    }),
-    [combineActions(createRewordingComment.SUCCESS, markRewordShared.SUCCESS)]: (nodeState, action) => {
-      const { payload: { structure, blockId, rewordingId }} = action;
+    [updateBlockSort.SUCCESS]: (nodeState, action) =>
+      update(nodeState, {
+        data: {
+          $set: action.payload.data,
+        },
+      }),
+    [combineActions(
+      createRewordingComment.SUCCESS,
+      markRewordShared.SUCCESS,
+    )]: (nodeState, action) => {
+      const {
+        payload: { structure, blockId, rewordingId },
+      } = action;
       return update(nodeState, {
         data: {
           [structure]: (info) => {
             if (Array.isArray(info)) {
               return info.map((b) => {
                 if (b.id === blockId) {
-                  return ({
+                  return {
                     ...b,
                     rewordings: markVersionLock(b.rewordings, rewordingId),
-                  })
+                  };
                 }
                 return b;
-              })
+              });
               // content;
-            } 
-            return ({
+            }
+            return {
               ...info,
               rewordings: markVersionLock(info.rewordings, rewordingId),
-            })
-
+            };
           },
         },
-      })
+      });
     },
     [patchCollaborators]: (nodeState, action) => {
       const {
@@ -314,7 +328,7 @@ const nodeEditReducer = mapHandleActions(
           return {
             ...node,
             collaborators,
-          }
+          };
         },
       });
     },
@@ -326,13 +340,14 @@ const nodeEditReducer = mapHandleActions(
       ...nodeState,
       fetchingCollaborators: true,
     }),
-    [fetchCollaborators.SUCCESS]: (nodeState, action) => update(nodeState, {
-      data: {
-        collaborators: {
-          $set: action.payload.data,
+    [fetchCollaborators.SUCCESS]: (nodeState, action) =>
+      update(nodeState, {
+        data: {
+          collaborators: {
+            $set: action.payload.data,
+          },
         },
-      },
-    }),
+      }),
     [fetchCollaborators.FULFILL]: (nodeState) => ({
       ...nodeState,
       fetchingCollaborators: false,
@@ -405,11 +420,12 @@ const nodeEditReducer = mapHandleActions(
       ...nodeState,
       isChangingTemplate: false,
     }),
-    [createInvitation.SUCCESS]: (nodeState, action) => update(nodeState, {
-      userInvitations: {
-        $push: [action.payload.data],
-      },
-    }),
+    [createInvitation.SUCCESS]: (nodeState, action) =>
+      update(nodeState, {
+        userInvitations: {
+          $push: [action.payload.data],
+        },
+      }),
     [combineActions(resetBundle, separateNode.SUCCESS)]: () => undefined,
   },
   undefined,

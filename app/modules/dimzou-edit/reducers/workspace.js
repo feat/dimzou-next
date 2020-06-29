@@ -37,6 +37,7 @@ export const initialState = {
   isSectionReleasePanelOpened: false,
   sectionReleaseContext: null,
   isSectionReleasing: false,
+  sidebarHasFocus: false,
 }
 
 const reducer = handleActions({

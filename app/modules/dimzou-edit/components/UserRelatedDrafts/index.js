@@ -16,7 +16,7 @@ import ScrollBox from '@/components/ScrollBox';
 import SubscribeButton from '@/modules/subscription/SubscribeButton';
 
 import { selectUserRelatedDrafts } from '../../selectors';
-import { asyncFetchUserRelated, showCurrentUserDrafts, setSidebarHasFocus } from '../../actions';
+import { asyncFetchUserRelated, showCurrentUserDrafts } from '../../actions';
 import dimzouSocket from '../../socket';
 import BundleNode from '../UserDraftsPanel/BundleNode'
 import workshopIcon from '../../assets/icon-workshop.svg';
@@ -29,6 +29,7 @@ import { SUBSCRIPTION_ENTITY_TYPE_DIMZOU } from '../../../subscription/constants
 const PAGE_SIZE = 999;
 
 function UserRelatedDrafts(props) {
+  const { expandedCache } = props;
   const userRelatedDrafts = useSelector((state) => selectUserRelatedDrafts(state, props)) || {};
   const dispatch = useDispatch();
   const currentUser = useSelector(selectCurrentUser);
@@ -101,9 +102,6 @@ function UserRelatedDrafts(props) {
     <div 
       className='dz-DraftsPanel'
       ref={props.domRef}
-      onClick={() => {
-        dispatch(setSidebarHasFocus(true));
-      }}
     >
       <div className="dz-DraftsPanel__header has-border">
         <div className="dz-DraftsPanel__title">
@@ -172,7 +170,14 @@ function UserRelatedDrafts(props) {
                 </div>
                 <div>
                   {classified.created.published.map((b) => (
-                    <BundleNode type="publication" currentUser={currentUser} data={b} key={b.id} />
+                    <BundleNode 
+                      type="publication" 
+                      currentUser={currentUser} 
+                      data={b} 
+                      key={b.id} 
+                      expanded={expandedCache.get(`publication_${b.id}`)}
+                      cacheExpanded={(expanded) => expandedCache.set(`publication_${b.id}`, expanded)}
+                    />
                   ))}
                 </div>
               </div>
@@ -184,7 +189,13 @@ function UserRelatedDrafts(props) {
                 </div>
                 <div>
                   {classified.created.draft.map((b) => (
-                    <BundleNode currentUser={currentUser} data={b} key={b.id} />
+                    <BundleNode 
+                      currentUser={currentUser} 
+                      data={b} 
+                      key={b.id} 
+                      expanded={expandedCache.get(`draft_${b.id}`)}
+                      cacheExpanded={(expanded) => expandedCache.set(`draft_${b.id}`, expanded)}
+                    />
                   ))}
                 </div>
               </div>
@@ -196,7 +207,13 @@ function UserRelatedDrafts(props) {
                 </div>
                 <div className="dz-DraftsPanelSubSection__content dz-DraftsPanelSubSection__content_archived">
                   {classified.created.published.map((b) => (
-                    <BundleNode currentUser={currentUser} data={b} key={b.id} />
+                    <BundleNode 
+                      currentUser={currentUser} 
+                      data={b} 
+                      key={b.id} 
+                      expanded={expandedCache.get(`draft_${b.id}`)}
+                      cacheExpanded={(expanded) => expandedCache.set(`draft_${b.id}`, expanded)}
+                    />
                   ))}
                 </div>
               </div>
@@ -215,7 +232,15 @@ function UserRelatedDrafts(props) {
                 </div>
                 <div>
                   {classified.participated.published.map((b) => (
-                    <BundleNode type="publication" showRoleOfUser={props.userId}  currentUser={currentUser} data={b} key={b.id} />
+                    <BundleNode 
+                      type="publication" 
+                      showRoleOfUser={props.userId} 
+                      currentUser={currentUser} 
+                      data={b} 
+                      key={b.id} 
+                      expanded={expandedCache.get(`publication_${b.id}`)}
+                      cacheExpanded={(expanded) => expandedCache.set(`publication_${b.id}`, expanded)}
+                    />
                   ))}
                 </div>
               </div>
@@ -227,7 +252,14 @@ function UserRelatedDrafts(props) {
                 </div>
                 <div>
                   {classified.participated.draft.map((b) => (
-                    <BundleNode showRoleOfUser={props.userId} currentUser={currentUser} data={b} key={b.id} />
+                    <BundleNode 
+                      showRoleOfUser={props.userId} 
+                      currentUser={currentUser} 
+                      data={b} 
+                      key={b.id} 
+                      expanded={expandedCache.get(`draft_${b.id}`)}
+                      cacheExpanded={(expanded) => expandedCache.set(`draft_${b.id}`, expanded)}
+                    />
                   ))}
                 </div>
               </div>
@@ -245,6 +277,7 @@ UserRelatedDrafts.propTypes = {
     PropTypes.number,
   ]),
   domRef: PropTypes.object,
+  expandedCache: PropTypes.object,
 }
 
 export default UserRelatedDrafts;

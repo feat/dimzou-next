@@ -92,6 +92,11 @@ class Cache {
     return this.data[key];
   }
 
+  remove(key) {
+    delete this.data[key];
+    this.triggerCache();
+  }
+
   flush() {
     if (this.cacheTimer) {
       clearTimeout(this.cacheTimer);
@@ -101,6 +106,10 @@ class Cache {
     } else {
       storage.removeItem(this.getUserCacheKey())
     }
+  }
+
+  all() {
+    return this.data;
   }
 }
 

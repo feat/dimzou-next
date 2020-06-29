@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Cropper from 'cropperjs';
 import IconButton from '@feat/feat-ui/lib/button/IconButton';
+import notification from '@feat/feat-ui/lib/notification';
 
 import 'cropperjs/dist/cropper.css';
 
@@ -84,6 +85,13 @@ class CoverCropper extends React.Component {
   handleConfirm = () => {
     const data = this.cropper.getData();
     const canvas = this.cropper.getCroppedCanvas();
+    if (!canvas) {
+      notification.error({
+        message: 'Error',
+        description: 'Failed to get canvas.',
+      });
+      return;
+    }
     const { onConfirm } = this.props;
     canvas.toBlob(
       (croppedImage) => {

@@ -1,5 +1,9 @@
 @import 'base.scss';
 
+$node-level1-size: 18px;
+$node-level2-size: 16px;
+$node-level3-size: 14px;
+
 .dz-DraftsPanel {
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     display: flex;
@@ -85,7 +89,17 @@
         // border-left: 2px solid $gray-10;
     }
 
-    
+    &_bundle {
+        .dz-DimzouOutline__heading {
+            font-size: $node-level2-size;
+        }
+    }
+
+    &_node {
+        .dz-DimzouOutline__heading {
+            font-size: $node-level3-size;
+        }
+    }
 }
 
 .dz-DraftsPanelNodeDropzone {
@@ -116,8 +130,8 @@
 }
 
 .dz-DraftsNodeLabel {
-    padding-top: 3px;
-    padding-bottom: 3px;
+    // padding-top: 3px;
+    // padding-bottom: 3px;
     display: flex;
     &__text {
         @include text-truncate;
@@ -143,7 +157,13 @@
     }
 
     &_bundle {
-        font-size: px-to-rem(18);
+        font-size: $node-level1-size;
+    }
+    &_node {
+        font-size: $node-level2-size;
+    }
+    .dz-DimzouOutline__heading {
+        font-size: $node-level3-size;
     }
     &.is-current {
         .dz-DraftsNodeLabel__text {
