@@ -569,11 +569,15 @@ function NodeContent(props) {
       });
     });
   };
+  // eslint-disable-next-line arrow-body-style
+  const loadNextRows = isLoading
+    ? (() => Promise.resolve())
+    : loadMoreRows;
 
   return (
     <InfiniteLoader
       isRowLoaded={isRowLoaded}
-      loadMoreRows={loadMoreRows}
+      loadMoreRows={loadNextRows}
       rowCount={blockSections.length + 20}
       threshold={10}
     >
