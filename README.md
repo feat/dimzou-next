@@ -2,6 +2,10 @@
 
 Dimzou Feature related pages
 
+## 系统要求
+* Node.js 10.13 or later
+* Redis 2.8 or later
+
 ## 项目启动
 
 1. 拉取仓库
@@ -73,8 +77,6 @@ Dimzou Feature related pages
 4. 将开发证书放到 `server/cert`，证书命名规则，详见目录中的 `README.md`。当`.env` 中未设置 `HTTPS` 时，可忽略这个步骤
 
 ### 开发
-
-**系统要求： Node.js 10.13 or later**
 
 开发环境中需要使用redis，请确保环境配置中指向的 `redis-server` 已启动。本地服务可以尝试在终端中使用 `redis-server` 启动服务
 
