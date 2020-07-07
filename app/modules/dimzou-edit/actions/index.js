@@ -191,6 +191,39 @@ export const receiveNodeUpdateSignal = createAction(
 );
 export const setLoadingProgress = createRoutine('DZ/NODE/SET_LOADING_PROGRESS');
 
+export const asyncFetchNodeData = (nodeId) => async (dispatch) => {
+  try {
+    const { data: content } = await getParagraphRangeRequest({
+      node_id: nodeId,
+    });
+    const { data: title } = await getParagraphTypeRequest({
+      node: nodeId,
+      type: 0,
+    });
+    const { data: summary } = await getParagraphTypeRequest({
+      node: nodeId,
+      type: 100,
+    });
+    const { data: cover } = await getParagraphTypeRequest({
+      node: nodeId,
+      type: 300,
+    });
+    await dispatch(
+      fetchNodeData({
+        nodeId,
+        nodeData: {
+          content,
+          title: title[0],
+          summary: summary[0],
+          cover: cover[0] || {},
+        },
+      }),
+    );
+  } catch (err) {
+    logging.error(err);
+  }
+};
+
 export const asyncFetchNodeEditInfo = (payload) => async (
   dispatch,
   getState,
@@ -335,6 +368,7 @@ export const asyncUpdateNodeVisibility = (payload) => async (dispatch) => {
 export const fetchNodeEditInfo = createRoutine('DZ/NODE/FETCH_EDIT_INFO');
 export const loadNodeEditInfo = createAction('DZ/NODE/LOAD_EDIT_INFO');
 export const updateNodeInfo = createAction('DZ/NODE/UPDATE_INFO');
+export const fetchNodeData = createAction('DZ/NODE/FETCH_DATA');
 // cover
 export const updateAppendImagePivot = createAction(
   'DZ/NODE/CONTENT/APPEN_IMAGE_PIVOT',

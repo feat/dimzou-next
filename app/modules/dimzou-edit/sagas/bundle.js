@@ -252,11 +252,19 @@ function* listenDimzouSocket() {
       if (!bundleId) {
         return;
       }
-      const normalized = normalize(data, dimzouNodeDescSchema);
+      // const normalized = normalize(data, dimzouNodeDescSchema);
       const action = receiveNodeDescInfo({
         bundleId,
         data,
-        entities: normalized.entities,
+        entityMutators: [
+          {
+            [dimzouNodeDescSchema.key]: {
+              [data.id]: {
+                $set: data,
+              },
+            },
+          },
+        ],
       });
       emitter(action);
     });

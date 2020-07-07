@@ -65,7 +65,7 @@ export function classifyRewordings(records) {
   const rejectedVersions = [];
   let hasLockedVersion = false;
 
-  if (records) {
+  if (records && records.length) {
     records.forEach((record) => {
       if (record.version_lock) {
         hasLockedVersion = true;

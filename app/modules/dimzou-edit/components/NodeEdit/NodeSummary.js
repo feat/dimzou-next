@@ -5,7 +5,11 @@ import TranslatableMessage from '@/modules/language/containers/TranslatableMessa
 
 import RewordableSection from '../RewordableSection';
 import ContentBlockRender from '../ContentBlockRender';
-import { BundleContext, NodeContext, UserCapabilitiesContext } from '../../context'
+import {
+  BundleContext,
+  NodeContext,
+  UserCapabilitiesContext,
+} from '../../context';
 
 import intlMessages from '../../messages';
 
@@ -21,9 +25,9 @@ function NodeSummary() {
       mode={bundleState.mode}
       bundleId={node.bundle_id}
       nodeId={node.id}
-      blockId={node.summary.id}
-      rewordings={node.summary.rewordings}
-      info={node.summary.info}
+      blockId={node.summary ? node.summary.id : {}}
+      rewordings={node.summary ? node.summary.rewordings : {}}
+      info={node.summary ? node.summary.info : {}}
       structure="summary"
       currentUser={currentUser}
       userCapabilities={userCapabilities}
@@ -32,7 +36,7 @@ function NodeSummary() {
       }
       render={ContentBlockRender}
     />
-  )
+  );
 }
 
 export default NodeSummary;

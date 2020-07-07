@@ -5,7 +5,11 @@ import { selectCurrentUser } from '@/modules/auth/selectors';
 
 import RewordableSection from '../RewordableSection';
 import CoverBlockRender from '../CoverBlockRender';
-import { BundleContext, NodeContext, UserCapabilitiesContext } from '../../context'
+import {
+  BundleContext,
+  NodeContext,
+  UserCapabilitiesContext,
+} from '../../context';
 
 function NodeCover(props) {
   const bundleState = useContext(BundleContext);
@@ -19,20 +23,20 @@ function NodeCover(props) {
       mode={bundleState.mode}
       bundleId={node.bundle_id}
       nodeId={node.id}
-      blockId={node.cover.id}
-      rewordings={node.cover.rewordings}
-      info={node.cover.info}
+      blockId={node.cover ? node.cover.id : {}}
+      rewordings={node.cover ? node.cover.rewordings : {}}
+      info={node.cover ? node.cover.info : {}}
       structure="cover"
       template={props.template}
       currentUser={currentUser}
       userCapabilities={userCapabilities}
       render={CoverBlockRender}
     />
-  )
+  );
 }
 
 NodeCover.propTypes = {
   template: PropTypes.string,
-}
+};
 
 export default NodeCover;

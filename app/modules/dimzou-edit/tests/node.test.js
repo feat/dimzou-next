@@ -1,10 +1,10 @@
 import {
   fetchNodeEditInfo,
   loadNodeEditInfo,
-  patchContent,
+  // patchContent,
   changeTemplate,
-  // changeEditPermission, 
-  createAppendBlock, 
+  // changeEditPermission,
+  createAppendBlock,
   removeAppendBlock,
   getBlockTranslation,
 } from '../actions';
@@ -36,7 +36,7 @@ describe('Dimzou Node', () => {
       });
       state = nodeReducer(state, action);
       const nodeState = state[NODE_ID];
-      
+
       expect(nodeState.fetchError).toBe(error);
     });
     it('fetch edit info fulfill', () => {
@@ -46,7 +46,7 @@ describe('Dimzou Node', () => {
       state = nodeReducer(state, action);
       const nodeState = state[NODE_ID];
       expect(nodeState.isFetchingEditInfo).toBe(false);
-    })
+    });
     it('load edit info', () => {
       const action = loadNodeEditInfo({
         nodeId: NODE_ID,
@@ -59,7 +59,6 @@ describe('Dimzou Node', () => {
       expect(nodeState.data).toBe(nodeData);
     });
   });
-
 
   describe('append content block', () => {
     let state;
@@ -86,15 +85,15 @@ describe('Dimzou Node', () => {
     });
   });
 
-  describe('update data', () => {
-    it('handle patch content', () => {
-      const data = { id: 1 };
-      const action = patchContent({ nodeId: NODE_ID, data });
-      const state = nodeReducer(initialNodesState, action);
-      const nodeState = state[NODE_ID];
-      expect(nodeState.data).toEqual(data);
-    });
-  });
+  // describe('update data', () => {
+  //   it('handle patch content', () => {
+  //     const data = { id: 1 };
+  //     const action = patchContent({ nodeId: NODE_ID, data });
+  //     const state = nodeReducer(initialNodesState, action);
+  //     const nodeState = state[NODE_ID];
+  //     expect(nodeState.data).toEqual(data);
+  //   });
+  // });
 
   describe('get block translation', () => {
     it('content success', () => {
@@ -115,7 +114,6 @@ describe('Dimzou Node', () => {
       expect(contentBlock.info.translation).toEqual('TRANSLATION');
     });
   });
-
 
   describe('change template', () => {
     const initialState = {

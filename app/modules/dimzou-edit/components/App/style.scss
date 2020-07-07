@@ -107,6 +107,5 @@
 
 @include block(ns(BlockSectionLoading, dz)) {
   padding: px-to-rem(10);
-  text-align: center;
   color: $gray-6;
 }

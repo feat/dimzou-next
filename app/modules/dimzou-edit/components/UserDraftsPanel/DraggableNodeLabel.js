@@ -1,17 +1,33 @@
 import React from 'react';
 import { DragSource } from 'react-dnd';
 import classNames from 'classnames';
+import { 
+  addEventListenerFor,
+  removeEventListenerFor,
+} from '@/services/dnd/helpers';
 
 const withDrag = DragSource(
   'EXP_NODE',
   {
-    beginDrag: (props) => ({
-      type: props.type,
-      data: props.data,
-      bundleId: props.bundleId,
-      index: props.index,
-    }),
+    beginDrag: (props) => {
+      const container = document.querySelector('.dz-DraftsPanel__content');
+      if (container) {
+        addEventListenerFor(container);
+      }
+      return {
+        type: props.type,
+        data: props.data,
+        bundleId: props.bundleId,
+        index: props.index,
+      }
+    },
     canDrag: (props) => !props.disabled,
+    endDrag: () => {
+      const container = document.querySelector('.dz-DraftsPanel__content');
+      if (container) {
+        removeEventListenerFor(container);
+      }
+    },
   },
   (connect, monitor) => ({
     connectDragSource: connect.dragSource(),

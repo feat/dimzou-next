@@ -10,6 +10,7 @@ import {
   loadNodeEditInfo,
   updateNodeInfo,
   patchContent,
+  fetchNodeData,
   commitBlock,
   submitBlock,
   submitMediaBlock,
@@ -105,12 +106,33 @@ const nodeEditReducer = mapHandleActions(
       const {
         data: { content },
       } = action.payload;
-      content.shift();
       return update(nodeState, {
-        data: (data) => ({
-          ...data,
-          content: [...data.content, ...content],
-        }),
+        data: (data) => {
+          const hash = {};
+          const tempList = [...data.content, ...content]
+            .sort((a, b) => a.sort - b.sort)
+            .reduce((acc, cur) => {
+              // eslint-disable-next-line no-unused-expressions
+              hash[cur.id] ? '' : (hash[cur.id] = true && acc.push(cur));
+              return acc;
+            }, []);
+          return {
+            ...data,
+            content: tempList,
+          };
+        },
+      });
+    },
+
+    [fetchNodeData]: (nodeState = initialNodeState, action) => {
+      const {
+        payload: { nodeData },
+      } = action;
+      return update(nodeState, {
+        data: (data) => {
+          const tempData = { ...data, ...nodeData };
+          return tempData;
+        },
       });
     },
 
@@ -118,10 +140,16 @@ const nodeEditReducer = mapHandleActions(
       const {
         payload: { data },
       } = action;
-      return {
-        ...nodeState,
-        data,
-      };
+      // return {
+      //   ...nodeState,
+      //   data,
+      // };
+      return update(nodeState, {
+        data: (d) => {
+          const tempData = { ...d, ...data };
+          return tempData;
+        },
+      });
     },
 
     [createAppendBlock]: (nodeState = initialNodeState, action) => {

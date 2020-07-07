@@ -1,5 +1,10 @@
-import { 
-  put, call, select, takeEvery, takeLatest, fork,
+import {
+  put,
+  call,
+  select,
+  takeEvery,
+  takeLatest,
+  fork,
   delay,
 } from 'redux-saga/effects';
 // import { eventChannel } from 'redux-saga';
@@ -41,7 +46,6 @@ import {
 
   // edit signal
   editPatchSignal,
-
   addCollaborator,
   updateCollaborator,
   removeCollaborator,
@@ -53,7 +57,6 @@ import {
   initBlockEditWithTranslation,
   getBlockTranslation,
   initBlockEdit,
-
   createAppendBlock,
   // link
   likeRewording,
@@ -65,8 +68,8 @@ import {
   exitRewordingEdit,
   updateBlockEditor,
   exitBlockEdit,
+  asyncFetchNodeData,
 } from '../actions';
-
 
 import {
   patchDimzouEditInfo,
@@ -89,7 +92,11 @@ import {
   // update config
   updateChapter as updateChapterRequest,
 } from '../requests';
-import { selectNodeData, selectBundleData, selectNodeCollaborators } from '../selectors';
+import {
+  selectNodeData,
+  selectBundleData,
+  selectNodeCollaborators,
+} from '../selectors';
 
 import {
   tryToFetchNewComment,
@@ -117,7 +124,6 @@ import {
   // NODE_STRUCTURE_COVER,
   structureMap,
   NODE_TYPE_COVER,
-
   ACTION_UPDATE_COLLABORATOR,
   ACTION_ADD_COLLABORATOR,
   ACTION_REMOVE_COLLABORATOR,
@@ -131,7 +137,12 @@ import {
 } from '../utils/content';
 import { getRewordType } from '../utils/rewordings';
 import { dimzouTransformer, patchDimzouNode } from '../utils/transformer';
-import { getNodeCache, appendingBlockKey, rewordingKey, blockKey } from '../utils/cache';
+import {
+  getNodeCache,
+  appendingBlockKey,
+  rewordingKey,
+  blockKey,
+} from '../utils/cache';
 
 import dimzouSocket from '../socket';
 
@@ -659,15 +670,10 @@ function* removeRewordingAsync(action) {
   // select block data;
   try {
     yield put(removeRewording.request(payload));
-    yield call(
-      removeContentRequest,
-      payload.bundleId,
-      payload.nodeId,
-      {
-        paragraph_id: payload.blockId,
-        rewording_id: payload.rewordingId,
-      },
-    );
+    yield call(removeContentRequest, payload.bundleId, payload.nodeId, {
+      paragraph_id: payload.blockId,
+      rewording_id: payload.rewordingId,
+    });
     const node = yield select((state) => selectNodeData(state, payload));
     const updatedNode = patchDimzouNode(node, payload, 'remove-content');
     yield put(
@@ -692,12 +698,12 @@ function* removeRewordingAsync(action) {
 function* updateRewordingAsync(action) {
   const { payload } = action;
   if (payload.structure === 'cover') {
-    yield call(submitCoverFlow, 
-      action, 
+    yield call(
+      submitCoverFlow,
+      action,
       updateRewording,
       ACTION_UPDATE_REWORDING,
-    )
-    
+    );
   } else {
     yield call(
       submitEditFlow,
@@ -724,7 +730,6 @@ function* checkEditFlow(action, routine, method) {
         reword_id: payload.rewordingId,
       },
     );
-
     yield put(
       patchContent({
         bundleId: payload.bundleId,
@@ -732,21 +737,26 @@ function* checkEditFlow(action, routine, method) {
         data,
       }),
     );
+    yield put(asyncFetchNodeData(payload.nodeId));
 
     yield put(routine.success(payload));
     logging.debug(data);
   } catch (err) {
     if (err.code === 'INVALID_REWORD_STATUS') {
       const data = yield select((state) => selectNodeData(state, payload));
-      const patched = patchDimzouNode(data, {
-        structure: payload.structure,
-        blockId: payload.blockId,
-        rewording: err.data,
-      }, 'update-rewording');
+      const patched = patchDimzouNode(
+        data,
+        {
+          structure: payload.structure,
+          blockId: payload.blockId,
+          rewording: err.data,
+        },
+        'update-rewording',
+      );
       notification.error({
         message: 'Warning',
         description: err.message,
-      })
+      });
       yield put(
         patchContent({
           bundleId: payload.bundleId,
@@ -764,7 +774,7 @@ function* checkEditFlow(action, routine, method) {
           ...payload,
           data: err,
         }),
-      );  
+      );
     }
   } finally {
     yield put(routine.fulfill(payload));
@@ -870,12 +880,7 @@ function* removeBlockAsync(action) {
     if (payload.rewordingId !== undefined) {
       preData.reword_id = payload.rewordingId;
     }
-    yield call(
-      removeContentRequest,
-      payload.bundleId,
-      payload.nodeId,
-      preData,
-    );
+    yield call(removeContentRequest, payload.bundleId, payload.nodeId, preData);
     // if is node
     const node = yield select((state) => selectNodeData(state, payload));
     const updatedNode = patchDimzouNode(node, payload, 'remove-content');
@@ -917,7 +922,7 @@ function* addMediaBlockFlow(action, routine) {
     const body = {
       html_content: '<figure><img src="{0}" /></figure>',
       file: payload.file,
-    }
+    };
     if (payload.pivotId === BEGINNING_PIVOT) {
       body.is_first = true;
     } else {
@@ -927,7 +932,7 @@ function* addMediaBlockFlow(action, routine) {
       insertMediaBlockRequest,
       payload.bundleId,
       payload.nodeId,
-      body
+      body,
     );
     const node = yield select((state) => selectNodeData(state, payload));
     const updatedNode = patchDimzouNode(node, data, 'insert-content');
@@ -1077,7 +1082,6 @@ function* updateBlockSortAsync(action) {
   }
 }
 
-
 function* changeTemplateAsync(action) {
   yield delay(2000);
   const { payload } = action;
@@ -1124,7 +1128,6 @@ function* changeTemplateAsync(action) {
   }
 }
 
-
 function* addCollaboratorAsync(action) {
   const {
     payload: { bundleId, nodeId, userId, role },
@@ -1164,7 +1167,6 @@ function* addCollaboratorAsync(action) {
   }
 }
 
-
 function* handleCollaboratorPatch(action) {
   const {
     payload: { bundleId, nodeId, data },
@@ -1172,7 +1174,9 @@ function* handleCollaboratorPatch(action) {
   const collaborators = yield select((state) =>
     selectNodeCollaborators(state, { bundleId, nodeId }),
   );
-  const updatedAt = collaborators.map((c) => new Date(c.updated_at)).sort((a, b) => b - a)[0];
+  const updatedAt = collaborators
+    .map((c) => new Date(c.updated_at))
+    .sort((a, b) => b - a)[0];
   if (new Date(data.updated_at) < updatedAt) {
     return;
   }
@@ -1352,7 +1356,6 @@ function* changeEditPermissionAsync(action) {
   }
 }
 
-
 function* handleEditPatchSingal(action) {
   const { payload } = action;
   const node = yield select((state) => selectNodeData(state, payload));
@@ -1380,8 +1383,8 @@ const patchCache = (nodeId, cacheKey, patch) => {
   cache.set(cacheKey, {
     ...blockCache,
     ...patch,
-  })
-}
+  });
+};
 
 function* initAppendEditCache(action) {
   const { payload } = action;
@@ -1397,14 +1400,14 @@ function* initAppendEditCache(action) {
 
 function* updateAppendCache(action) {
   const { payload } = action;
-  
+
   const cacheKey = appendingBlockKey(payload);
-  const html = payload.editorState.getCurrentContent().hasText() ? 
-    getHTML(payload.editorState.getCurrentContent())
+  const html = payload.editorState.getCurrentContent().hasText()
+    ? getHTML(payload.editorState.getCurrentContent())
     : '';
   patchCache(payload.nodeId, cacheKey, {
     html,
-  })
+  });
 }
 
 function removeAppendCache(action) {
@@ -1419,7 +1422,7 @@ function updateRewordingEditCache(action) {
   const html = getHTML(payload.editorState.getCurrentContent());
   patchCache(payload.nodeId, cacheKey, {
     html,
-  })
+  });
 }
 
 function initRewordingEditCache(action) {

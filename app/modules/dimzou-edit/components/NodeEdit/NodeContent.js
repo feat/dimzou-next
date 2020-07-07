@@ -65,10 +65,24 @@ function NodeContent(props) {
   // const nameIndexMap = useRef({});
   const [beginIndex, setBeginIndex] = useState(0);
   const hasInitScrolled = useRef(false);
+  const [scrollToIndex, setScrollToIndex] = useState(-1);
+
+  // loading提示
+  const [isLoading, setLoading] = useState(false);
+
+  const appendList = (list = []) => {
+    const newListItems = [...list];
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < 20; i++) {
+      newListItems.push('feat');
+    }
+    return newListItems;
+  };
+  const [list, setList] = useState(appendList());
 
   const { mode } = bundleState;
   const { data: node, appendings, outline } = nodeState;
-  const { content } = node;
+  const { content, node_paragraphs_count } = node;
 
   const [blockSections, nameIndexMap] = useMemo(
     () => {
@@ -106,6 +120,7 @@ function NodeContent(props) {
           },
         });
         indexMap[`content-${block.id}`] = counter;
+        // indexMap[`content-${block.id}`] = block.sort;
         counter += 1;
 
         if (appendingBlock) {
@@ -344,6 +359,7 @@ function NodeContent(props) {
 
   // const [hash, setHash] = useState(workspace.hash);
   const renderInfoRef = useRef(null);
+
   function scrollToHash(hash, renderInfo) {
     const index = nameIndexMap[hash.replace('#', '')];
     if (index === undefined || !renderInfo) {
@@ -391,24 +407,43 @@ function NodeContent(props) {
   }, []);
 
   // 触发滚动
+  // useEffect(
+  //   () => {
+  //     if (
+  //       scrollContext.scrollHash &&
+  //       /^#content-/.test(scrollContext.scrollHash)
+  //     ) {
+  //       scrollToHash(scrollContext.scrollHash, renderInfoRef.current);
+  //     } else if (!hasInitScrolled.current) {
+  //       const cache = getNodeCache(node.id);
+  //       const scrollCache = cache && cache.get('contentScroll');
+  //       if (scrollCache && scrollCache.startIndex) {
+  //         scrollContext.setScrollHash(`#content-${scrollCache.blockId}`);
+  //       }
+  //     }
+  //     hasInitScrolled.current = true;
+  //   },
+  //   [scrollContext.scrollHash],
+  // );
+
   useEffect(
     () => {
-      if (
-        scrollContext.scrollHash &&
-        /^#content-/.test(scrollContext.scrollHash)
-      ) {
-        scrollToHash(scrollContext.scrollHash, renderInfoRef.current);
-      } else if (!hasInitScrolled.current) {
-        const cache = getNodeCache(node.id);
-        const scrollCache = cache && cache.get('contentScroll');
-        if (scrollCache && scrollCache.startIndex) {
-          scrollContext.setScrollHash(`#content-${scrollCache.blockId}`);
-        }
+      setScrollToIndex(scrollContext.sort);
+      scrollContext.setActiveHash(scrollContext.scrollHash);
+      scrollContext.setSort(undefined);
+      const index = nameIndexMap[scrollContext.scrollHash.replace('#', '')];
+      if (!index) {
+        setTimeout(() => {
+          window.scrollBy(0, -100);
+        }, 1000);
       }
-      hasInitScrolled.current = true;
     },
-    [scrollContext.scrollHash],
+    [scrollContext.sort],
   );
+
+  const clearScrollToIndex = () => {
+    setScrollToIndex(-1);
+  };
 
   const handleRowsRendered = (info) => {
     setBeginIndex(info.overscanStartIndex);
@@ -435,16 +470,6 @@ function NodeContent(props) {
           });
       }
     }
-
-    // if (info.stopIndex >= blockSections.length - 1) {
-    //   dispatch(
-    //     asyncFetchNodeEditInfo({
-    //       bundleId: node.bundle_id,
-    //       nodeId: node.id,
-    //       limit: info.stopIndex + 20,
-    //     }),
-    //   );
-    // }
   };
 
   // 当切换其他章节时，这个方法可以确保页面不会跳动，但是在上下滚动时会出现跳动。需要检测滚动方向，确定优先渲染当组件
@@ -459,135 +484,52 @@ function NodeContent(props) {
       />
     );
   }
-  // https://github.com/bvaughn/react-virtualized/issues/1324 使用这个方法还是会出现页面跳动
 
-  // return (
-  //   <WindowScroller key={node.id}>
-  //     {({ height, isScrolling, onChildScroll, scrollTop, registerChild }) => (
-  //       <div
-  //         ref={(el) => {
-  //           domRef.current = el;
-  //           registerChild(el);
-  //         }}
-  //         className={classNames('dz-BlockSectionContainer', props.className)}
-  //         style={{ left: -1 * PARA_NUM_OFFSET, position: 'relative' }}
-  //       >
-  //         <List
-  //           autoHeight
-  //           height={height}
-  //           isScrolling={isScrolling}
-  //           onScroll={onChildScroll}
-  //           rowCount={blockSections.length}
-  //           rowHeight={cacheRef.current.rowHeight}
-  //           scrollTop={scrollTop}
-  //           width={width + PARA_NUM_OFFSET}
-  //           onRowsRendered={handleRowsRendered}
-  //           tabIndex={-1}
-  //           overscanRowCount={8}
-  //           style={{ counterReset: `para ${Math.max(beginIndex)}` }}
-  //           rowRenderer={({ index, key, parent, style }) => {
-  //             let blockStyle;
-  //             if (inDropzone) {
-  //               if (dropPivotIndex !== undefined && index > dropPivotIndex) {
-  //                 blockStyle = {
-  //                   ...style,
-  //                   transition: `transform ${TRANSITION_DURATION}ms ease`,
-  //                   transform: `translate3d(0px, ${DROP_REGION_HEIGHT}px, 0px)`,
-  //                   paddingLeft: PARA_NUM_OFFSET,
-  //                 };
-  //               } else {
-  //                 blockStyle = {
-  //                   ...style,
-  //                   transition: `transform ${TRANSITION_DURATION}ms ease`,
-  //                   paddingLeft: PARA_NUM_OFFSET,
-  //                 };
-  //               }
-  //             } else {
-  //               blockStyle = {
-  //                 ...style,
-  //                 paddingLeft: PARA_NUM_OFFSET,
-  //               };
-  //             }
-  //             const { component: Compo, props: compoProps } = blockSections[
-  //               index
-  //             ];
-  //             return (
-  //               <CellMeasurer
-  //                 cache={cacheRef.current}
-  //                 columnIndex={0}
-  //                 key={key}
-  //                 parent={parent}
-  //                 rowIndex={index}
-  //               >
-  //                 {(cellMeasure) => (
-  //                   <MeasureProvider {...cellMeasure}>
-  //                     <div className="dz-BlockSectionWrap" style={blockStyle}>
-  //                       <Compo {...compoProps} />
-  //                     </div>
-  //                   </MeasureProvider>
-  //                 )}
-  //               </CellMeasurer>
-  //             );
-  //           }}
-  //         />
-  //         {inDropzone && (
-  //           <DropHint left={PARA_NUM_OFFSET} top={getTop()} height={2} />
-  //         )}
-  //       </div>
-  //     )}
-  //   </WindowScroller>
-  // );
-
-  // const isRowLoaded = useCallback(({ index }) => {
-  //   console.log(index);
-  //   return !!blockSections[index];
-  // }, []);
-
-  // loading提示
-  const [isLoading, setLoading] = useState(false);
   // 判断是否加载更多数据
-  const isRowLoaded = ({ index }) => {
-    if (node.node_paragraphs_count - blockSections.length < 3) {
-      return true;
-    }
-    return !!blockSections[index];
-  };
+  const isRowLoaded = ({ index }) =>
+    // if (node.node_paragraphs_count - blockSections.length < 3) {
+    //   return true;
+    // }
+    // return !!blockSections[index];
+    !!list[index] && !!blockSections[index];
+
   // eslint-disable-next-line arrow-body-style
   const loadMoreRows = () => {
     // 加载更多数据
-    return new Promise((resolve) => {
-      resolve();
-    }).then(() => {
-      setLoading(true);
-      dispatch(
-        asyncUpdateNodeInfo({
-          nodeId: node.id,
-          paragraphId: node.content[node.content.length - 1].id,
-        }),
-      ).then(() => {
-        setLoading(false);
-      });
+    setList(appendList(list));
+    setLoading(true);
+    return dispatch(
+      asyncUpdateNodeInfo({
+        nodeId: node.id,
+        paragraphId: node.content[node.content.length - 1].id,
+      }),
+    ).then(() => {
+      setLoading(false);
     });
   };
-  // eslint-disable-next-line arrow-body-style
-  const loadNextRows = isLoading
-    ? (() => Promise.resolve())
-    : loadMoreRows;
 
+  const loadNextRows = isLoading ? () => Promise.resolve() : loadMoreRows;
+
+  const toIndex = scrollToIndex;
+  const nodeLength = blockSections ? blockSections.length : 0;
   return (
     <InfiniteLoader
       isRowLoaded={isRowLoaded}
       loadMoreRows={loadNextRows}
-      rowCount={blockSections.length + 20}
-      threshold={10}
+      rowCount={
+        node_paragraphs_count - 2 > nodeLength
+          ? node_paragraphs_count - 2
+          : nodeLength
+      }
+      threshold={15}
     >
       {({ onRowsRendered, registerChild }) => (
-        <WindowScroller key={node.id}>
+        <WindowScroller key={node.id} onScroll={clearScrollToIndex}>
           {({ height, isScrolling, onChildScroll, scrollTop }) => (
             <div
               ref={(el) => {
                 domRef.current = el;
-                registerChild(el);
+                // registerChild(el);
               }}
               className={classNames(
                 'dz-BlockSectionContainer',
@@ -598,11 +540,19 @@ function NodeContent(props) {
               <List
                 autoHeight
                 height={height}
+                ref={registerChild}
                 isScrolling={isScrolling}
                 onScroll={onChildScroll}
-                rowCount={blockSections.length}
+                // rowCount={blockSections.length}
+                rowCount={
+                  node_paragraphs_count - 2 > nodeLength
+                    ? node_paragraphs_count - 2
+                    : nodeLength
+                }
                 rowHeight={cacheRef.current.rowHeight}
                 scrollTop={scrollTop}
+                deferredMeasurementCache={cacheRef.current}
+                scrollToIndex={toIndex}
                 width={width + PARA_NUM_OFFSET}
                 onRowsRendered={(info) => {
                   handleRowsRendered(info);
@@ -637,16 +587,42 @@ function NodeContent(props) {
                       paddingLeft: PARA_NUM_OFFSET,
                     };
                   }
-                  const { component: Compo, props: compoProps } = blockSections[
-                    index
-                  ];
+
+                  const blockSection = blockSections && blockSections[index];
+
+                  if (blockSection) {
+                    const {
+                      component: Compo,
+                      props: compoProps,
+                    } = blockSection;
+                    return (
+                      <CellMeasurer
+                        key={key}
+                        cache={cacheRef.current}
+                        parent={parent}
+                        columnIndex={0}
+                        rowIndex={index}
+                      >
+                        {(cellMeasure) => (
+                          <MeasureProvider {...cellMeasure}>
+                            <div
+                              className="dz-BlockSectionWrap"
+                              style={blockStyle}
+                            >
+                              <Compo {...compoProps} />
+                            </div>
+                          </MeasureProvider>
+                        )}
+                      </CellMeasurer>
+                    );
+                  }
 
                   return (
                     <CellMeasurer
-                      cache={cacheRef.current}
-                      columnIndex={0}
                       key={key}
+                      cache={cacheRef.current}
                       parent={parent}
+                      columnIndex={0}
                       rowIndex={index}
                     >
                       {(cellMeasure) => (
@@ -655,7 +631,9 @@ function NodeContent(props) {
                             className="dz-BlockSectionWrap"
                             style={blockStyle}
                           >
-                            <Compo {...compoProps} />
+                            <div className="dz-BlockSectionLoading">
+                              {formatMessage(commonMessages.loading)}
+                            </div>
                           </div>
                         </MeasureProvider>
                       )}

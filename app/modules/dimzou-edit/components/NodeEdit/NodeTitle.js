@@ -5,7 +5,11 @@ import TranslatableMessage from '@/modules/language/containers/TranslatableMessa
 
 import RewordableSection from '../RewordableSection';
 import ContentBlockRender from '../ContentBlockRender';
-import { BundleContext, NodeContext, UserCapabilitiesContext } from '../../context'
+import {
+  BundleContext,
+  NodeContext,
+  UserCapabilitiesContext,
+} from '../../context';
 import { getVersionLabel } from '../../utils/bundle';
 
 import intlMessages from '../../messages';
@@ -18,23 +22,26 @@ function NodeTitle() {
   const currentUser = useSelector(selectCurrentUser);
 
   const versionLabel = getVersionLabel(bundleState.data);
-  
-  const versionEl = useMemo(() => {
-    const el = document.createElement('span');
-    el.innerText = versionLabel;
-    el.style.fontSize = '0.7em';
-    el.style.marginLeft = '0.5em';
-    return el;
-  }, [versionLabel])
+
+  const versionEl = useMemo(
+    () => {
+      const el = document.createElement('span');
+      el.innerText = versionLabel;
+      el.style.fontSize = '0.7em';
+      el.style.marginLeft = '0.5em';
+      return el;
+    },
+    [versionLabel],
+  );
 
   return (
     <RewordableSection
       mode={bundleState.mode}
       bundleId={node.bundle_id}
       nodeId={node.id}
-      blockId={node.title.id}
-      rewordings={node.title.rewordings}
-      info={node.title.info}
+      blockId={node.title ? node.title.id : {}}
+      rewordings={node.title ? node.title.rewordings : {}}
+      info={node.title ? node.title.info : {}}
       structure="title"
       currentUser={currentUser}
       userCapabilities={userCapabilities}
@@ -46,7 +53,7 @@ function NodeTitle() {
       contentSuffix={versionEl}
       render={ContentBlockRender}
     />
-  )
+  );
 }
 
 export default NodeTitle;
