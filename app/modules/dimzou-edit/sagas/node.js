@@ -737,7 +737,7 @@ function* checkEditFlow(action, routine, method) {
         data,
       }),
     );
-    yield put(asyncFetchNodeData(payload.nodeId));
+    yield put(asyncFetchNodeData(payload.nodeId, payload.blockId));
 
     yield put(routine.success(payload));
     logging.debug(data);

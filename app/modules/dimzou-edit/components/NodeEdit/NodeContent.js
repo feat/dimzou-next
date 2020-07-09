@@ -17,13 +17,10 @@ import {
   CellMeasurer,
   List,
 } from 'react-virtualized';
-
 import { selectCurrentUser } from '@/modules/auth/selectors';
 import { formatMessage } from '@/services/intl';
 import message from '@feat/feat-ui/lib/message';
-
 import commonMessages from '@/messages/common';
-
 import { BEGINNING_PIVOT, TAILING_PIVOT } from '../../constants';
 import {
   NodeContext,
@@ -32,13 +29,11 @@ import {
   ScrollContext,
 } from '../../context';
 import MeasureProvider from '../../providers/MeasureProvider';
-
 import {
   commitMediaBlock,
   submitMediaBlock,
   asyncUpdateNodeInfo,
 } from '../../actions';
-
 import RewordableSection from '../RewordableSection';
 import ContentBlockRender from '../ContentBlockRender';
 import AppendingBlock from '../AppendingBlock';
@@ -46,13 +41,11 @@ import DropHint from '../DropHint';
 import intlMessages from '../../messages';
 import { getActiveHash } from './utils';
 import { getNodeCache } from '../../utils/cache';
-
 const TRANSITION_DURATION = 100;
 const DROP_REGION_HEIGHT = 40;
 const PARA_NUM_OFFSET = 56;
 const CONTENT_WIDTH = 720;
 const ELEMENT_DEFAULT_HEIGHT = 160;
-
 function NodeContent(props) {
   const nodeState = useContext(NodeContext);
   const bundleState = useContext(BundleContext);
@@ -60,34 +53,42 @@ function NodeContent(props) {
   const currentUser = useSelector(selectCurrentUser);
   const scrollContext = useContext(ScrollContext);
   const dispatch = useDispatch();
-
   const domRef = useRef(null);
   // const nameIndexMap = useRef({});
   const [beginIndex, setBeginIndex] = useState(0);
   const hasInitScrolled = useRef(false);
   const [scrollToIndex, setScrollToIndex] = useState(-1);
 
-  // loading提示
-  const [isLoading, setLoading] = useState(false);
-
-  const appendList = (list = []) => {
-    const newListItems = [...list];
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < 20; i++) {
-      newListItems.push('feat');
-    }
-    return newListItems;
-  };
-  const [list, setList] = useState(appendList());
-
   const { mode } = bundleState;
   const { data: node, appendings, outline } = nodeState;
   const { content, node_paragraphs_count } = node;
+
+  // loading提示
+  const [isLoading, setLoading] = useState(false);
+
+  const [data, setData] = useState(
+    Array.from({ length: nodeState.data.node_paragraphs_count - 2 }).map(
+      // eslint-disable-next-line no-unused-vars
+      (_) => null,
+    ),
+  );
+  useEffect(
+    () => {
+      setData(
+        Array.from({ length: nodeState.data.node_paragraphs_count - 2 }).map(
+          // eslint-disable-next-line no-unused-vars
+          (_) => null,
+        ),
+      );
+    },
+    [node_paragraphs_count],
+  );
 
   const [blockSections, nameIndexMap] = useMemo(
     () => {
       const sections = [];
       const indexMap = {};
+      const tempData = [...data];
       let counter = 0;
       if (!content) {
         return sections;
@@ -96,7 +97,6 @@ function NodeContent(props) {
       const lastBlockId = blockCount
         ? content[blockCount - 1].id
         : BEGINNING_PIVOT;
-
       content.forEach((block, index) => {
         const appendingBlock = appendings[block.id];
         sections.push({
@@ -119,10 +119,30 @@ function NodeContent(props) {
             name: `content-${block.id}`,
           },
         });
-        indexMap[`content-${block.id}`] = counter;
-        // indexMap[`content-${block.id}`] = block.sort;
-        counter += 1;
 
+        tempData[block.sort - 1] = {
+          component: RewordableSection,
+          props: {
+            key: block.id,
+            mode,
+            structure: 'content',
+            bundleId: node.bundle_id,
+            nodeId: node.id,
+            blockId: block.id,
+            info: block.info,
+            rewordings: block.rewordings,
+            status: block.status,
+            sort: block.sort,
+            isLastBlock: index + 1 === blockCount,
+            currentUser,
+            userCapabilities,
+            render: ContentBlockRender,
+            name: `content-${block.id}`,
+          },
+        };
+
+        indexMap[`content-${block.id}`] = counter;
+        counter += 1;
         if (appendingBlock) {
           sections.push({
             component: AppendingBlock,
@@ -137,9 +157,20 @@ function NodeContent(props) {
             },
           });
           counter += 1;
+          // tempData.push({
+          //   component: AppendingBlock,
+          //   props: {
+          //     bundleId: node.bundle_id,
+          //     nodeId: node.id,
+          //     pivotId: block.id,
+          //     userCapabilities,
+          //     key: `appending_${block.id}`,
+          //     placeholder: formatMessage(intlMessages.insertEditorPlaceholder),
+          //     currentUser,
+          //   },
+          // });
         }
       });
-
       if (
         userCapabilities.canEdit &&
         userCapabilities.canAppendContent &&
@@ -158,12 +189,44 @@ function NodeContent(props) {
             currentUser,
           },
         });
+
+        if (content.length - node_paragraphs_count >= -2) {
+          tempData[content.length] = {
+            component: AppendingBlock,
+            props: {
+              bundleId: node.bundle_id,
+              nodeId: node.id,
+              pivotId: TAILING_PIVOT,
+              lastBlockId,
+              userCapabilities,
+              key: TAILING_PIVOT,
+              placeholder: formatMessage(intlMessages.tailingEditorPlaceholder),
+              currentUser,
+              sort: tempData.length,
+            },
+          };
+        } else {
+          tempData.splice(-1, 1, {
+            component: AppendingBlock,
+            props: {
+              bundleId: node.bundle_id,
+              nodeId: node.id,
+              pivotId: TAILING_PIVOT,
+              lastBlockId,
+              userCapabilities,
+              key: TAILING_PIVOT,
+              placeholder: formatMessage(intlMessages.tailingEditorPlaceholder),
+              currentUser,
+              sort: tempData.length,
+            },
+          });
+        }
       }
+      setData(tempData);
       return [sections, indexMap];
     },
     [content, appendings, userCapabilities],
   );
-
   // react-virtualized related
   const cacheRef = useRef(
     new CellMeasurerCache({
@@ -171,7 +234,6 @@ function NodeContent(props) {
       defaultHeight: ELEMENT_DEFAULT_HEIGHT,
     }),
   );
-
   // update width --- start
   // ------
   const [width, setWidth] = useState(CONTENT_WIDTH);
@@ -189,7 +251,6 @@ function NodeContent(props) {
     };
   }, []);
   // update width -- end
-
   // image upload feature -- start
   // ------
   const [dropPivotIndex, setDropPivotIndex] = useState(null);
@@ -211,7 +272,6 @@ function NodeContent(props) {
     },
     [dropPivotIndex, beginIndex],
   );
-
   useEffect(
     () => {
       const dom = domRef.current;
@@ -230,7 +290,6 @@ function NodeContent(props) {
         }
         e.preventDefault();
         e.stopPropagation();
-
         // if (e.dataTransfer.files && e.dataTransfer.files.length) {
         //   setInDropZone(true)
         // }
@@ -262,7 +321,6 @@ function NodeContent(props) {
           }
         }
       };
-
       const handleDragEnter = (e) => {
         const { dataTransfer } = e;
         logging.debug('enter');
@@ -274,7 +332,6 @@ function NodeContent(props) {
           // setFileDropActive(true)
         }
       };
-
       const handleDragLeave = (e) => {
         logging.debug('leave');
         if (!inDropzone) {
@@ -300,7 +357,6 @@ function NodeContent(props) {
         e.preventDefault();
         // setFileDropActive(false)
       };
-
       const handleDrop = (e) => {
         logging.debug('drop');
         if (!inDropzone) {
@@ -334,7 +390,6 @@ function NodeContent(props) {
         }
         setInDropZone(false);
       };
-
       dom.addEventListener('dragenter', handleDragEnter);
       dom.addEventListener('dragend', handleDragEnd);
       dom.addEventListener('dragover', handleDropOver);
@@ -356,37 +411,34 @@ function NodeContent(props) {
     },
     [beginIndex, inDropzone, blockSections, dropPivotIndex],
   );
-
   // const [hash, setHash] = useState(workspace.hash);
   const renderInfoRef = useRef(null);
-
   function scrollToHash(hash, renderInfo) {
     const index = nameIndexMap[hash.replace('#', '')];
     if (index === undefined || !renderInfo) {
       return;
     }
     scrollContext.onScrollStarted();
-    if (
-      renderInfo.overscanStartIndex <= index &&
-      renderInfo.overscanStopIndex >= index
-    ) {
-      const dom = document.querySelector(hash);
-      if (dom) {
-        dom.scrollIntoView(true);
-        setTimeout(() => {
-          scrollContext.onScrollFinished();
-        }, 500);
-        // window.scrollTo(0, window.scrollY - 120);
-      } else {
-        scrollContext.onScrollFinished();
-      }
-    } else {
-      const delta = index - renderInfo.startIndex;
-      const deltaY = delta * ELEMENT_DEFAULT_HEIGHT;
-      window.scrollTo(0, window.scrollY + deltaY);
-    }
+    // if (
+    //   renderInfo.overscanStartIndex <= index &&
+    //   renderInfo.overscanStopIndex >= index
+    // ) {
+    //   const dom = document.querySelector(hash);
+    //   if (dom) {
+    //     dom.scrollIntoView(true);
+    //     setTimeout(() => {
+    //       scrollContext.onScrollFinished();
+    //     }, 500);
+    //     // window.scrollTo(0, window.scrollY - 120);
+    //   } else {
+    //     scrollContext.onScrollFinished();
+    //   }
+    // } else {
+    //   const delta = index - renderInfo.startIndex;
+    //   const deltaY = delta * ELEMENT_DEFAULT_HEIGHT;
+    //   window.scrollTo(0, window.scrollY + deltaY);
+    // }
   }
-
   // 清理 location.hash
   useEffect(() => {
     const removeHash = () => {
@@ -405,46 +457,6 @@ function NodeContent(props) {
       window.removeEventListener('mousewheel', removeHash);
     };
   }, []);
-
-  // 触发滚动
-  // useEffect(
-  //   () => {
-  //     if (
-  //       scrollContext.scrollHash &&
-  //       /^#content-/.test(scrollContext.scrollHash)
-  //     ) {
-  //       scrollToHash(scrollContext.scrollHash, renderInfoRef.current);
-  //     } else if (!hasInitScrolled.current) {
-  //       const cache = getNodeCache(node.id);
-  //       const scrollCache = cache && cache.get('contentScroll');
-  //       if (scrollCache && scrollCache.startIndex) {
-  //         scrollContext.setScrollHash(`#content-${scrollCache.blockId}`);
-  //       }
-  //     }
-  //     hasInitScrolled.current = true;
-  //   },
-  //   [scrollContext.scrollHash],
-  // );
-
-  useEffect(
-    () => {
-      setScrollToIndex(scrollContext.sort);
-      scrollContext.setActiveHash(scrollContext.scrollHash);
-      scrollContext.setSort(undefined);
-      const index = nameIndexMap[scrollContext.scrollHash.replace('#', '')];
-      if (!index) {
-        setTimeout(() => {
-          window.scrollBy(0, -100);
-        }, 1000);
-      }
-    },
-    [scrollContext.sort],
-  );
-
-  const clearScrollToIndex = () => {
-    setScrollToIndex(-1);
-  };
-
   const handleRowsRendered = (info) => {
     setBeginIndex(info.overscanStartIndex);
     renderInfoRef.current = info;
@@ -470,8 +482,16 @@ function NodeContent(props) {
           });
       }
     }
+    // if (info.stopIndex >= blockSections.length - 1) {
+    //   dispatch(
+    //     asyncFetchNodeEditInfo({
+    //       bundleId: node.bundle_id,
+    //       nodeId: node.id,
+    //       limit: info.stopIndex + 20,
+    //     }),
+    //   );
+    // }
   };
-
   // 当切换其他章节时，这个方法可以确保页面不会跳动，但是在上下滚动时会出现跳动。需要检测滚动方向，确定优先渲染当组件
   if (!props.isActive) {
     const height = domRef.current ? domRef.current.clientHeight : '100%';
@@ -485,31 +505,89 @@ function NodeContent(props) {
     );
   }
 
-  // 判断是否加载更多数据
-  const isRowLoaded = ({ index }) =>
-    // if (node.node_paragraphs_count - blockSections.length < 3) {
-    //   return true;
-    // }
-    // return !!blockSections[index];
-    !!list[index] && !!blockSections[index];
+  useEffect(
+    () => {
+      scrollContext.sort && setScrollToIndex(scrollContext.sort);
+      scrollContext.setActiveHash(scrollContext.scrollHash);
+      scrollContext.setSort(undefined);
+      const index = nameIndexMap[scrollContext.scrollHash.replace('#', '')];
+      if (!index && scrollContext.paragraphId) {
+        dispatch(
+          asyncUpdateNodeInfo({
+            nodeId: node.id,
+            paragraphId: scrollContext.paragraphId,
+          }),
+        ).then(() => {
+          scrollToParagraph(scrollContext.scrollHash);
+        });
+        dispatch(
+          asyncUpdateNodeInfo({
+            nodeId: node.id,
+            paragraphId: scrollContext.paragraphId,
+            forward: 1,
+          }),
+        );
+      }
+      scrollToParagraph(scrollContext.scrollHash);
+    },
+    [scrollContext.sort],
+  );
 
-  // eslint-disable-next-line arrow-body-style
-  const loadMoreRows = () => {
-    // 加载更多数据
-    setList(appendList(list));
-    setLoading(true);
-    return dispatch(
-      asyncUpdateNodeInfo({
-        nodeId: node.id,
-        paragraphId: node.content[node.content.length - 1].id,
-      }),
-    ).then(() => {
-      setLoading(false);
-    });
+  const scrollToParagraph = (hash) => {
+    setTimeout(() => {
+      // const dom = document.querySelector(hash);
+      const dom = document.getElementById(hash.replace('#', ''));
+      if (dom) {
+        dom.scrollIntoView(true);
+        setTimeout(() => {
+          scrollContext.onScrollFinished();
+        }, 500);
+        // window.scrollTo(0, window.scrollY - 120);
+      } else {
+        scrollContext.onScrollFinished();
+      }
+    }, 1000);
   };
 
-  const loadNextRows = isLoading ? () => Promise.resolve() : loadMoreRows;
+  const clearScrollToIndex = () => {
+    setScrollToIndex(-1);
+  };
 
+  // 判断是否加载更多数据
+  const isRowLoaded = ({ index }) => !!data[index];
+
+  // eslint-disable-next-line arrow-body-style
+  const loadMoreRows = ({ startIndex, stopIndex }) => {
+    // 加载更多数据
+    const tempStartNode = content.find((item) => item.sort === startIndex);
+    const tempStopNode = content.find((item) => item.sort === stopIndex + 3);
+    if (tempStartNode) {
+      setLoading(true);
+      return dispatch(
+        asyncUpdateNodeInfo({
+          nodeId: node.id,
+          paragraphId: tempStartNode.id,
+        }),
+      ).then(() => {
+        setLoading(false);
+      });
+    }
+    if (tempStopNode) {
+      setLoading(true);
+      return dispatch(
+        asyncUpdateNodeInfo({
+          nodeId: node.id,
+          paragraphId: tempStopNode.id,
+          forward: 1,
+        }),
+      ).then(() => {
+        setLoading(false);
+      });
+    }
+    return Promise.resolve();
+  };
+  // eslint-disable-next-line arrow-body-style
+  const loadNextRows = isLoading ? () => Promise.resolve() : loadMoreRows;
   const toIndex = scrollToIndex;
   const nodeLength = blockSections ? blockSections.length : 0;
   return (
@@ -521,7 +599,7 @@ function NodeContent(props) {
           ? node_paragraphs_count - 2
           : nodeLength
       }
-      threshold={15}
+      threshold={20}
     >
       {({ onRowsRendered, registerChild }) => (
         <WindowScroller key={node.id} onScroll={clearScrollToIndex}>
@@ -543,7 +621,6 @@ function NodeContent(props) {
                 ref={registerChild}
                 isScrolling={isScrolling}
                 onScroll={onChildScroll}
-                // rowCount={blockSections.length}
                 rowCount={
                   node_paragraphs_count - 2 > nodeLength
                     ? node_paragraphs_count - 2
@@ -558,8 +635,8 @@ function NodeContent(props) {
                   handleRowsRendered(info);
                   onRowsRendered(info);
                 }}
-                tabIndex={-1}
-                overscanRowCount={8}
+                // tabIndex={-1}
+                // overscanRowCount={8}
                 style={{ counterReset: `para ${Math.max(beginIndex)}` }}
                 rowRenderer={({ index, key, parent, style }) => {
                   let blockStyle;
@@ -588,7 +665,8 @@ function NodeContent(props) {
                     };
                   }
 
-                  const blockSection = blockSections && blockSections[index];
+                  // const blockSection = blockSections && blockSections[index];
+                  const blockSection = data && data[index];
 
                   if (blockSection) {
                     const {
@@ -619,10 +697,10 @@ function NodeContent(props) {
 
                   return (
                     <CellMeasurer
-                      key={key}
                       cache={cacheRef.current}
-                      parent={parent}
                       columnIndex={0}
+                      key={key}
+                      parent={parent}
                       rowIndex={index}
                     >
                       {(cellMeasure) => (
@@ -656,14 +734,11 @@ function NodeContent(props) {
     </InfiniteLoader>
   );
 }
-
 NodeContent.propTypes = {
   className: PropTypes.string,
   isActive: PropTypes.bool,
 };
-
 NodeContent.defaultProps = {
   isActive: true,
 };
-
 export default NodeContent;

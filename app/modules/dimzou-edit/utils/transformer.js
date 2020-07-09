@@ -1,6 +1,6 @@
 import uniq from 'lodash/uniq';
 import uniqBy from 'lodash/uniqBy';
-import update from 'immutability-helper'
+import update from 'immutability-helper';
 
 import {
   REWORDING_STATUS_PENDING,
@@ -699,20 +699,28 @@ function submitContent(node, patch, structure) {
         content: (list) => {
           const patchPivotId = patch[0].id;
           const pivotIndex = list.findIndex((n) => n.id === patchPivotId);
-          const merged = uniqBy([
-            ...list.slice(0, pivotIndex),
-            ...patch,
-            ...list.slice(pivotIndex + 1),
-          ], (r) => r.id)
+          const merged = uniqBy(
+            [
+              ...list.slice(0, pivotIndex),
+              ...patch,
+              ...list.slice(pivotIndex + 1),
+            ],
+            (r) => r.id,
+          );
           if (patch.length > 1) {
-            return merged.map((item, i) => i > pivotIndex ? ({
-              ...item,
-              sort: i+1,
-            }) : item);
+            return merged.map(
+              (item, i) =>
+                i > pivotIndex
+                  ? {
+                    ...item,
+                    sort: i + 1,
+                  }
+                  : item,
+            );
           }
-          return merged
+          return merged;
         },
-      })
+      });
     case 'summary':
       return {
         ...node,
@@ -736,40 +744,44 @@ function submitContent(node, patch, structure) {
 
 function insertContent(node, patch) {
   const isArray = patch instanceof Array;
-  const offset = isArray ? patch.length  :1;
+  const offset = isArray ? patch.length : 1;
   const sliceIndex = isArray ? patch[0].sort : patch.sort;
   return {
     ...node,
-    content: uniqBy([
-      ...node.content.slice(0, sliceIndex - 1),
-      ...(isArray ? patch : [patch]),
-      ...node.content.slice(sliceIndex - 1).map((item) => {
-        // eslint-disable-next-line
-        item.sort += offset;
-        return item;
-      }),
-    ], (r) => r.id),
+    content: uniqBy(
+      [
+        ...node.content.slice(0, sliceIndex - 1),
+        ...(isArray ? patch : [patch]),
+        ...node.content.slice(sliceIndex - 1).map((item) => {
+          // eslint-disable-next-line
+          item.sort += offset;
+          return item;
+        }),
+      ],
+      (r) => r.id,
+    ),
   };
 }
 
 function removeContentBlock(node, info) {
-  const removeIndex = node.content.findIndex((block) => block.id === info.blockId);
+  const removeIndex = node.content.findIndex(
+    (block) => block.id === info.blockId,
+  );
   if (removeIndex === -1) {
     return node;
   }
   // const block = node.content[removeIndex];
   return {
     ...node,
+    node_paragraphs_count: node.node_paragraphs_count - 1,
     content: [
       ...node.content.slice(0, removeIndex),
-      ...node.content.slice(removeIndex +1).map((item) => 
-        ({
-          ...item,
-          sort: item.sort - 1,
-        })
-      ),
+      ...node.content.slice(removeIndex + 1).map((item) => ({
+        ...item,
+        sort: item.sort - 1,
+      })),
     ],
-  }
+  };
 }
 
 function tailingInsertContent(node, patch) {
@@ -791,12 +803,12 @@ function reorderContent(node, patch) {
       if (nextSort === item.sort) {
         return item;
       }
-      return ({
+      return {
         ...item,
         sort: nextSort,
-      })
+      };
     }),
-  }
+  };
 }
 
 export function patchDimzouNode(node, patch, method, structure) {

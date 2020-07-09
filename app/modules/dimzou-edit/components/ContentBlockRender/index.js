@@ -9,7 +9,6 @@ import Avatar from '@feat/feat-ui/lib/avatar/Avatar';
 import { formatMessage } from '@/services/intl';
 import { getAvatar, getUsername } from '@/utils/user';
 
-
 import {
   EDIT_MODE_ORIGIN,
   EDIT_MODE_TRANSLATION,
@@ -59,7 +58,7 @@ export default function ContentBlockRender(props) {
     postRewording,
     postMediaRewording,
     updateEditor,
-    
+
     contentSuffix,
   } = props;
   const domRef = useRef(null);
@@ -84,15 +83,17 @@ export default function ContentBlockRender(props) {
     !(candidateVersions && candidateVersions.length);
   // const { canEdit, canAppendContent } = userCapabilities;
 
-
-  const className = classNames('dz-BlockSection', `dz-BlockSection_${structure}`, {
-    'dz-BlockSection_origin': mode === EDIT_MODE_ORIGIN,
-    'dz-BlockSection_translation': mode === EDIT_MODE_TRANSLATION,
-    'dz-BlockSection_todo':
-    mode === EDIT_MODE_TRANSLATION && !currentVersion,
-    'dz-BlockSection_deleted': blockIsDeleted,
-    'has-current': currentVersion,
-  })
+  const className = classNames(
+    'dz-BlockSection',
+    `dz-BlockSection_${structure}`,
+    {
+      'dz-BlockSection_origin': mode === EDIT_MODE_ORIGIN,
+      'dz-BlockSection_translation': mode === EDIT_MODE_TRANSLATION,
+      'dz-BlockSection_todo': mode === EDIT_MODE_TRANSLATION && !currentVersion,
+      'dz-BlockSection_deleted': blockIsDeleted,
+      'has-current': currentVersion,
+    },
+  );
 
   return (
     <div
@@ -103,9 +104,9 @@ export default function ContentBlockRender(props) {
       // data-structure={structure}
       // data-id={blockId}
     >
-      <span className="dz-BlockSection__anchor" id={name}></span>
+      <span className="dz-BlockSection__anchor" id={name} />
       {(!currentVersion || mode === EDIT_MODE_TRANSLATION) && (
-        <div className="dz-BlockSection__paraNum"></div>
+        <div className="dz-BlockSection__paraNum">{props.sort}</div>
       )}
       <div className="dz-BlockSection__wrapper">
         <div className="dz-BlockSection__main">
@@ -129,14 +130,11 @@ export default function ContentBlockRender(props) {
           {/* main */}
           {isEditModeEnabled &&
             blockState.editorState && (
-            <div className='dz-BlockSection__current dz-BlockSectionCurrent'>
+            <div className="dz-BlockSection__current dz-BlockSectionCurrent">
               <div className="dz-BlockSectionCurrent__avatar">
-                <Avatar 
-                  size="sm"
-                  avatar={getAvatar(currentUser, 'md')}
-                />
+                <Avatar size="sm" avatar={getAvatar(currentUser, 'md')} />
                 {mode === EDIT_MODE_ORIGIN && (
-                  <div className="dz-BlockSection__paraNum"></div>
+                  <div className="dz-BlockSection__paraNum">{props.sort}</div>
                 )}
               </div>
               <div className="dz-BlockSectionCurrent__main">
@@ -167,8 +165,7 @@ export default function ContentBlockRender(props) {
           )}
           {isEditModeEnabled && (
             <div className="dz-BlockSectionFooter">
-              <div className="dz-BlockSectionFooter__left">
-              </div>
+              <div className="dz-BlockSectionFooter__left" />
               <div className="dz-BlockSectionFooter__right">
                 {!blockState.isEditModeForced && (
                   <IconButton
@@ -191,7 +188,7 @@ export default function ContentBlockRender(props) {
           )}
           {!isEditModeEnabled &&
             currentVersion && (
-            <div className='dz-BlockSection__current dz-BlockSectionCurrent'>
+            <div className="dz-BlockSection__current dz-BlockSectionCurrent">
               <div className="dz-BlockSectionCurrent__avatar">
                 <Avatar
                   size="sm"
@@ -199,7 +196,7 @@ export default function ContentBlockRender(props) {
                   avatar={getAvatar(currentVersion.user, 'md')}
                 />
                 {mode === EDIT_MODE_ORIGIN && (
-                  <div className="dz-BlockSection__paraNum"></div>
+                  <div className="dz-BlockSection__paraNum">{props.sort}</div>
                 )}
               </div>
               <div className="dz-BlockSectionCurrent__main">
@@ -212,7 +209,10 @@ export default function ContentBlockRender(props) {
                   </span>
                   <span className="dz-BlockSectionCurrent__date">
                     <PubDate
-                      date={currentVersion.last_modified || currentVersion.create_time}
+                      date={
+                        currentVersion.last_modified ||
+                          currentVersion.create_time
+                      }
                       format="yy MM dd HH:mm"
                     />
                   </span>
@@ -232,7 +232,6 @@ export default function ContentBlockRender(props) {
                 />
               </div>
             </div>
-            
           )}
           {!isEditModeEnabled &&
             currentVersion && (
@@ -321,7 +320,11 @@ export default function ContentBlockRender(props) {
                   blockState.expandedType === BLOCK_EXPANDED_SECTION_COMMENTS
                 }
                 initialData={currentVersion.comments}
-                entityCapabilities={{ canComment: true, commentLimit: 1, maxReplyLimit: 1 }}
+                entityCapabilities={{
+                  canComment: true,
+                  commentLimit: 1,
+                  maxReplyLimit: 1,
+                }}
               />
             </>
           )}
@@ -331,8 +334,9 @@ export default function ContentBlockRender(props) {
                 <div
                   className={classNames('dz-rewordings', {
                     isHide:
-                    blockState.isVersions &&
-                    blockState.expandedType !== BLOCK_EXPANDED_SECTION_VERSIONS,
+                      blockState.isVersions &&
+                      blockState.expandedType !==
+                        BLOCK_EXPANDED_SECTION_VERSIONS,
                   })}
                 >
                   {/* <div className="dz-BlockSection__sectionTitle">
@@ -357,28 +361,29 @@ export default function ContentBlockRender(props) {
                   />
                 </div>
               )}
-              {currentVersion && !!rejectedVersions.length && (
-              <>
-                <div className="dz-BlockSection__sectionTitle">
-                  {formatMessage(intlMessages.abandoned)}
-                </div>
-                <RewordingList
-                  data={rejectedVersions}
-                  type="rejected"
-                  bundleId={bundleId}
-                  nodeId={nodeId}
-                  structure={structure}
-                  blockId={blockId}
-                  blockStatus={status}
-                  currentUser={currentUser}
-                  userCapabilities={userCapabilities}
-                  userHasPendingRewording={!!blockUserMeta.pendingRewording}
-                  isElecting={blockState.electingRewording}
-                  onItemDrop={postMediaRewording}
-                  hasLockedVersion={hasLockedVersion}
-                  contentSuffix={contentSuffix}
-                />
-              </>
+              {currentVersion &&
+                !!rejectedVersions.length && (
+                  <>
+                    <div className="dz-BlockSection__sectionTitle">
+                      {formatMessage(intlMessages.abandoned)}
+                    </div>
+                    <RewordingList
+                      data={rejectedVersions}
+                      type="rejected"
+                      bundleId={bundleId}
+                      nodeId={nodeId}
+                      structure={structure}
+                      blockId={blockId}
+                      blockStatus={status}
+                      currentUser={currentUser}
+                      userCapabilities={userCapabilities}
+                      userHasPendingRewording={!!blockUserMeta.pendingRewording}
+                      isElecting={blockState.electingRewording}
+                      onItemDrop={postMediaRewording}
+                      hasLockedVersion={hasLockedVersion}
+                      contentSuffix={contentSuffix}
+                    />
+                  </>
               )}
             </React.Fragment>
           )}
@@ -424,9 +429,6 @@ ContentBlockRender.propTypes = {
   postMediaRewording: PropTypes.func,
   updateEditor: PropTypes.func,
   name: PropTypes.string,
-  contentSuffix: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.object,
-  ]),
+  contentSuffix: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   style: PropTypes.object,
 };

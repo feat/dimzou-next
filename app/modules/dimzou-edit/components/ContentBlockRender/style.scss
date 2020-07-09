@@ -35,19 +35,17 @@
       right: calc(100% - 32px);
       text-align: right;
 
-      &::before {
-        content: counter(para);
-        // color: $color-primary;
-      }
+      // &::before {
+      //   content: counter(para);
+      //   // color: $color-primary;
+      // }
     }
-    
   }
 
   @include modifier(origin) {
     @include element(paraNum, true) {
       color: $origin-theme-color;
     }
-    
   }
 
   @include modifier(translation) {
@@ -69,7 +67,7 @@
 
   @include element(anchor) {
     position: relative;
-    top: -120px;
+    top: -60px;
     visibility: hidden;
   }
 
@@ -312,7 +310,6 @@
     top: 0;
   }
   @include element(main) {
-    
   }
   @include element(userInfo) {
     span {
@@ -330,7 +327,10 @@
     color: $gray-6;
   }
   .typo-Article {
-    h1, h2, h3, h4 {
+    h1,
+    h2,
+    h3,
+    h4 {
       margin-top: 0;
     }
   }

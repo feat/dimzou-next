@@ -9,7 +9,6 @@ import commonMessages from '@/messages/common';
 import Avatar from '@feat/feat-ui/lib/avatar/Avatar';
 import IconButton from '@feat/feat-ui/lib/button/IconButton';
 
-
 import RewordingCommentBundle from '../RewordingCommentBundle';
 import DimzouEditor from '../DimzouEditor';
 import RewordingLikeWidget from '../RewordingLike';
@@ -29,14 +28,18 @@ class Rewording extends React.Component {
     const { currentUser, showAvatar, uiState = {} } = this.props;
     return (
       <div
-        className={classNames("dz-RewordingSection dz-RewordingSection_pending", {
-          'has-avatar': showAvatar,
-        })}
+        className={classNames(
+          'dz-RewordingSection dz-RewordingSection_pending',
+          {
+            'has-avatar': showAvatar,
+          },
+        )}
       >
         <div
-          className={classNames("dz-Rewording dz-Rewording_pending", {
+          className={classNames('dz-Rewording dz-Rewording_pending', {
             'has-avatar': showAvatar,
-          })}>
+          })}
+        >
           <div className="dz-Rewording__para">
             {/* 修改序号(版本) */}
             {/* {this.props.count - this.props.index} */}
@@ -115,17 +118,20 @@ class Rewording extends React.Component {
     const { user } = data;
     const canElect =
       data.status === REWORDING_STATUS_PENDING && userCapabilities.canElect;
-
     return (
       <div
-        className={classNames(`dz-RewordingSection dz-RewordingSection_${modifier}`, {
-          'has-avatar': showAvatar,
-        })}
+        className={classNames(
+          `dz-RewordingSection dz-RewordingSection_${modifier}`,
+          {
+            'has-avatar': showAvatar,
+          },
+        )}
       >
         <div
           className={classNames(`dz-Rewording dz-Rewording_${modifier}`, {
             'has-avatar': showAvatar,
-          })}>
+          })}
+        >
           <div className="dz-Rewording__main">
             <div className="dz-Rewording__flexbox">
               {showAvatar && (
@@ -172,9 +178,7 @@ class Rewording extends React.Component {
               <div className="dz-RewordingFooter__left">
                 {data.submit_version && (
                   <span className="dz-RewordingFooter__action">
-                    <RewordingVersion 
-                      version={data.submit_version - 1}
-                    />
+                    <RewordingVersion version={data.submit_version - 1} />
                   </span>
                 )}
                 <span className="dz-RewordingFooter__action">
@@ -247,7 +251,11 @@ class Rewording extends React.Component {
               shouldRender
               isCommentActive={uiState.isCommentPanelOpened}
               initialData={data.comments}
-              entityCapabilities={{ canComment: true, commentLimit: 1, maxReplyLimit: 1 }}
+              entityCapabilities={{
+                canComment: true,
+                commentLimit: 1,
+                maxReplyLimit: 1,
+              }}
             />
           </div>
         </div>

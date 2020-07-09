@@ -108,4 +108,5 @@
 @include block(ns(BlockSectionLoading, dz)) {
   padding: px-to-rem(10);
   color: $gray-6;
+  min-height: px-to-rem(100);
 }

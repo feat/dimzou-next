@@ -191,10 +191,11 @@ export const receiveNodeUpdateSignal = createAction(
 );
 export const setLoadingProgress = createRoutine('DZ/NODE/SET_LOADING_PROGRESS');
 
-export const asyncFetchNodeData = (nodeId) => async (dispatch) => {
+export const asyncFetchNodeData = (nodeId, blockId) => async (dispatch) => {
   try {
     const { data: content } = await getParagraphRangeRequest({
       node_id: nodeId,
+      paragraph_id: blockId,
     });
     const { data: title } = await getParagraphTypeRequest({
       node: nodeId,
@@ -296,12 +297,13 @@ export const asyncFetchNodeEditInfo = (payload) => async (
 
 // 分页加载段落数据；
 export const asyncUpdateNodeInfo = (payload) => async (dispatch) => {
-  const { nodeId, paragraphId } = payload;
+  const { nodeId, paragraphId, forward } = payload;
   try {
     const { data: content } = await getParagraphRangeRequest({
       node_id: nodeId,
       paragraph_id: paragraphId,
       limit: 20,
+      forward,
     });
     await dispatch(
       updateNodeInfo({
