@@ -1,6 +1,16 @@
 # Dimzou Web
 
-Dimzou Feature related pages
+开源的 Dimzou 应用。
+
+使用 Reatc 和 Redux 构建， 同时利用 Feat Open Project 的API。
+
+> Feat.com 项目是一个社会化工程，也是一个公开的工程。我们欢迎各种形式的贡献：比如PR、提出问题、对问题的反馈、提供评论、捐款，甚至只是将你认为工程上的一些事情分享出去，都是一种对工程发展很有价值的贡献和帮助。
+
+在提出拉取请求之前，请记得阅读我们的 [《FEAT 社会化工程参与者指南》](https://www.featapi.com/guides/contribution/)
+
+Feat.com的工程开发所需的资金筹款在接收、开销、管理等整个过程都以完全透明的方式进行， 并接受社会监管。 
+
+我们非常感谢哪些已经为我们作出了筹款的捐献者。
 
 ## 系统要求
 * Node.js 10.13 or later
