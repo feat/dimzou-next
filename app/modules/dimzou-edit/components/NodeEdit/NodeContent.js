@@ -72,23 +72,17 @@ function NodeContent(props) {
       (_) => null,
     ),
   );
-  useEffect(
-    () => {
-      setData(
-        Array.from({ length: nodeState.data.node_paragraphs_count - 2 }).map(
-          // eslint-disable-next-line no-unused-vars
-          (_) => null,
-        ),
-      );
-    },
-    [node_paragraphs_count],
-  );
 
   const [blockSections, nameIndexMap] = useMemo(
     () => {
       const sections = [];
       const indexMap = {};
-      const tempData = [...data];
+      const tempData = [
+        ...Array.from({ length: nodeState.data.node_paragraphs_count - 2 }).map(
+          // eslint-disable-next-line no-unused-vars
+          (_) => null,
+        ),
+      ];
       let counter = 0;
       if (!content) {
         return sections;
@@ -202,7 +196,7 @@ function NodeContent(props) {
               key: TAILING_PIVOT,
               placeholder: formatMessage(intlMessages.tailingEditorPlaceholder),
               currentUser,
-              sort: tempData.length,
+              sort: tempData.length + 1,
             },
           };
         } else {
@@ -590,6 +584,7 @@ function NodeContent(props) {
   const loadNextRows = isLoading ? () => Promise.resolve() : loadMoreRows;
   const toIndex = scrollToIndex;
   const nodeLength = blockSections ? blockSections.length : 0;
+
   return (
     <InfiniteLoader
       isRowLoaded={isRowLoaded}

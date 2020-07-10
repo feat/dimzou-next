@@ -787,6 +787,7 @@ function removeContentBlock(node, info) {
 function tailingInsertContent(node, patch) {
   return {
     ...node,
+    node_paragraphs_count: node.node_paragraphs_count + patch.length,
     content: uniqBy([...node.content, ...patch], (r) => r.id),
   };
 }
