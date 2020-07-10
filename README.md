@@ -2,7 +2,7 @@
 
 开源的 Dimzou 应用。
 
-使用 Reatc 和 Redux 构建， 同时利用 Feat Open Project 的API。
+使用 React 和 Redux 以及 Next.js 构建， 同时利用 Feat Open Project 的API。
 
 > Feat.com 项目是一个社会化工程，也是一个公开的工程。我们欢迎各种形式的贡献：比如PR、提出问题、对问题的反馈、提供评论、捐款，甚至只是将你认为工程上的一些事情分享出去，都是一种对工程发展很有价值的贡献和帮助。
 
