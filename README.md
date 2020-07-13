@@ -1,5 +1,7 @@
 # Dimzou Web
 
+[English README.md](./README-en.md)
+
 开源的 Dimzou 应用。
 
 使用 React 和 Redux 以及 Next.js 构建， 同时利用 Feat Open Project 的API。
