@@ -14,6 +14,12 @@ Feat.com的工程开发所需的资金筹款在接收、开销、管理等整个
 
 我们非常感谢哪些已经为我们作出了筹款的捐献者。
 
+## 关于 Dimzou
+
+Dimzou 是一个多人写作工具，允许用户聚集在一起开始创作。有别于实时的编辑方案（Operational Transformation 等方案)，这里采用的方式更像是 `revision control`。每一个参与者提交的内容会出去“待审核”状态，知道管理人员对段落进行审核。这种方案更加符合“分工合作”的自然场景。
+
+产品说明可查阅: [Dimzou 产品说明](https://www.openwriter.com/dimzou-publication/246/269)
+
 ## 系统要求
 * Node.js 10.13 or later
 * Redis 2.8 or later
