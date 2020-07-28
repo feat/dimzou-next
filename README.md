@@ -20,6 +20,26 @@ Dimzou 是一个多人写作工具，允许用户聚集在一起开始创作。�
 
 产品说明可查阅: [Dimzou 产品说明](https://www.openwriter.com/dimzou-publication/246/269)
 
+## 核心编辑模型
+
+```typescript
+interface Node {
+  title: RewordableSection
+  summary: RewordableSection
+  content: Array<RewordableSection>
+}
+
+interface RewordableSection {
+  rewordings: Array<RewordingRecord>
+}
+
+interface RewordingRecord {
+  widget_type: string,
+  widget_data: string,
+  exported_html: string, 
+}
+```
+
 ## 系统要求
 * Node.js 10.13 or later
 * Redis 2.8 or later
