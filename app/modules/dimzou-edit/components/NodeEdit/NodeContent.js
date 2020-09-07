@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {
   useContext,
   useRef,
@@ -8,7 +9,7 @@ import {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import Router from 'next/router';
+import Router, { useRouter } from 'next/router';
 import classNames from 'classnames';
 import {
   WindowScroller,
@@ -20,13 +21,18 @@ import {
 import { selectCurrentUser } from '@/modules/auth/selectors';
 import { formatMessage } from '@/services/intl';
 import message from '@feat/feat-ui/lib/message';
+import groupBy from 'lodash/groupBy';
+import get from 'lodash/get';
+import findIndex from 'lodash/findIndex';
+import { selectUserRelatedDrafts, selectUserDraftsState } from '../../selectors';
 import commonMessages from '@/messages/common';
-import { BEGINNING_PIVOT, TAILING_PIVOT } from '../../constants';
+import { BEGINNING_PIVOT, TAILING_PIVOT, ROLE_OWNER } from '../../constants';
 import {
   NodeContext,
   BundleContext,
   UserCapabilitiesContext,
   ScrollContext,
+  OwnerContext,
 } from '../../context';
 import MeasureProvider from '../../providers/MeasureProvider';
 import {
@@ -40,38 +46,91 @@ import AppendingBlock from '../AppendingBlock';
 import DropHint from '../DropHint';
 import intlMessages from '../../messages';
 import { getActiveHash } from './utils';
+import { getAsPath } from '../../utils/router';
+import { groupByStatus } from '../../utils/bundle';
 import { getNodeCache } from '../../utils/cache';
+
 const TRANSITION_DURATION = 100;
 const DROP_REGION_HEIGHT = 40;
 const PARA_NUM_OFFSET = 56;
 const CONTENT_WIDTH = 720;
 const ELEMENT_DEFAULT_HEIGHT = 160;
+
 function NodeContent(props) {
   const nodeState = useContext(NodeContext);
   const bundleState = useContext(BundleContext);
   const userCapabilities = useContext(UserCapabilitiesContext);
+  const ownerContext = useContext(OwnerContext);
+  const { uid } = ownerContext;
   const currentUser = useSelector(selectCurrentUser);
   const scrollContext = useContext(ScrollContext);
+  const currentUserDrafts = useSelector(selectUserDraftsState); // get current user's drafts, you are the current user
+  const userDrafts = useSelector((state) => selectUserRelatedDrafts(state, {userId: uid}));// get other users's drafts, when you browsing other users' dimzou page
   const dispatch = useDispatch();
   const domRef = useRef(null);
   // const nameIndexMap = useRef({});
   const [beginIndex, setBeginIndex] = useState(0);
   const hasInitScrolled = useRef(false);
   const [scrollToIndex, setScrollToIndex] = useState(-1);
-
+  const router = useRouter();
+  
   const { mode } = bundleState;
   const { data: node, appendings, outline } = nodeState;
   const { content, node_paragraphs_count } = node;
 
   // loading提示
   const [isLoading, setLoading] = useState(false);
-
+  const [scrollTime, setScrollTime] = useState(5);
+  const [scrollDirection, setDirection] = useState(0);
+  const scrollDirectionRef = useRef(0);
+  
   const [data, setData] = useState(
     Array.from({ length: nodeState.data.node_paragraphs_count - 2 }).map(
       // eslint-disable-next-line no-unused-vars
       (_) => null,
     ),
   );
+  
+  // check if on current user's dimzou page
+  const isCurrentDimZou = useMemo(() => uid === currentUser.uid,[uid]);
+
+  const drafts = useMemo(() => {
+    const output = {};
+    // check if user on their Dimzou page and decide to use context
+    const { data: draftData, loaded, ids } = isCurrentDimZou ? currentUserDrafts : userDrafts;
+
+    const extraNodes = loaded.filter((item) => !ids[item.id]);
+    const flatNodes = draftData ? draftData.reduce((els, bundle) => els.concat(bundle, bundle.all_copies ? bundle.all_copies : [] ), []) : [];
+    const bundleNodes = [
+      ...extraNodes,
+      ...flatNodes,
+    ]
+
+    const roleGrouped = groupBy(bundleNodes, (bundle) => {
+      const collaborators = get(bundle, 'nodes.0.collaborators');
+      if (collaborators) {
+        const info = collaborators.find((item) => item.user && item.user.uid === uid);
+        if (info && info.role === ROLE_OWNER) {
+          return 'created';
+        } 
+        return 'participated';
+      }
+      if (bundle.user && bundle.user.uid === uid) {
+        return 'created'
+      }
+      return 'participated';
+    });
+    Object.keys(roleGrouped).forEach((key) => {
+      output[key] = groupByStatus(roleGrouped[key]);
+    });
+    if (roleGrouped.created && roleGrouped.created.length) {
+      output.hasCreated = true;
+    }
+    if (roleGrouped.participated && roleGrouped.participated.length) {
+      output.hasParticipated = true;
+    }
+    return output.created.draft;
+  },[uid]);
 
   const [blockSections, nameIndexMap] = useMemo(
     () => {
@@ -221,6 +280,107 @@ function NodeContent(props) {
     },
     [content, appendings, userCapabilities],
   );
+
+  const updateHref= (bundle_id, node_id) => ({
+    href: {
+      pathname: '/dimzou-edit',
+      query: {
+        bundleId : bundle_id,
+        nodeId: node_id,
+      },
+    },
+    as: getAsPath({query: {
+      bundleId : bundle_id,
+      nodeId: node_id,
+    }}),
+  })
+
+  // direct to previous bundle
+  const toPreviousBundle = () => {
+    const bundleIndex = findIndex(drafts, (draft) => draft.id === bundleState.data.id);
+    // check if previous bundle exist
+    const hasPreviousBundle = drafts.length > 1 && bundleIndex > 0;
+    if(hasPreviousBundle) {
+      // get previous bundle infor
+      const previousBundleIndex = bundleIndex - 1;
+      const previousBundleId = drafts[previousBundleIndex].id;
+      const nodeLength = drafts[previousBundleIndex].nodes ? drafts[previousBundleIndex].nodes.length : 0;
+      const previousBundleNodeId = drafts[previousBundleIndex].nodes 
+        ? drafts[previousBundleIndex].nodes[nodeLength-1].id
+        : undefined;
+
+      // update href
+      const newHref = updateHref(previousBundleId, previousBundleNodeId);
+
+      // to previous Bundle
+      window.scrollTo(0, 0);
+      router.push(newHref.href, newHref.as);
+    }
+  }
+
+  // direct to next bundle
+  const toNextBundle = () => {
+    const bundleIndex = findIndex(drafts, (draft) => draft.id === bundleState.data.id);
+    // check if next bundle exist
+    const hasNextBundle = drafts.length > 1 && bundleIndex < drafts.length - 1;
+    if(hasNextBundle) {
+      // get next bundle infor
+      const nextBundleId = drafts[bundleIndex+1].id;
+      const nextBundleNodeId = drafts[bundleIndex+1].nodes 
+        ? drafts[bundleIndex+1].nodes[0].id 
+        : undefined;
+
+      // update href
+      const newHref = updateHref(nextBundleId, nextBundleNodeId);
+
+      // to next Bundle
+      window.scrollTo(0, 0);
+      router.push(newHref.href, newHref.as);
+    }
+  }
+
+  const resetScrollTime = () => setScrollTime (3);
+
+  useEffect(() => {
+    if(scrollDirection < 0 && scrollDirection === scrollDirectionRef.current){
+      // scrolled up
+      if(scrollTime === 0){
+        resetScrollTime();
+        toPreviousBundle();
+      }
+    }
+    if(scrollDirection > 0 && scrollDirection === scrollDirectionRef.current){
+      // scroll down
+      if(scrollTime === 0){
+        resetScrollTime();
+        toNextBundle();
+      }
+    }
+    scrollDirectionRef.current = scrollDirection;
+  },[scrollTime, scrollDirection]);
+
+  // function that works for the scroll listerner
+  const listernToScroll = (event) => {
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = 
+      document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = winScroll / height;
+    if(scrolled === 0 || scrolled > 0.999){
+      setDirection(event.deltaY);
+      setScrollTime((preScrollTime) => preScrollTime - 1);
+    } else {
+      resetScrollTime();
+    }
+  } 
+
+  useEffect(() => {
+    window.addEventListener('wheel', listernToScroll);
+    return (() => {
+      window.removeEventListener('wheel', listernToScroll);
+      resetScrollTime();
+    });
+  },[]);
+
   // react-virtualized related
   const cacheRef = useRef(
     new CellMeasurerCache({
@@ -295,6 +455,7 @@ function NodeContent(props) {
           for (let i = 0; i < blocks.length; i += 1) {
             const block = blocks[i];
             if (!block) {
+              // eslint-disable-next-line no-continue
               continue;
             }
             const box = block.getBoundingClientRect();
@@ -582,7 +743,6 @@ function NodeContent(props) {
   };
   // eslint-disable-next-line arrow-body-style
   const loadNextRows = isLoading ? () => Promise.resolve() : loadMoreRows;
-  const toIndex = scrollToIndex;
   const nodeLength = blockSections ? blockSections.length : 0;
 
   return (
@@ -624,7 +784,8 @@ function NodeContent(props) {
                 rowHeight={cacheRef.current.rowHeight}
                 scrollTop={scrollTop}
                 deferredMeasurementCache={cacheRef.current}
-                scrollToIndex={toIndex}
+                scrollToIndex={scrollToIndex}
+                scrollToAlignment="center"
                 width={width + PARA_NUM_OFFSET}
                 onRowsRendered={(info) => {
                   handleRowsRendered(info);

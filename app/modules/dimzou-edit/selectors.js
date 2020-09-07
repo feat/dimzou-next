@@ -225,6 +225,7 @@ export const selectUserDraftsState = createSelector(
     }
   }
 );
+
 export const selectUserRelatedDrafts = createSelector(
   (state, props) => get(state, [REDUCER_KEY, 'userRelated', props.userId]),
   selectEntities,
