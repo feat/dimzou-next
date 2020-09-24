@@ -365,7 +365,10 @@ function NodeContent(props) {
     const height = 
       document.documentElement.scrollHeight - document.documentElement.clientHeight;
     const scrolled = winScroll / height;
-    if(scrolled === 0 || scrolled > 0.999){
+    if(scrolled === 0 && event.deltaY < 0){
+      setDirection(event.deltaY);
+      setScrollTime((preScrollTime) => preScrollTime - 1);
+    } else if(scrolled > 0.999 && event.deltaY > 0){
       setDirection(event.deltaY);
       setScrollTime((preScrollTime) => preScrollTime - 1);
     } else {
@@ -374,9 +377,14 @@ function NodeContent(props) {
   } 
 
   useEffect(() => {
-    window.addEventListener('wheel', listernToScroll);
+    const mainContainer = document.querySelector(`[class*="__mainContainer"]`);
+    if(mainContainer !== null) {
+      mainContainer.addEventListener('wheel', listernToScroll);
+    }
     return (() => {
-      window.removeEventListener('wheel', listernToScroll);
+      if(mainContainer !== null) {
+        mainContainer.removeEventListener('wheel', listernToScroll);
+      }
       resetScrollTime();
     });
   },[]);
