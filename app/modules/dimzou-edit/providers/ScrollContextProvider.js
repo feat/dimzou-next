@@ -16,6 +16,7 @@ function ScrollContextProvider(props) {
   const [activeHash, setActiveHash] = useState(''); // anchor 状态
   const [sort, setSort] = useState(undefined);
   const [paragraphId, setParagraphId] = useState(null);
+  const [scrollToBottom, setScrollToBottom] = useState(false);
 
   useEffect(() => {
     const updateHash = () => {
@@ -53,6 +54,8 @@ function ScrollContextProvider(props) {
         scrollHash,
         sort,
         paragraphId,
+        scrollToBottom,
+        setScrollToBottom,
         setActiveHash,
         setScrollHash,
         setSort,

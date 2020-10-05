@@ -64,6 +64,8 @@ function NodeContent(props) {
   const { uid } = ownerContext;
   const currentUser = useSelector(selectCurrentUser);
   const scrollContext = useContext(ScrollContext);
+  console.log(`scroll context ${JSON.stringify(scrollContext,null,2)}`);
+  console.log(`### node state ${JSON.stringify(nodeState,null,2)}`);
   const currentUserDrafts = useSelector(selectUserDraftsState); // get current user's drafts, you are the current user
   const userDrafts = useSelector((state) => selectUserRelatedDrafts(state, {userId: uid}));// get other users's drafts, when you browsing other users' dimzou page
   const dispatch = useDispatch();
@@ -82,8 +84,9 @@ function NodeContent(props) {
   const [isLoading, setLoading] = useState(false);
   const [scrollTime, setScrollTime] = useState(5);
   const [scrollDirection, setDirection] = useState(0);
+  const [lastParagraphId, setParagraphId] = useState(-1);
   const scrollDirectionRef = useRef(0);
-  
+
   const [data, setData] = useState(
     Array.from({ length: nodeState.data.node_paragraphs_count - 2 }).map(
       // eslint-disable-next-line no-unused-vars
@@ -281,6 +284,37 @@ function NodeContent(props) {
     [content, appendings, userCapabilities],
   );
 
+  // detect if view needs to be scrolled to bottom
+  const handleScrollToBottom = () => {
+    const element = document.documentElement;
+    const { clientHeight, scrollHeight } = element;
+    element.scrollTop = scrollHeight - clientHeight;
+  }
+
+  useEffect(() => {
+    if(scrollContext && scrollContext.scrollToBottom){
+      const lastParagraph = document.querySelector(`[name=content_${lastParagraphId}]`);
+      if(lastParagraphId === -1 || lastParagraph === null){
+        handleScrollToBottom();
+      }
+    }
+  },[document.documentElement.scrollHeight]);
+
+  const getLastParagraphInfor = () => {
+    const paragraph = content.filter((p) => p.sort === node_paragraphs_count);
+    console.log(`### paragraph is ${JSON.stringify(paragraph, null, 2)}`);
+    if(paragraph){
+      setParagraphId(paragraph.id);
+    }
+  }
+
+  useEffect(() => {
+    if(scrollContext && scrollContext.scrollToBottom){
+      getLastParagraphInfor();
+      handleScrollToBottom();
+    }
+  })
+
   const updateHref= (bundle_id, node_id) => ({
     href: {
       pathname: '/dimzou-edit',
@@ -313,7 +347,7 @@ function NodeContent(props) {
       const newHref = updateHref(previousBundleId, previousBundleNodeId);
 
       // to previous Bundle
-      window.scrollTo(0, 0);
+      scrollContext.setScrollToBottom(true);
       router.push(newHref.href, newHref.as);
     }
   }
@@ -339,7 +373,7 @@ function NodeContent(props) {
     }
   }
 
-  const resetScrollTime = () => setScrollTime (3);
+  const resetScrollTime = () => setScrollTime (5);
 
   useEffect(() => {
     if(scrollDirection < 0 && scrollDirection === scrollDirectionRef.current){
@@ -361,6 +395,9 @@ function NodeContent(props) {
 
   // function that works for the scroll listerner
   const listernToScroll = (event) => {
+    if(scrollContext && scrollContext.scrollToBottom){
+      scrollContext.setScrollToBottom(false);
+    }
     const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
     const height = 
       document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -620,6 +657,7 @@ function NodeContent(props) {
       window.removeEventListener('mousewheel', removeHash);
     };
   }, []);
+
   const handleRowsRendered = (info) => {
     setBeginIndex(info.overscanStartIndex);
     renderInfoRef.current = info;
@@ -645,15 +683,10 @@ function NodeContent(props) {
           });
       }
     }
-    // if (info.stopIndex >= blockSections.length - 1) {
-    //   dispatch(
-    //     asyncFetchNodeEditInfo({
-    //       bundleId: node.bundle_id,
-    //       nodeId: node.id,
-    //       limit: info.stopIndex + 20,
-    //     }),
-    //   );
-    // }
+    console.log(`#scroll# stop index: ${info.stopIndex}, para count: ${node_paragraphs_count}`);
+    if(scrollContext && scrollContext.scrollToBottom && info.stopIndex === node_paragraphs_count){
+      scrollContext.setScrollToBottom(false);
+    }
   };
   // 当切换其他章节时，这个方法可以确保页面不会跳动，但是在上下滚动时会出现跳动。需要检测滚动方向，确定优先渲染当组件
   if (!props.isActive) {
@@ -792,7 +825,6 @@ function NodeContent(props) {
                 rowHeight={cacheRef.current.rowHeight}
                 scrollTop={scrollTop}
                 deferredMeasurementCache={cacheRef.current}
-                scrollToIndex={scrollToIndex}
                 scrollToAlignment="center"
                 width={width + PARA_NUM_OFFSET}
                 onRowsRendered={(info) => {

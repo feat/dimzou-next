@@ -22,6 +22,7 @@ function OutlineWrap(props) {
         };
         scrollContext.setSort(sort);
         scrollContext.setParagraphId(paragraphId);
+        scrollContext.setScrollToBottom(false);
         router.push(hashHref, getAsPath(hashHref));
       }}
     />
