@@ -64,8 +64,6 @@ function NodeContent(props) {
   const { uid } = ownerContext;
   const currentUser = useSelector(selectCurrentUser);
   const scrollContext = useContext(ScrollContext);
-  console.log(`scroll context ${JSON.stringify(scrollContext,null,2)}`);
-  console.log(`### node state ${JSON.stringify(nodeState,null,2)}`);
   const currentUserDrafts = useSelector(selectUserDraftsState); // get current user's drafts, you are the current user
   const userDrafts = useSelector((state) => selectUserRelatedDrafts(state, {userId: uid}));// get other users's drafts, when you browsing other users' dimzou page
   const dispatch = useDispatch();
@@ -82,7 +80,7 @@ function NodeContent(props) {
 
   // loading提示
   const [isLoading, setLoading] = useState(false);
-  const [scrollTime, setScrollTime] = useState(5);
+  const [scrollTime, setScrollTime] = useState(10);
   const [scrollDirection, setDirection] = useState(0);
   const [lastParagraphId, setParagraphId] = useState(-1);
   const scrollDirectionRef = useRef(0);
@@ -294,17 +292,21 @@ function NodeContent(props) {
   useEffect(() => {
     if(scrollContext && scrollContext.scrollToBottom){
       const lastParagraph = document.querySelector(`[name=content_${lastParagraphId}]`);
-      if(lastParagraphId === -1 || lastParagraph === null){
+      if(lastParagraph === null){
         handleScrollToBottom();
+      } else {
+        lastParagraph.scrollIntoView(true);
+        scrollContext.setScrollToBottom(false);
       }
     }
-  },[document.documentElement.scrollHeight]);
+  },[document.documentElement.scrollHeight, lastParagraphId]);
 
   const getLastParagraphInfor = () => {
-    const paragraph = content.filter((p) => p.sort === node_paragraphs_count);
-    console.log(`### paragraph is ${JSON.stringify(paragraph, null, 2)}`);
-    if(paragraph){
-      setParagraphId(paragraph.id);
+    if(lastParagraphId === -1){
+      const paragraph = content.filter((p) => p.sort === node_paragraphs_count);
+      if(paragraph[0].id){
+        setParagraphId(paragraph[0].id);
+      }
     }
   }
 
@@ -373,7 +375,7 @@ function NodeContent(props) {
     }
   }
 
-  const resetScrollTime = () => setScrollTime (5);
+  const resetScrollTime = () => setScrollTime (10);
 
   useEffect(() => {
     if(scrollDirection < 0 && scrollDirection === scrollDirectionRef.current){
@@ -683,7 +685,6 @@ function NodeContent(props) {
           });
       }
     }
-    console.log(`#scroll# stop index: ${info.stopIndex}, para count: ${node_paragraphs_count}`);
     if(scrollContext && scrollContext.scrollToBottom && info.stopIndex === node_paragraphs_count){
       scrollContext.setScrollToBottom(false);
     }
