@@ -64,6 +64,7 @@ function NodeContent(props) {
   const { uid } = ownerContext;
   const currentUser = useSelector(selectCurrentUser);
   const scrollContext = useContext(ScrollContext);
+  logging.debug('scroll context', scrollContext);
   const currentUserDrafts = useSelector(selectUserDraftsState); // get current user's drafts, you are the current user
   const userDrafts = useSelector((state) => selectUserRelatedDrafts(state, {userId: uid}));// get other users's drafts, when you browsing other users' dimzou page
   const dispatch = useDispatch();
@@ -749,6 +750,88 @@ function NodeContent(props) {
     }
     return Promise.resolve();
   };
+
+  const rowRenderer = ({index, key, parent, style}) => {
+    let blockStyle;
+    if (inDropzone) {
+      if (
+        dropPivotIndex !== undefined &&
+        index > dropPivotIndex
+      ) {
+        blockStyle = {
+          ...style,
+          transition: `transform ${TRANSITION_DURATION}ms ease`,
+          transform: `translate3d(0px, ${DROP_REGION_HEIGHT}px, 0px)`,
+          paddingLeft: PARA_NUM_OFFSET,
+        };
+      } else {
+        blockStyle = {
+          ...style,
+          transition: `transform ${TRANSITION_DURATION}ms ease`,
+          paddingLeft: PARA_NUM_OFFSET,
+        };
+      }
+    } else {
+      blockStyle = {
+        ...style,
+        paddingLeft: PARA_NUM_OFFSET,
+      };
+    }
+
+    // const blockSection = blockSections && blockSections[index];
+    const blockSection = data && data[index];
+
+    if (blockSection) {
+      const {
+        component: Compo,
+        props: compoProps,
+      } = blockSection;
+      return (
+        <CellMeasurer
+          key={key}
+          cache={cacheRef.current}
+          parent={parent}
+          columnIndex={0}
+          rowIndex={index}
+        >
+          {(cellMeasure) => (
+            <MeasureProvider {...cellMeasure}>
+              <div
+                className="dz-BlockSectionWrap"
+                style={blockStyle}
+              >
+                <Compo {...compoProps} />
+              </div>
+            </MeasureProvider>
+          )}
+        </CellMeasurer>
+      );
+    }
+
+    return (
+      <CellMeasurer
+        cache={cacheRef.current}
+        columnIndex={0}
+        key={key}
+        parent={parent}
+        rowIndex={index}
+      >
+        {(cellMeasure) => (
+          <MeasureProvider {...cellMeasure}>
+            <div
+              className="dz-BlockSectionWrap"
+              style={blockStyle}
+            >
+              <div className="dz-BlockSectionLoading">
+                {formatMessage(commonMessages.loading)}
+              </div>
+            </div>
+          </MeasureProvider>
+        )}
+      </CellMeasurer>
+    );
+  }
+
   // eslint-disable-next-line arrow-body-style
   const loadNextRows = isLoading ? () => Promise.resolve() : loadMoreRows;
   const nodeLength = blockSections ? blockSections.length : 0;
@@ -802,86 +885,7 @@ function NodeContent(props) {
                 // tabIndex={-1}
                 // overscanRowCount={8}
                 style={{ counterReset: `para ${Math.max(beginIndex)}` }}
-                rowRenderer={({ index, key, parent, style }) => {
-                  let blockStyle;
-                  if (inDropzone) {
-                    if (
-                      dropPivotIndex !== undefined &&
-                      index > dropPivotIndex
-                    ) {
-                      blockStyle = {
-                        ...style,
-                        transition: `transform ${TRANSITION_DURATION}ms ease`,
-                        transform: `translate3d(0px, ${DROP_REGION_HEIGHT}px, 0px)`,
-                        paddingLeft: PARA_NUM_OFFSET,
-                      };
-                    } else {
-                      blockStyle = {
-                        ...style,
-                        transition: `transform ${TRANSITION_DURATION}ms ease`,
-                        paddingLeft: PARA_NUM_OFFSET,
-                      };
-                    }
-                  } else {
-                    blockStyle = {
-                      ...style,
-                      paddingLeft: PARA_NUM_OFFSET,
-                    };
-                  }
-
-                  // const blockSection = blockSections && blockSections[index];
-                  const blockSection = data && data[index];
-
-                  if (blockSection) {
-                    const {
-                      component: Compo,
-                      props: compoProps,
-                    } = blockSection;
-                    return (
-                      <CellMeasurer
-                        key={key}
-                        cache={cacheRef.current}
-                        parent={parent}
-                        columnIndex={0}
-                        rowIndex={index}
-                      >
-                        {(cellMeasure) => (
-                          <MeasureProvider {...cellMeasure}>
-                            <div
-                              className="dz-BlockSectionWrap"
-                              style={blockStyle}
-                            >
-                              <Compo {...compoProps} />
-                            </div>
-                          </MeasureProvider>
-                        )}
-                      </CellMeasurer>
-                    );
-                  }
-
-                  return (
-                    <CellMeasurer
-                      cache={cacheRef.current}
-                      columnIndex={0}
-                      key={key}
-                      parent={parent}
-                      rowIndex={index}
-                    >
-                      {(cellMeasure) => (
-                        <MeasureProvider {...cellMeasure}>
-                          <div
-                            className="dz-BlockSectionWrap"
-                            style={blockStyle}
-                          >
-                            <div className="dz-BlockSectionLoading">
-                              {formatMessage(commonMessages.loading)}
-                            </div>
-                          </div>
-                        </MeasureProvider>
-                      )}
-                    </CellMeasurer>
-                  );
-                }}
+                rowRenderer={rowRenderer}
               />
               {inDropzone && (
                 <DropHint left={PARA_NUM_OFFSET} top={getTop()} height={2} />
