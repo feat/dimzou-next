@@ -613,6 +613,7 @@ function NodeContent(props) {
       }
       if(scrollToIndexRef.current !== null){
         scrollToIndexRef.current = null;
+        scrollContext.setSort(undefined);
         logging.debug('scroll: clean scroll ref 3');
       }
     };
@@ -719,6 +720,7 @@ function NodeContent(props) {
         dom.scrollIntoView(true);
         setTimeout(() => {
           scrollContext.onScrollFinished();
+          scrollContext.setSort(undefined);
           scrollToIndexRef.current = null;
           logging.debug('scroll: clean scroll ref 1');
         }, 500);
