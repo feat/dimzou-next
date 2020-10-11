@@ -69,10 +69,8 @@ function NodeContent(props) {
   const userDrafts = useSelector((state) => selectUserRelatedDrafts(state, {userId: uid}));// get other users's drafts, when you browsing other users' dimzou page
   const dispatch = useDispatch();
   const domRef = useRef(null);
-  // const nameIndexMap = useRef({});
   const [beginIndex, setBeginIndex] = useState(0);
   const hasInitScrolled = useRef(false);
-  const [scrollToIndex, setScrollToIndex] = useState(-1);
   const router = useRouter();
   
   const { mode } = bundleState;
@@ -81,10 +79,27 @@ function NodeContent(props) {
 
   // loading提示
   const [isLoading, setLoading] = useState(false);
+
   const [scrollTime, setScrollTime] = useState(5);
   const [scrollDirection, setDirection] = useState(0);
   const scrollDirectionRef = useRef(0);
-  
+
+  const [renderedRowInfor, setRenderedRowInfor] = useState({});
+  const scrollToIndexRef = useRef(null);
+  const scrollTopRef = useRef(0);
+
+  const renderedRowIndexRange = useMemo(() => {
+    logging.debug('scroll: update index range');
+    const range = [-1,0];
+    if(renderedRowInfor){
+      const {startIndex, stopIndex} = renderedRowInfor;
+      range[0] = startIndex;
+      range[1] = stopIndex;
+      return range;
+    } 
+    return range;
+  },[renderedRowInfor]);
+  logging.debug('scroll: rendered row index range', renderedRowIndexRange[0], renderedRowIndexRange[1]);
   const [data, setData] = useState(
     Array.from({ length: nodeState.data.node_paragraphs_count - 2 }).map(
       // eslint-disable-next-line no-unused-vars
@@ -583,25 +598,6 @@ function NodeContent(props) {
       return;
     }
     scrollContext.onScrollStarted();
-    // if (
-    //   renderInfo.overscanStartIndex <= index &&
-    //   renderInfo.overscanStopIndex >= index
-    // ) {
-    //   const dom = document.querySelector(hash);
-    //   if (dom) {
-    //     dom.scrollIntoView(true);
-    //     setTimeout(() => {
-    //       scrollContext.onScrollFinished();
-    //     }, 500);
-    //     // window.scrollTo(0, window.scrollY - 120);
-    //   } else {
-    //     scrollContext.onScrollFinished();
-    //   }
-    // } else {
-    //   const delta = index - renderInfo.startIndex;
-    //   const deltaY = delta * ELEMENT_DEFAULT_HEIGHT;
-    //   window.scrollTo(0, window.scrollY + deltaY);
-    // }
   }
   // 清理 location.hash
   useEffect(() => {
@@ -614,6 +610,10 @@ function NodeContent(props) {
           },
           window.location.pathname,
         );
+      }
+      if(scrollToIndexRef.current !== null){
+        scrollToIndexRef.current = null;
+        logging.debug('scroll: clean scroll ref 3');
       }
     };
     window.addEventListener('mousewheel', removeHash);
@@ -669,53 +669,70 @@ function NodeContent(props) {
     );
   }
 
-  useEffect(
-    () => {
-      scrollContext.sort && setScrollToIndex(scrollContext.sort);
+  const handleScrollDown = () => {
+    const element = document.documentElement || document.body;
+    const { scrollTop, clientHeight } = element;
+    const distance = clientHeight;
+    element.scrollTop = scrollTop + distance;
+    scrollTopRef.current = element.scrollTop;
+    logging.debug('scroll : scroll down, distance', distance );
+  }
+
+  const handleScrollUp = () => {
+    const element = document.documentElement || document.body;
+    const { scrollTop, clientHeight } = element;
+    const distance = clientHeight
+    element.scrollTop = scrollTop - distance;
+    scrollTopRef.current = element.scrollTop;
+    logging.debug('scroll : scroll up, distance', distance );
+  }
+
+  useEffect(() => {
+    if(scrollContext.sort){
+      scrollToIndexRef.current = scrollContext.sort;
       scrollContext.setActiveHash(scrollContext.scrollHash);
       scrollContext.setSort(undefined);
-      const index = nameIndexMap[scrollContext.scrollHash.replace('#', '')];
-      if (!index && scrollContext.paragraphId) {
-        dispatch(
-          asyncUpdateNodeInfo({
-            nodeId: node.id,
-            paragraphId: scrollContext.paragraphId,
-          }),
-        ).then(() => {
-          scrollToParagraph(scrollContext.scrollHash);
-        });
-        dispatch(
-          asyncUpdateNodeInfo({
-            nodeId: node.id,
-            paragraphId: scrollContext.paragraphId,
-            forward: 1,
-          }),
-        );
+    }
+  },scrollContext.sort);
+
+  useEffect(() => {
+    // logging.debug('scroll : nameIndexMap', nameIndexMap);
+    // const index = nameIndexMap[scrollContext.scrollHash.replace('#', '')];
+    logging.debug('scroll: target paragraph id', scrollContext.paragraphId);
+    logging.debug('scroll: target index ref', scrollToIndexRef.current);
+
+    if(scrollToIndexRef.current !== null){
+      if(scrollToIndexRef.current > renderedRowIndexRange[1]){
+        handleScrollDown();
+      } else if (scrollToIndexRef.current < renderedRowIndexRange[0]){
+        handleScrollUp();
+      } else {
+        scrollToParagraph(scrollContext.scrollHash);
       }
-      scrollToParagraph(scrollContext.scrollHash);
-    },
-    [scrollContext.sort],
-  );
+    }
+  }, [renderedRowIndexRange, scrollToIndexRef.current, scrollTopRef.current]);
 
   const scrollToParagraph = (hash) => {
     setTimeout(() => {
-      // const dom = document.querySelector(hash);
       const dom = document.getElementById(hash.replace('#', ''));
+      logging.debug('scroll: target element', dom);
       if (dom) {
         dom.scrollIntoView(true);
         setTimeout(() => {
           scrollContext.onScrollFinished();
+          scrollToIndexRef.current = null;
+          logging.debug('scroll: clean scroll ref 1');
         }, 500);
-        // window.scrollTo(0, window.scrollY - 120);
       } else {
         scrollContext.onScrollFinished();
       }
     }, 1000);
   };
 
-  const clearScrollToIndex = () => {
-    setScrollToIndex(-1);
-  };
+  // const clearScrollToIndexRef = () => {
+  //   scrollToIndexRef.current = null;
+  //   logging.debug('scroll: clean scroll ref 2');
+  // };
 
   // 判断是否加载更多数据
   const isRowLoaded = ({ index }) => !!data[index];
@@ -752,6 +769,7 @@ function NodeContent(props) {
   };
 
   const rowRenderer = ({index, key, parent, style}) => {
+    // logging.debug('rowRenderer', index, key);
     let blockStyle;
     if (inDropzone) {
       if (
@@ -848,7 +866,7 @@ function NodeContent(props) {
       threshold={20}
     >
       {({ onRowsRendered, registerChild }) => (
-        <WindowScroller key={node.id} onScroll={clearScrollToIndex}>
+        <WindowScroller key={node.id}>
           {({ height, isScrolling, onChildScroll, scrollTop }) => (
             <div
               ref={(el) => {
@@ -861,6 +879,7 @@ function NodeContent(props) {
               )}
               style={{ left: -1 * PARA_NUM_OFFSET, position: 'relative' }}
             >
+            
               <List
                 autoHeight
                 height={height}
@@ -875,15 +894,14 @@ function NodeContent(props) {
                 rowHeight={cacheRef.current.rowHeight}
                 scrollTop={scrollTop}
                 deferredMeasurementCache={cacheRef.current}
-                scrollToIndex={scrollToIndex}
-                scrollToAlignment="center"
                 width={width + PARA_NUM_OFFSET}
                 onRowsRendered={(info) => {
+                  logging.debug('index', info);
+                  setRenderedRowInfor(info);
                   handleRowsRendered(info);
                   onRowsRendered(info);
+                  
                 }}
-                // tabIndex={-1}
-                // overscanRowCount={8}
                 style={{ counterReset: `para ${Math.max(beginIndex)}` }}
                 rowRenderer={rowRenderer}
               />
