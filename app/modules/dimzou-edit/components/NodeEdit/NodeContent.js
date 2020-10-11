@@ -64,7 +64,6 @@ function NodeContent(props) {
   const { uid } = ownerContext;
   const currentUser = useSelector(selectCurrentUser);
   const scrollContext = useContext(ScrollContext);
-  logging.debug('scroll context', scrollContext);
   const currentUserDrafts = useSelector(selectUserDraftsState); // get current user's drafts, you are the current user
   const userDrafts = useSelector((state) => selectUserRelatedDrafts(state, {userId: uid}));// get other users's drafts, when you browsing other users' dimzou page
   const dispatch = useDispatch();
@@ -89,7 +88,6 @@ function NodeContent(props) {
   const scrollTopRef = useRef(0);
 
   const renderedRowIndexRange = useMemo(() => {
-    logging.debug('scroll: update index range');
     const range = [-1,0];
     if(renderedRowInfor){
       const {startIndex, stopIndex} = renderedRowInfor;
@@ -99,7 +97,7 @@ function NodeContent(props) {
     } 
     return range;
   },[renderedRowInfor]);
-  logging.debug('scroll: rendered row index range', renderedRowIndexRange[0], renderedRowIndexRange[1]);
+
   const [data, setData] = useState(
     Array.from({ length: nodeState.data.node_paragraphs_count - 2 }).map(
       // eslint-disable-next-line no-unused-vars
@@ -484,7 +482,6 @@ function NodeContent(props) {
             }
             const box = block.getBoundingClientRect();
             const { top, height } = box;
-            // logging.debug(top, height, clientY)
             if (top + height / 2 > clientY) {
               blockIndex = i - 1;
               break;
@@ -494,7 +491,6 @@ function NodeContent(props) {
               break;
             }
           }
-          // logging.debug(blockIndex);
           if (blockIndex !== undefined) {
             setDropPivotIndex(beginIndex + blockIndex);
           }
@@ -502,23 +498,18 @@ function NodeContent(props) {
       };
       const handleDragEnter = (e) => {
         const { dataTransfer } = e;
-        logging.debug('enter');
         e.stopPropagation();
         e.preventDefault();
         if (dataTransfer.types && dataTransfer.types[0] === 'Files') {
-          logging.debug('active');
           setInDropZone(true);
-          // setFileDropActive(true)
         }
       };
       const handleDragLeave = (e) => {
-        logging.debug('leave');
         if (!inDropzone) {
           return;
         }
         e.stopPropagation();
         e.preventDefault();
-        // logging.debug(e.target, e.relatedTarget)
         if (
           e.target.contains(e.relatedTarget) ||
           dom.contains(e.relatedTarget)
@@ -528,7 +519,6 @@ function NodeContent(props) {
         setInDropZone(false);
       };
       const handleDragEnd = (e) => {
-        logging.debug('end');
         if (!inDropzone) {
           return;
         }
@@ -537,7 +527,6 @@ function NodeContent(props) {
         // setFileDropActive(false)
       };
       const handleDrop = (e) => {
-        logging.debug('drop');
         if (!inDropzone) {
           return;
         }
@@ -614,7 +603,6 @@ function NodeContent(props) {
       if(scrollToIndexRef.current !== null){
         scrollToIndexRef.current = null;
         scrollContext.setSort(undefined);
-        logging.debug('scroll: clean scroll ref 3');
       }
     };
     window.addEventListener('mousewheel', removeHash);
@@ -625,7 +613,6 @@ function NodeContent(props) {
   const handleRowsRendered = (info) => {
     setBeginIndex(info.overscanStartIndex);
     renderInfoRef.current = info;
-    // logging.debug('handleRowsRendered', scrollContext, info);
     if (
       scrollContext.scrollHash &&
       /^#content-/.test(scrollContext.scrollHash)
@@ -676,7 +663,6 @@ function NodeContent(props) {
     const distance = clientHeight;
     element.scrollTop = scrollTop + distance;
     scrollTopRef.current = element.scrollTop;
-    logging.debug('scroll : scroll down, distance', distance );
   }
 
   const handleScrollUp = () => {
@@ -685,7 +671,6 @@ function NodeContent(props) {
     const distance = clientHeight
     element.scrollTop = scrollTop - distance;
     scrollTopRef.current = element.scrollTop;
-    logging.debug('scroll : scroll up, distance', distance );
   }
 
   useEffect(() => {
@@ -696,11 +681,6 @@ function NodeContent(props) {
   },scrollContext.sort);
 
   useEffect(() => {
-    // logging.debug('scroll : nameIndexMap', nameIndexMap);
-    // const index = nameIndexMap[scrollContext.scrollHash.replace('#', '')];
-    logging.debug('scroll: target paragraph id', scrollContext.paragraphId);
-    logging.debug('scroll: target index ref', scrollToIndexRef.current);
-
     if(scrollToIndexRef.current !== null){
       if(scrollToIndexRef.current > renderedRowIndexRange[1]){
         handleScrollDown();
@@ -715,25 +695,18 @@ function NodeContent(props) {
   const scrollToParagraph = (hash) => {
     setTimeout(() => {
       const dom = document.getElementById(hash.replace('#', ''));
-      logging.debug('scroll: target element', dom);
       if (dom) {
         dom.scrollIntoView(true);
         setTimeout(() => {
           scrollContext.onScrollFinished();
           scrollContext.setSort(undefined);
           scrollToIndexRef.current = null;
-          logging.debug('scroll: clean scroll ref 1');
         }, 500);
       } else {
         scrollContext.onScrollFinished();
       }
     }, 1000);
   };
-
-  // const clearScrollToIndexRef = () => {
-  //   scrollToIndexRef.current = null;
-  //   logging.debug('scroll: clean scroll ref 2');
-  // };
 
   // 判断是否加载更多数据
   const isRowLoaded = ({ index }) => !!data[index];
@@ -770,7 +743,6 @@ function NodeContent(props) {
   };
 
   const rowRenderer = ({index, key, parent, style}) => {
-    // logging.debug('rowRenderer', index, key);
     let blockStyle;
     if (inDropzone) {
       if (
@@ -897,7 +869,6 @@ function NodeContent(props) {
                 deferredMeasurementCache={cacheRef.current}
                 width={width + PARA_NUM_OFFSET}
                 onRowsRendered={(info) => {
-                  logging.debug('index', info);
                   setRenderedRowInfor(info);
                   handleRowsRendered(info);
                   onRowsRendered(info);
