@@ -691,7 +691,6 @@ function NodeContent(props) {
     if(scrollContext.sort){
       scrollToIndexRef.current = scrollContext.sort;
       scrollContext.setActiveHash(scrollContext.scrollHash);
-      scrollContext.setSort(undefined);
     }
   },scrollContext.sort);
 
