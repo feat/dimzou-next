@@ -24,7 +24,10 @@ import message from '@feat/feat-ui/lib/message';
 import groupBy from 'lodash/groupBy';
 import get from 'lodash/get';
 import findIndex from 'lodash/findIndex';
-import { selectUserRelatedDrafts, selectUserDraftsState } from '../../selectors';
+import {
+  selectUserRelatedDrafts,
+  selectUserDraftsState,
+} from '../../selectors';
 import commonMessages from '@/messages/common';
 import { BEGINNING_PIVOT, TAILING_PIVOT, ROLE_OWNER } from '../../constants';
 import {
@@ -65,15 +68,17 @@ function NodeContent(props) {
   const currentUser = useSelector(selectCurrentUser);
   const scrollContext = useContext(ScrollContext);
   const currentUserDrafts = useSelector(selectUserDraftsState); // get current user's drafts, you are the current user
-  const userDrafts = useSelector((state) => selectUserRelatedDrafts(state, {userId: uid}));// get other users's drafts, when you browsing other users' dimzou page
+  const userDrafts = useSelector((state) =>
+    selectUserRelatedDrafts(state, { userId: uid }),
+  ); // get other users's drafts, when you browsing other users' dimzou page
   const dispatch = useDispatch();
   const domRef = useRef(null);
   // const nameIndexMap = useRef({});
   const [beginIndex, setBeginIndex] = useState(0);
   const hasInitScrolled = useRef(false);
-  const [scrollToIndex, setScrollToIndex] = useState(-1);
+  // const [scrollToIndex, setScrollToIndex] = useState(-1);
   const router = useRouter();
-  
+
   const { mode } = bundleState;
   const { data: node, appendings, outline } = nodeState;
   const { content, node_paragraphs_count } = node;
@@ -91,47 +96,57 @@ function NodeContent(props) {
       (_) => null,
     ),
   );
-  
+
   // check if on current user's dimzou page
-  const isCurrentDimZou = useMemo(() => uid === currentUser.uid,[uid]);
+  const isCurrentDimZou = useMemo(() => uid === currentUser.uid, [uid]);
 
-  const drafts = useMemo(() => {
-    const output = {};
-    // check if user on their Dimzou page and decide to use context
-    const { data: draftData, loaded, ids } = isCurrentDimZou ? currentUserDrafts : userDrafts;
+  const drafts = useMemo(
+    () => {
+      const output = {};
+      // check if user on their Dimzou page and decide to use context
+      const { data: draftData, loaded, ids } = isCurrentDimZou
+        ? currentUserDrafts
+        : userDrafts;
 
-    const extraNodes = loaded.filter((item) => !ids[item.id]);
-    const flatNodes = draftData ? draftData.reduce((els, bundle) => els.concat(bundle, bundle.all_copies ? bundle.all_copies : [] ), []) : [];
-    const bundleNodes = [
-      ...extraNodes,
-      ...flatNodes,
-    ]
+      const extraNodes = loaded.filter((item) => !ids[item.id]);
+      const flatNodes = draftData
+        ? draftData.reduce(
+          (els, bundle) =>
+            els.concat(bundle, bundle.all_copies ? bundle.all_copies : []),
+          [],
+        )
+        : [];
+      const bundleNodes = [...extraNodes, ...flatNodes];
 
-    const roleGrouped = groupBy(bundleNodes, (bundle) => {
-      const collaborators = get(bundle, 'nodes.0.collaborators');
-      if (collaborators) {
-        const info = collaborators.find((item) => item.user && item.user.uid === uid);
-        if (info && info.role === ROLE_OWNER) {
+      const roleGrouped = groupBy(bundleNodes, (bundle) => {
+        const collaborators = get(bundle, 'nodes.0.collaborators');
+        if (collaborators) {
+          const info = collaborators.find(
+            (item) => item.user && item.user.uid === uid,
+          );
+          if (info && info.role === ROLE_OWNER) {
+            return 'created';
+          }
+          return 'participated';
+        }
+        if (bundle.user && bundle.user.uid === uid) {
           return 'created';
-        } 
+        }
         return 'participated';
+      });
+      Object.keys(roleGrouped).forEach((key) => {
+        output[key] = groupByStatus(roleGrouped[key]);
+      });
+      if (roleGrouped.created && roleGrouped.created.length) {
+        output.hasCreated = true;
       }
-      if (bundle.user && bundle.user.uid === uid) {
-        return 'created'
+      if (roleGrouped.participated && roleGrouped.participated.length) {
+        output.hasParticipated = true;
       }
-      return 'participated';
-    });
-    Object.keys(roleGrouped).forEach((key) => {
-      output[key] = groupByStatus(roleGrouped[key]);
-    });
-    if (roleGrouped.created && roleGrouped.created.length) {
-      output.hasCreated = true;
-    }
-    if (roleGrouped.participated && roleGrouped.participated.length) {
-      output.hasParticipated = true;
-    }
-    return output.created.draft;
-  },[uid]);
+      return output.created.draft;
+    },
+    [uid],
+  );
 
   const [blockSections, nameIndexMap] = useMemo(
     () => {
@@ -287,62 +302,74 @@ function NodeContent(props) {
     const element = document.documentElement;
     const { clientHeight, scrollHeight } = element;
     element.scrollTop = scrollHeight - clientHeight;
-  }
+  };
 
-  useEffect(() => {
-    if(scrollContext && scrollContext.scrollToBottom){
-      const lastParagraph = document.querySelector(`[name=content_${lastParagraphId}]`);
-      if(lastParagraph === null){
-        handleScrollToBottom();
-      } else {
-        lastParagraph.scrollIntoView(true);
-        scrollContext.setScrollToBottom(false);
+  useEffect(
+    () => {
+      if (scrollContext && scrollContext.scrollToBottom) {
+        const lastParagraph = document.querySelector(
+          `[name=content_${lastParagraphId}]`,
+        );
+        if (lastParagraph === null) {
+          handleScrollToBottom();
+        } else {
+          lastParagraph.scrollIntoView(true);
+          scrollContext.setScrollToBottom(false);
+        }
       }
-    }
-  },[document.documentElement.scrollHeight, lastParagraphId]);
+    },
+    [document.documentElement.scrollHeight, lastParagraphId],
+  );
 
   const getLastParagraphInfor = () => {
-    if(lastParagraphId === -1){
+    if (lastParagraphId === -1) {
       const paragraph = content.filter((p) => p.sort === node_paragraphs_count);
-      if(paragraph[0].id){
+      if (paragraph.length && paragraph[0].id) {
         setParagraphId(paragraph[0].id);
       }
     }
-  }
+  };
 
   useEffect(() => {
-    if(scrollContext && scrollContext.scrollToBottom){
+    if (scrollContext && scrollContext.scrollToBottom) {
       getLastParagraphInfor();
       handleScrollToBottom();
     }
-  })
+  });
 
-  const updateHref= (bundle_id, node_id) => ({
+  const updateHref = (bundle_id, node_id) => ({
     href: {
       pathname: '/dimzou-edit',
       query: {
-        bundleId : bundle_id,
+        bundleId: bundle_id,
         nodeId: node_id,
       },
     },
-    as: getAsPath({query: {
-      bundleId : bundle_id,
-      nodeId: node_id,
-    }}),
-  })
+    as: getAsPath({
+      query: {
+        bundleId: bundle_id,
+        nodeId: node_id,
+      },
+    }),
+  });
 
   // direct to previous bundle
   const toPreviousBundle = () => {
-    const bundleIndex = findIndex(drafts, (draft) => draft.id === bundleState.data.id);
+    const bundleIndex = findIndex(
+      drafts,
+      (draft) => draft.id === bundleState.data.id,
+    );
     // check if previous bundle exist
     const hasPreviousBundle = drafts.length > 1 && bundleIndex > 0;
-    if(hasPreviousBundle) {
+    if (hasPreviousBundle) {
       // get previous bundle infor
       const previousBundleIndex = bundleIndex - 1;
       const previousBundleId = drafts[previousBundleIndex].id;
-      const nodeLength = drafts[previousBundleIndex].nodes ? drafts[previousBundleIndex].nodes.length : 0;
-      const previousBundleNodeId = drafts[previousBundleIndex].nodes 
-        ? drafts[previousBundleIndex].nodes[nodeLength-1].id
+      const nodeLength = drafts[previousBundleIndex].nodes
+        ? drafts[previousBundleIndex].nodes.length
+        : 0;
+      const previousBundleNodeId = drafts[previousBundleIndex].nodes
+        ? drafts[previousBundleIndex].nodes[nodeLength - 1].id
         : undefined;
 
       // update href
@@ -352,18 +379,21 @@ function NodeContent(props) {
       scrollContext.setScrollToBottom(true);
       router.push(newHref.href, newHref.as);
     }
-  }
+  };
 
   // direct to next bundle
   const toNextBundle = () => {
-    const bundleIndex = findIndex(drafts, (draft) => draft.id === bundleState.data.id);
+    const bundleIndex = findIndex(
+      drafts,
+      (draft) => draft.id === bundleState.data.id,
+    );
     // check if next bundle exist
     const hasNextBundle = drafts.length > 1 && bundleIndex < drafts.length - 1;
-    if(hasNextBundle) {
+    if (hasNextBundle) {
       // get next bundle infor
-      const nextBundleId = drafts[bundleIndex+1].id;
-      const nextBundleNodeId = drafts[bundleIndex+1].nodes 
-        ? drafts[bundleIndex+1].nodes[0].id 
+      const nextBundleId = drafts[bundleIndex + 1].id;
+      const nextBundleNodeId = drafts[bundleIndex + 1].nodes
+        ? drafts[bundleIndex + 1].nodes[0].id
         : undefined;
 
       // update href
@@ -373,60 +403,71 @@ function NodeContent(props) {
       window.scrollTo(0, 0);
       router.push(newHref.href, newHref.as);
     }
-  }
+  };
 
-  const resetScrollTime = () => setScrollTime (10);
+  const resetScrollTime = () => setScrollTime(10);
 
-  useEffect(() => {
-    if(scrollDirection < 0 && scrollDirection === scrollDirectionRef.current){
-      // scrolled up
-      if(scrollTime === 0){
-        resetScrollTime();
-        toPreviousBundle();
+  useEffect(
+    () => {
+      if (
+        scrollDirection < 0 &&
+        scrollDirection === scrollDirectionRef.current
+      ) {
+        // scrolled up
+        if (scrollTime === 0) {
+          resetScrollTime();
+          toPreviousBundle();
+        }
       }
-    }
-    if(scrollDirection > 0 && scrollDirection === scrollDirectionRef.current){
-      // scroll down
-      if(scrollTime === 0){
-        resetScrollTime();
-        toNextBundle();
+      if (
+        scrollDirection > 0 &&
+        scrollDirection === scrollDirectionRef.current
+      ) {
+        // scroll down
+        if (scrollTime === 0) {
+          resetScrollTime();
+          toNextBundle();
+        }
       }
-    }
-    scrollDirectionRef.current = scrollDirection;
-  },[scrollTime, scrollDirection]);
+      scrollDirectionRef.current = scrollDirection;
+    },
+    [scrollTime, scrollDirection],
+  );
 
   // function that works for the scroll listerner
   const listernToScroll = (event) => {
-    if(scrollContext && scrollContext.scrollToBottom){
+    if (scrollContext && scrollContext.scrollToBottom) {
       scrollContext.setScrollToBottom(false);
     }
-    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-    const height = 
-      document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const winScroll =
+      document.body.scrollTop || document.documentElement.scrollTop;
+    const height =
+      document.documentElement.scrollHeight -
+      document.documentElement.clientHeight;
     const scrolled = winScroll / height;
-    if(scrolled === 0 && event.deltaY < 0){
+    if (scrolled === 0 && event.deltaY < 0) {
       setDirection(event.deltaY);
       setScrollTime((preScrollTime) => preScrollTime - 1);
-    } else if(scrolled > 0.999 && event.deltaY > 0){
+    } else if (scrolled > 0.999 && event.deltaY > 0) {
       setDirection(event.deltaY);
       setScrollTime((preScrollTime) => preScrollTime - 1);
     } else {
       resetScrollTime();
     }
-  } 
+  };
 
   useEffect(() => {
     const mainContainer = document.querySelector(`[class*="__mainContainer"]`);
-    if(mainContainer !== null) {
+    if (mainContainer !== null) {
       mainContainer.addEventListener('wheel', listernToScroll);
     }
-    return (() => {
-      if(mainContainer !== null) {
+    return () => {
+      if (mainContainer !== null) {
         mainContainer.removeEventListener('wheel', listernToScroll);
       }
       resetScrollTime();
-    });
-  },[]);
+    };
+  }, []);
 
   // react-virtualized related
   const cacheRef = useRef(
@@ -685,7 +726,11 @@ function NodeContent(props) {
           });
       }
     }
-    if(scrollContext && scrollContext.scrollToBottom && info.stopIndex === node_paragraphs_count){
+    if (
+      scrollContext &&
+      scrollContext.scrollToBottom &&
+      info.stopIndex === node_paragraphs_count
+    ) {
       scrollContext.setScrollToBottom(false);
     }
   };
@@ -704,7 +749,7 @@ function NodeContent(props) {
 
   useEffect(
     () => {
-      scrollContext.sort && setScrollToIndex(scrollContext.sort);
+      // scrollContext.sort && setScrollToIndex(scrollContext.sort);
       scrollContext.setActiveHash(scrollContext.scrollHash);
       scrollContext.setSort(undefined);
       const index = nameIndexMap[scrollContext.scrollHash.replace('#', '')];
@@ -747,7 +792,7 @@ function NodeContent(props) {
   };
 
   const clearScrollToIndex = () => {
-    setScrollToIndex(-1);
+    // setScrollToIndex(-1);
   };
 
   // 判断是否加载更多数据
