@@ -14,15 +14,37 @@
     &.active {
       font-weight: bold;
     }
-    
+
+    @include modifier(del) {
+      &.is-active {
+        color: $gray-0;
+        [data-entity-type='annotation:delete'] {
+          background-color: rgba(245, 176, 211, 1);
+        }
+      }
+      [data-entity-type='annotation:delete'] {
+        background-color: rgba(245, 176, 211, 0.6);
+      }
+      h2 {
+        margin: 0;
+        font-size: initial;
+        font-weight: initial;
+        font-family: inherit;
+      }
+      strong {
+        font-weight: initial;
+      }
+      em {
+        font-style: initial;
+      }
+    }
+
     @include modifier(2) {
-      // font-weight: bold;  
+      // font-weight: bold;
     }
     @include modifier(3) {
-      
     }
     @include modifier(4) {
-      
     }
   }
   @include element(actions) {

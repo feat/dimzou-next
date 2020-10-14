@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 
 import IconButton from '@feat/feat-ui/lib/button/IconButton';
 import Avatar from '@feat/feat-ui/lib/avatar/Avatar';
+// import SvgIcon from '@feat/feat-ui/lib/svg-icon';
 
 import { formatMessage } from '@/services/intl';
 import { getAvatar, getUsername } from '@/utils/user';
@@ -104,7 +105,7 @@ export default function ContentBlockRender(props) {
       // data-structure={structure}
       // data-id={blockId}
     >
-      <span className="dz-BlockSection__anchor" id={name} />
+      <div className="dz-BlockSection__anchor" id={name} />
       {(!currentVersion || mode === EDIT_MODE_TRANSLATION) && (
         <div className="dz-BlockSection__paraNum">{props.sort}</div>
       )}
@@ -135,6 +136,16 @@ export default function ContentBlockRender(props) {
                 <Avatar size="sm" avatar={getAvatar(currentUser, 'md')} />
                 {mode === EDIT_MODE_ORIGIN && (
                   <div className="dz-BlockSection__paraNum">{props.sort}</div>
+                )}
+                {currentVersion &&
+                    currentUser.uid !== currentVersion.user.uid && (
+                  <div className="dz-BlockSectionCurrent__avatar_origin">
+                    {/* <SvgIcon icon="sort" /> */}
+                    <Avatar
+                      size="sm"
+                      avatar={getAvatar(currentVersion.user, 'md')}
+                    />
+                  </div>
                 )}
               </div>
               <div className="dz-BlockSectionCurrent__main">
@@ -220,7 +231,7 @@ export default function ContentBlockRender(props) {
                 <DraggableBlockContent
                   blockId={blockId}
                   sort={props.sort}
-                  disabled={structure !== 'content'}
+                  disabled={structure !== 'content' || !userCapabilities.canEdit}
                   rewording={currentVersion}
                   onRemove={removeBlock}
                   onClick={enterEditMode}

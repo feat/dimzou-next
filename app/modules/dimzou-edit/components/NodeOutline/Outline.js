@@ -23,7 +23,7 @@ function Outline(props) {
         >
           <LabelButton
             className={classNames({
-              'is-active': props.activeHash === targetHash,
+              'is-active': props.activeHash === targetHash && item.label,
             })}
             data-target={targetHash}
             onClick={() => {
@@ -31,7 +31,16 @@ function Outline(props) {
             }}
             data-node-level="heading"
           >
-            {item.label}
+            {item.label ? (
+              item.label
+            ) : (
+              <span
+                className={classNames('dz-DimzouOutline__heading_del', {
+                  'is-active': props.activeHash === targetHash,
+                })}
+                dangerouslySetInnerHTML={{ __html: item.htmlCont }}
+              />
+            )}
           </LabelButton>
         </div>
       );

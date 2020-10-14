@@ -15,7 +15,7 @@ import {
   updateRewording,
   commitRewording,
   submitRewording,
-  // ui 
+  // ui
   openCommentPanel,
   closeCommentPanel,
   initRewordingEdit,
@@ -40,11 +40,15 @@ import {
   getHTML,
   convertToRaw,
   tryToSyncFocus,
-} from "../DimzouEditor";
+} from '../DimzouEditor';
 
-import { getConfirmedHTML, getConfirmedText, getBaseHTML } from '../../utils/content';
+import {
+  getConfirmedHTML,
+  getConfirmedText,
+  getBaseHTML,
+} from '../../utils/content';
 
-import Rewording from "../Rewording";
+import Rewording from '../Rewording';
 import { extractWidgetInfo, noInteration } from '../../utils/rewordings';
 import { getNodeCache, rewordingKey } from '../../utils/cache';
 import intlMessages from '../../messages';
@@ -125,11 +129,11 @@ class RewordingWrap extends React.PureComponent {
       userHasPendingRewording,
       userCapabilities: { canEdit },
     } = this.props;
-  
+
     if (!canEdit) {
       return;
     }
-    
+
     const widgetInfo = extractWidgetInfo(data);
 
     if (data.status === REWORDING_STATUS_PENDING) {
@@ -253,7 +257,7 @@ class RewordingWrap extends React.PureComponent {
       trigger: 'rewording',
     };
     dispatch(removeRewording(payload));
-  }
+  };
 
   submitRewording = () => {
     const {
@@ -300,7 +304,7 @@ class RewordingWrap extends React.PureComponent {
       trigger: 'rewording',
     };
     const shouldUpdateRewording = data.status === REWORDING_STATUS_PENDING;
-    
+
     if (!shouldUpdateRewording) {
       payload.baseId = data.base_on;
     }
@@ -333,7 +337,6 @@ class RewordingWrap extends React.PureComponent {
 }
 
 RewordingWrap.contextType = MeasureContext;
-
 
 const mapStateToProps = createStructuredSelector({
   uiState: selectRewordingState,

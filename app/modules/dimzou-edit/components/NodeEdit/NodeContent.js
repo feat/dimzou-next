@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {
   useContext,
   useRef,
@@ -52,13 +51,11 @@ import { getActiveHash } from './utils';
 import { getAsPath } from '../../utils/router';
 import { groupByStatus } from '../../utils/bundle';
 import { getNodeCache } from '../../utils/cache';
-
 const TRANSITION_DURATION = 100;
 const DROP_REGION_HEIGHT = 40;
 const PARA_NUM_OFFSET = 56;
 const CONTENT_WIDTH = 720;
 const ELEMENT_DEFAULT_HEIGHT = 160;
-
 function NodeContent(props) {
   const nodeState = useContext(NodeContext);
   const bundleState = useContext(BundleContext);
@@ -76,8 +73,8 @@ function NodeContent(props) {
   // const nameIndexMap = useRef({});
   const [beginIndex, setBeginIndex] = useState(0);
   const hasInitScrolled = useRef(false);
-  // const [scrollToIndex, setScrollToIndex] = useState(-1);
   const router = useRouter();
+  const [scrollToIndex, setScrollToIndex] = useState(-1);
 
   const { mode } = bundleState;
   const { data: node, appendings, outline } = nodeState;
@@ -91,7 +88,7 @@ function NodeContent(props) {
   const scrollDirectionRef = useRef(0);
 
   const [data, setData] = useState(
-    Array.from({ length: nodeState.data.node_paragraphs_count - 2 }).map(
+    Array.from({ length: nodeState.data.node_paragraphs_count }).map(
       // eslint-disable-next-line no-unused-vars
       (_) => null,
     ),
@@ -543,7 +540,6 @@ function NodeContent(props) {
           for (let i = 0; i < blocks.length; i += 1) {
             const block = blocks[i];
             if (!block) {
-              // eslint-disable-next-line no-continue
               continue;
             }
             const box = block.getBoundingClientRect();
@@ -700,7 +696,6 @@ function NodeContent(props) {
       window.removeEventListener('mousewheel', removeHash);
     };
   }, []);
-
   const handleRowsRendered = (info) => {
     setBeginIndex(info.overscanStartIndex);
     renderInfoRef.current = info;
@@ -749,7 +744,7 @@ function NodeContent(props) {
 
   useEffect(
     () => {
-      // scrollContext.sort && setScrollToIndex(scrollContext.sort);
+      scrollContext.sort && setScrollToIndex(scrollContext.sort);
       scrollContext.setActiveHash(scrollContext.scrollHash);
       scrollContext.setSort(undefined);
       const index = nameIndexMap[scrollContext.scrollHash.replace('#', '')];
@@ -770,7 +765,6 @@ function NodeContent(props) {
           }),
         );
       }
-      scrollToParagraph(scrollContext.scrollHash);
     },
     [scrollContext.sort],
   );
@@ -792,7 +786,7 @@ function NodeContent(props) {
   };
 
   const clearScrollToIndex = () => {
-    // setScrollToIndex(-1);
+    setScrollToIndex(-1);
   };
 
   // 判断是否加载更多数据
@@ -830,8 +824,8 @@ function NodeContent(props) {
   };
   // eslint-disable-next-line arrow-body-style
   const loadNextRows = isLoading ? () => Promise.resolve() : loadMoreRows;
+  const toIndex = scrollToIndex;
   const nodeLength = blockSections ? blockSections.length : 0;
-
   return (
     <InfiniteLoader
       isRowLoaded={isRowLoaded}
@@ -871,7 +865,7 @@ function NodeContent(props) {
                 rowHeight={cacheRef.current.rowHeight}
                 scrollTop={scrollTop}
                 deferredMeasurementCache={cacheRef.current}
-                scrollToAlignment="center"
+                scrollToIndex={toIndex}
                 width={width + PARA_NUM_OFFSET}
                 onRowsRendered={(info) => {
                   handleRowsRendered(info);

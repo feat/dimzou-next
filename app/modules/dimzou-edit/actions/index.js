@@ -191,11 +191,14 @@ export const receiveNodeUpdateSignal = createAction(
 );
 export const setLoadingProgress = createRoutine('DZ/NODE/SET_LOADING_PROGRESS');
 
-export const asyncFetchNodeData = (nodeId, blockId) => async (dispatch) => {
+export const asyncFetchNodeData = (nodeId, blockId, limit) => async (
+  dispatch,
+) => {
   try {
     const { data: content } = await getParagraphRangeRequest({
       node_id: nodeId,
       paragraph_id: blockId,
+      limit: limit || 20,
     });
     const { data: title } = await getParagraphTypeRequest({
       node: nodeId,
