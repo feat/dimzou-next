@@ -249,6 +249,7 @@ export default function BundleNode(props) {
                 onClick={() => {
                   window.scrollTo(0, 0);
                   router.push(linkInfo.href, linkInfo.as);
+                  scrollContext.setScrollToBottom(false);
                 }}
                 data-node-level='bundle'
                 data-is-multi-chapter={isMulti}

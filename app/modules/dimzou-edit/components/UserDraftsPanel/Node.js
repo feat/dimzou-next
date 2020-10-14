@@ -57,6 +57,7 @@ export default function Node(props) {
               onClick={() => {
                 window.scrollTo(0, 0);
                 Router.push(href, getAsPath(href));
+                scrollContext.setScrollToBottom(false);
               }}
               data-node-level='node'
             >
