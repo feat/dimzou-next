@@ -68,7 +68,7 @@ import {
   exitRewordingEdit,
   updateBlockEditor,
   exitBlockEdit,
-  asyncFetchNodeData,
+  // asyncFetchNodeData,
 } from '../actions';
 
 import {
@@ -737,7 +737,7 @@ function* checkEditFlow(action, routine, method) {
         data,
       }),
     );
-    yield put(asyncFetchNodeData(payload.nodeId, payload.blockId));
+    // yield put(asyncFetchNodeData(payload.nodeId, payload.blockId));
 
     yield put(routine.success(payload));
     logging.debug(data);
@@ -1445,7 +1445,7 @@ function initBlockEditCache(action) {
   const { payload } = action;
   const cacheKey = blockKey(payload);
   const { editorState, ...cacheInfo } = payload;
-  const html = getHTML(editorState.getCurrentContent());
+  const html = editorState && getHTML(editorState.getCurrentContent());
   cacheInfo.html = html;
   patchCache(payload.nodeId, cacheKey, cacheInfo);
 }

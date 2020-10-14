@@ -308,6 +308,12 @@
     position: absolute;
     left: px-to-rem(4);
     top: 0;
+    @include modifier(origin) {
+      padding-top: px-to-rem(20);
+      .ft-SvgIcon {
+        width: px-to-rem(12);
+      }
+    }
   }
   @include element(main) {
   }

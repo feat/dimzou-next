@@ -146,10 +146,8 @@ class RewordableSection extends React.Component {
       rewordBaseHTML,
       editorInitWithTranslation,
     } = blockState;
-
     const contentState = editorState.getCurrentContent();
     const htmlContent = getHTML(contentState);
-
     // should have update
     if (htmlContent === updateBaseHTML && !editorInitWithTranslation) {
       message.info({

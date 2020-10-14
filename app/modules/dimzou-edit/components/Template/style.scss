@@ -2,7 +2,7 @@
 
 $padding-vertical: 12px;
 $sidebar-first-width: 360;
-$sidebar-second-width: 320;
+$sidebar-second-width: 280;
 $sidebar-third-width: 280; // ads-panel;
 
 @include block(ns(TemplateI, dz)) {
@@ -70,7 +70,7 @@ $sidebar-third-width: 280; // ads-panel;
       margin-right: px-to-rem($padding-vertical * 2);
     }
     @include element(sidebarThird) {
-      width: percentage($sidebar-third-width / (1880 - $sidebar-first-width));
+      // width: percentage($sidebar-third-width / (1880 - $sidebar-first-width));
     }
   }
   // Extra Large Desktop
@@ -152,7 +152,7 @@ $sidebar-third-width: 280; // ads-panel;
       margin-right: px-to-rem($padding-vertical * 2);
     }
     @include element(sidebarThird) {
-      width: percentage($sidebar-third-width / 1880);
+      // width: percentage($sidebar-third-width / 1880);
     }
   }
   // Extra Large Desktop
@@ -260,7 +260,7 @@ $sidebar-third-width: 280; // ads-panel;
       margin-right: px-to-rem($padding-vertical * 2);
     }
     @include element(sidebarThird) {
-      width: percentage($sidebar-third-width / 1880);
+      // width: percentage($sidebar-third-width / 1880);
     }
   }
   // Extra Large Desktop
@@ -340,7 +340,7 @@ $sidebar-third-width: 280; // ads-panel;
       margin-right: px-to-rem($padding-vertical * 2);
     }
     @include element(sidebarThird) {
-      width: percentage($sidebar-third-width / 1880);
+      // width: percentage($sidebar-third-width / 1880);
     }
   }
   // Extra Large Desktop
@@ -429,7 +429,7 @@ $sidebar-third-width: 280; // ads-panel;
       margin-right: px-to-rem($padding-vertical * 2);
     }
     @include element(sidebarThird) {
-      width: percentage($sidebar-third-width / 1880);
+      // width: percentage($sidebar-third-width / 1880);
     }
   }
   // Extra Large Desktop

@@ -136,7 +136,7 @@
     "react-select": "^2.1.2",
     "react-slick": "^0.23.2",
     "react-textfit": "^1.1.0",
-    "react-virtualized": "^9.21.2",
+    "react-virtualized": "^9.21.1",
     "redbox-react": "^1.6.0",
     "redis": "^2.8.0",
     "redux": "4.0.1",
