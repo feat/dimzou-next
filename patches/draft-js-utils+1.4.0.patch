@@ -1,0 +1,23 @@
+diff --git a/node_modules/draft-js-utils/esm/callModifierForSelectedBlocks.js b/node_modules/draft-js-utils/esm/callModifierForSelectedBlocks.js
+index 0edad5e..61ce3fc 100644
+--- a/node_modules/draft-js-utils/esm/callModifierForSelectedBlocks.js
++++ b/node_modules/draft-js-utils/esm/callModifierForSelectedBlocks.js
+@@ -1,4 +1,4 @@
+-import { EditorState, SelectionState } from 'draft-js';
++import { EditorState, SelectionState } from '@feat/draft-js';
+ import getSelectedBlocks from './getSelectedBlocks';
+ /**
+  * Calls a provided `modifier` function with a selection for each
+diff --git a/node_modules/draft-js-utils/lib/callModifierForSelectedBlocks.js b/node_modules/draft-js-utils/lib/callModifierForSelectedBlocks.js
+index 2f789bf..7f1bde9 100644
+--- a/node_modules/draft-js-utils/lib/callModifierForSelectedBlocks.js
++++ b/node_modules/draft-js-utils/lib/callModifierForSelectedBlocks.js
+@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
+ });
+ exports["default"] = void 0;
+ 
+-var _draftJs = require("draft-js");
++var _draftJs = require("@feat/draft-js");
+ 
+ var _getSelectedBlocks = _interopRequireDefault(require("./getSelectedBlocks"));
+ 

@@ -1,7 +1,7 @@
 import './style.scss';
 
-export TemplateI from './TemplateI';
-export TemplateII from './TemplateII';
-export TemplateIII from './TemplateIII';
-export TemplateIV from './TemplateIV';
-export TemplateV from './TemplateV';
+export { default as TemplateI } from './TemplateI';
+export { default as TemplateII } from './TemplateII';
+export { default as TemplateIII } from './TemplateIII';
+export { default as TemplateIV } from './TemplateIV';
+export { default as TemplateV } from './TemplateV';

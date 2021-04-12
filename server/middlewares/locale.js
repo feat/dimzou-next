@@ -1,20 +1,20 @@
-const { readFileSync } = require('fs');
+// const { readFileSync } = require('fs');
 const Sentry = require('@sentry/node');
 const cache = require('../services/cache');
 const request = require('../services/request');
-const localeDataCache = new Map();
+// const localeDataCache = new Map();
 
 const { SERVER_SENTRY_DSN } = process.env;
 
-const getLocaleDataScript = (locale) => {
-  const lang = locale.split('-')[0];
-  if (!localeDataCache.has(lang)) {
-    const localeDataFile = require.resolve(`react-intl/locale-data/${lang}`);
-    const localeDataScript = readFileSync(localeDataFile, 'utf8');
-    localeDataCache.set(lang, localeDataScript);
-  }
-  return localeDataCache.get(lang);
-};
+// const getLocaleDataScript = (locale) => {
+//   const lang = locale.split('-')[0];
+//   if (!localeDataCache.has(lang)) {
+//     const localeDataFile = require.resolve(`react-intl/locale-data/${lang}`);
+//     const localeDataScript = readFileSync(localeDataFile, 'utf8');
+//     localeDataCache.set(lang, localeDataScript);
+//   }
+//   return localeDataCache.get(lang);
+// };
 
 const firstUndefined = (arr, maxIndex, index = 0) => {
   if (index > maxIndex) {
@@ -84,7 +84,7 @@ module.exports = async (req, res, next) => {
     req.localeRegion = locale.label_region;
   }
 
-  req.localeDataScript = getLocaleDataScript(req.locale);
+  // req.localeDataScript = getLocaleDataScript(req.locale);
 
   if (!req.cookies.locale || req.cookies.locale !== req.locale) {
     res

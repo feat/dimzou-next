@@ -24,6 +24,8 @@ module.exports = {
     '@mock/([^\\.]*)$': '<rootDir>/mock/$1',
     'draft-js$': '@feat/draft-js',
     'draft-js/(.*)': '@feat/draft-js/$1',
+    'draft-js-export-html': '@feat/draft-js-export-html',
+    'draft-js-import-html': '@feat/draft-js-import-html',
   },
   setupFilesAfterEnv: [
     '<rootDir>/internals/testing/test-bundler.js',

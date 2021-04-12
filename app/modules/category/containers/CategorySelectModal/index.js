@@ -11,7 +11,7 @@ const mapStateToProps = createStructuredSelector({
 });
 const mapDispatchToProps = {
   createCategory: asyncCreateCategory,
-}
+};
 
 export default connect(
   mapStateToProps,

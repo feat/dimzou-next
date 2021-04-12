@@ -9,11 +9,11 @@ module.exports = async (req, res, next) => {
         headers['X-FakeIP'] = req.cookies.x_fake_ip;
       }
       if (req.session.apiToken) {
-        headers.Authorization = `Bearer ${req.session.apiToken.access_token}`
-      } 
+        headers.Authorization = `Bearer ${req.session.apiToken.access_token}`;
+      }
       req._apiHeaders = headers;
     }
     return req._apiHeaders;
-  }
+  };
   next();
-}
+};

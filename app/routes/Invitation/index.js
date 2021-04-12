@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { withRouter } from 'next/router'
+import { withRouter } from 'next/router';
 
 import request from '@/utils/request';
 import SplashView from '@/components/SplashView';
@@ -19,13 +19,16 @@ class InvitationPage extends React.Component {
     })
       .then(({ data }) => {
         if (data.entityType === 'dimzou_bundle') {
-          this.props.router.replace({
-            pathname: '/dimzou-edit',
-            query: {
-              bundleId: data.entityId,
-              invitation: code,
+          this.props.router.replace(
+            {
+              pathname: '/dimzou-edit',
+              query: {
+                bundleId: data.entityId,
+                invitation: code,
+              },
             },
-          }, `/draft/${data.entityId}?invitation=${code}`)
+            `/draft/${data.entityId}?invitation=${code}`,
+          );
         }
 
         // let redirectUrl;
@@ -64,7 +67,6 @@ class InvitationPage extends React.Component {
 
 InvitationPage.propTypes = {
   router: PropTypes.object,
-}
-
+};
 
 export default withRouter(InvitationPage);

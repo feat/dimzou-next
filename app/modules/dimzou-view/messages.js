@@ -19,6 +19,10 @@ export default defineMessages({
     id: 'app.view-dimzou.draft',
     defaultMessage: 'Draft',
   },
+  commentLabel: {
+    id: 'app.view-dimzou.comment',
+    defaultMessage: 'Comment',
+  },
   modifyLabel: {
     id: 'app.view-dimzou.modify',
     defaultMessage: 'Modify',

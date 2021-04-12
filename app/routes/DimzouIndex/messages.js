@@ -21,4 +21,8 @@ export default defineMessages({
     id: 'dz.top-scrored-block.title',
     defaultMessage: 'Top Scored',
   },
+  noRelatedCategories: {
+    id: 'dz.dimzou-index.no-related-categories',
+    defaultMessage: 'No related categories',
+  },
 });

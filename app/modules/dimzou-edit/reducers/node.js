@@ -1,21 +1,17 @@
 import { combineActions } from 'redux-actions';
 import update from 'immutability-helper';
-
 import { mapHandleActions } from '@/utils/reducerCreators';
+import invariant from 'invariant';
 
 import {
   updateNodeSort,
   resetBundle,
-  fetchNodeEditInfo,
-  loadNodeEditInfo,
-  updateNodeInfo,
-  patchContent,
-  fetchNodeData,
+  loadBlockRange,
   commitBlock,
   submitBlock,
   submitMediaBlock,
   commitMediaBlock,
-  updateBlockSort,
+  // updateBlockSort,
   patchCollaborators,
   fetchCollaborators,
   changeEditPermission,
@@ -33,6 +29,7 @@ import {
   getBlockTranslation,
   initBlockEdit,
   updateBlockEditor,
+  removeBlock,
   // comment
   createRewordingComment,
   markRewordShared,
@@ -40,7 +37,17 @@ import {
   initRewordingEdit,
   updateRewordingEditor,
   separateNode,
-  setLoadingProgress,
+  initNodeEdit,
+  submitRewording,
+  commitRewording,
+  updateRewording,
+  electRewording,
+  removeRewording,
+  submitMediaRewording,
+  updateMediaRewording,
+  commitMediaRewording,
+  // socket
+  patchNodeData,
 } from '../actions';
 
 export const initialNodeState = {
@@ -48,8 +55,13 @@ export const initialNodeState = {
   isReady: false,
   fetchError: null,
 
+  blocks: {},
   appendings: {},
-  data: null,
+  basic: null,
+  title: null,
+  summary: null,
+  cover: null,
+  contentList: null,
 
   activeCompoKey: undefined,
   userInvitations: [],
@@ -68,26 +80,31 @@ const markVersionLock = (list, id) =>
 
 const nodeEditReducer = mapHandleActions(
   {
-    [setLoadingProgress]: (nodeState, action) => ({
-      ...nodeState,
-      loadingProgress: action.payload.progress,
-    }),
-    [fetchNodeEditInfo.REQUEST]: (nodeState = initialNodeState) => ({
+    [initNodeEdit.REQUEST]: (nodeState = initialNodeState) => ({
       ...nodeState,
       isFetchingEditInfo: true,
       fetchError: null,
     }),
-    [loadNodeEditInfo]: (nodeState = initialNodeState, action) => {
+    [initNodeEdit.SUCCESS]: (nodeState = initialNodeState, action) => {
       const {
-        payload: { data },
+        payload: { basic, title, cover, summary, blocks, contentList },
       } = action;
+      invariant(contentList, 'contentList requried');
       return {
         ...nodeState,
         isReady: true,
-        data,
+        basic,
+        title,
+        cover,
+        summary,
+        contentList,
+        blocks: {
+          ...nodeState.blocks,
+          ...blocks,
+        },
       };
     },
-    [fetchNodeEditInfo.FAILURE]: (nodeState = initialNodeState, action) => {
+    [initNodeEdit.FAILURE]: (nodeState = initialNodeState, action) => {
       const {
         payload: { data },
       } = action;
@@ -96,60 +113,20 @@ const nodeEditReducer = mapHandleActions(
         fetchError: data,
       };
     },
-
-    [fetchNodeEditInfo.FULFILL]: (nodeState = initialNodeState) => ({
+    [initNodeEdit.FULFILL]: (nodeState = initialNodeState) => ({
       ...nodeState,
       isFetchingEditInfo: false,
     }),
 
-    [updateNodeInfo]: (nodeState = initialNodeState, action) => {
-      const {
-        data: { content },
-      } = action.payload;
-      return update(nodeState, {
-        data: (data) => {
-          const hash = {};
-          const tempList = [...data.content, ...content]
-            .sort((a, b) => a.sort - b.sort)
-            .reduce((acc, cur) => {
-              // eslint-disable-next-line no-unused-expressions
-              hash[cur.id] ? '' : (hash[cur.id] = true && acc.push(cur));
-              return acc;
-            }, []);
-          return {
-            ...data,
-            content: tempList,
-          };
+    [loadBlockRange]: (nodeState = initialNodeState, action) => {
+      const { blocks } = action.payload;
+      return {
+        ...nodeState,
+        blocks: {
+          ...nodeState.blocks,
+          ...blocks,
         },
-      });
-    },
-
-    [fetchNodeData]: (nodeState = initialNodeState, action) => {
-      const {
-        payload: { nodeData },
-      } = action;
-      return update(nodeState, {
-        data: (data) => {
-          const tempData = { ...data, ...nodeData };
-          return tempData;
-        },
-      });
-    },
-
-    [patchContent]: (nodeState = initialNodeState, action) => {
-      const {
-        payload: { data },
-      } = action;
-      // return {
-      //   ...nodeState,
-      //   data,
-      // };
-      return update(nodeState, {
-        data: (d) => {
-          const tempData = { ...d, ...data };
-          return tempData;
-        },
-      });
+      };
     },
 
     [createAppendBlock]: (nodeState = initialNodeState, action) => {
@@ -165,12 +142,66 @@ const nodeEditReducer = mapHandleActions(
       };
     },
     [combineActions(
-      removeAppendBlock,
       commitBlock.SUCCESS,
       submitBlock.SUCCESS,
       submitMediaBlock.SUCCESS,
       commitMediaBlock.SUCCESS,
-    )]: (nodeState = initialNodeState, action) => {
+    )]: (nodeState, action) => {
+      const {
+        payload: { pivotId, contentList },
+      } = action;
+      invariant(contentList, 'contentList requried');
+      // update blocks;
+      const blocks = {
+        ...nodeState.blocks,
+        ...action.payload.blocks,
+      };
+      // TODO: may update nodeDesc or fetch nodeDesc...
+
+      // cleanup appendings
+      const appendings = { ...nodeState.appendings };
+      delete appendings[pivotId];
+      return {
+        ...nodeState,
+        appendings,
+        contentList,
+        blocks,
+      };
+    },
+    [combineActions(
+      submitRewording.SUCCESS,
+      updateRewording.SUCCESS,
+      commitRewording.SUCCESS,
+      submitMediaRewording.SUCCESS,
+      updateMediaRewording.SUCCESS,
+      commitMediaRewording.SUCCESS,
+      electRewording.SUCCESS,
+    )]: (nodeState, action) => {
+      const { blocks, blockList, contentList, structure } = action.payload;
+      if (structure === 'content' || !structure) {
+        invariant(contentList, 'contentList is requried');
+        return {
+          ...nodeState,
+          contentList: contentList || nodeState.contentList,
+          blocks: {
+            ...nodeState.blocks,
+            ...blocks,
+          },
+        };
+      }
+      return update(nodeState, {
+        [structure]: {
+          $set: blockList[0],
+        },
+        blocks: {
+          $merge: blocks,
+        },
+      });
+    },
+    [combineActions(removeAppendBlock)]: (
+      nodeState = initialNodeState,
+      action,
+    ) => {
       const {
         payload: { pivotId },
       } = action;
@@ -182,45 +213,42 @@ const nodeEditReducer = mapHandleActions(
       };
     },
 
+    [combineActions(removeBlock.SUCCESS, removeRewording.SUCCESS)]: (
+      nodeState,
+      action,
+    ) => {
+      const { contentList } = action.payload;
+      invariant(contentList, 'contentList is requried when content updated');
+      return update(nodeState, {
+        basic: {
+          node_paragraphs_count: {
+            $set: contentList.length,
+          },
+        },
+        contentList: { $set: contentList },
+      });
+    },
+
     [getBlockTranslation.SUCCESS]: (nodeState = initialNodeState, action) => {
       const {
-        payload: { structure, blockId, translation },
+        payload: { blockId, translation },
       } = action;
-      const newData = { ...nodeState.data };
-      if (structure === 'title') {
-        newData.title = {
-          ...newData.title,
-          info: {
-            ...(newData.title.info ? newData.title.info : {}),
-            translation,
-          },
-        };
-      } else if (structure === 'summary') {
-        newData.summary = {
-          ...newData.summary,
-          info: {
-            ...(newData.summary.info ? newData.summary.info : {}),
-            translation,
-          },
-        };
-      } else if (structure === 'content') {
-        newData.content = newData.content.map((item) => {
-          if (item.id === blockId) {
-            return {
-              ...item,
-              info: {
-                ...(item.info ? item.info : {}),
-                translation,
-              },
-            };
-          }
-          return item;
-        });
+      const block = nodeState.blocks[blockId];
+      if (!block) {
+        return nodeState;
       }
-
       return {
         ...nodeState,
-        data: newData,
+        blocks: {
+          ...nodeState.blocks,
+          [blockId]: {
+            ...block,
+            info: {
+              ...(block.info || {}),
+              translation,
+            },
+          },
+        },
       };
     },
 
@@ -229,36 +257,28 @@ const nodeEditReducer = mapHandleActions(
       action,
     ) => {
       const {
-        payload: { rewordingLikes, structure, rewordingId, blockId },
+        payload: {
+          // rewordingLikes,
+          rewordingId,
+          blockId,
+        },
       } = action;
       return update(nodeState, {
-        data: {
-          [structure]: (info) => {
-            if (Array.isArray(info)) {
-              return info.map((b) => {
-                if (b.id === blockId) {
-                  return {
-                    ...b,
-                    rewordings: markVersionLock(b.rewordings, rewordingId),
-                  };
-                }
-                return b;
-              });
-              // content;
-            }
-            return {
-              ...info,
-              rewordings: markVersionLock(info.rewordings, rewordingId),
-            };
+        blocks: {
+          [blockId]: {
+            rewordings: (list) => markVersionLock(list, rewordingId),
           },
-          user_rewording_likes: (list) => [
-            ...rewordingLikes,
-            ...list.filter(
-              (item) =>
-                !rewordingLikes.some((updated) => updated.id === item.id),
-            ),
-          ],
         },
+        // TODO: fix user_rewording_likes
+        // basic: {
+        //   user_rewording_likes: (list) => [
+        //     ...rewordingLikes,
+        //     ...list.filter(
+        //       (item) =>
+        //         !rewordingLikes.some((updated) => updated.id === item.id),
+        //     ),
+        //   ],
+        // },
       });
     },
 
@@ -289,15 +309,15 @@ const nodeEditReducer = mapHandleActions(
       return nodeState.activeCompoKey === key
         ? nodeState
         : {
-          ...nodeState,
-          activeCompoKey: key,
-        };
+            ...nodeState,
+            activeCompoKey: key,
+          };
     },
 
     [combineActions(updateNodeSort.SUCCESS)]: (nodeState, action) => {
       if (nodeState && action.payload.patch) {
         return update(nodeState, {
-          data: (data) => ({
+          basic: (data) => ({
             ...data,
             ...action.payload.patch,
           }),
@@ -305,38 +325,23 @@ const nodeEditReducer = mapHandleActions(
       }
       return nodeState;
     },
-    [updateBlockSort.SUCCESS]: (nodeState, action) =>
-      update(nodeState, {
-        data: {
-          $set: action.payload.data,
-        },
-      }),
+    // [updateBlockSort.SUCCESS]: (nodeState, action) =>
+    //   update(nodeState, {
+    //     data: {
+    //       $set: action.payload.data,
+    //     },
+    //   }),
     [combineActions(
       createRewordingComment.SUCCESS,
       markRewordShared.SUCCESS,
     )]: (nodeState, action) => {
       const {
-        payload: { structure, blockId, rewordingId },
+        payload: { blockId, rewordingId },
       } = action;
       return update(nodeState, {
-        data: {
-          [structure]: (info) => {
-            if (Array.isArray(info)) {
-              return info.map((b) => {
-                if (b.id === blockId) {
-                  return {
-                    ...b,
-                    rewordings: markVersionLock(b.rewordings, rewordingId),
-                  };
-                }
-                return b;
-              });
-              // content;
-            }
-            return {
-              ...info,
-              rewordings: markVersionLock(info.rewordings, rewordingId),
-            };
+        blocks: {
+          [blockId]: {
+            rewordings: (list) => markVersionLock(list, rewordingId),
           },
         },
       });
@@ -349,7 +354,7 @@ const nodeEditReducer = mapHandleActions(
         return undefined;
       }
       return update(nodeState, {
-        data: (node) => {
+        basic: (node) => {
           if (!node) {
             return undefined;
           }
@@ -370,7 +375,7 @@ const nodeEditReducer = mapHandleActions(
     }),
     [fetchCollaborators.SUCCESS]: (nodeState, action) =>
       update(nodeState, {
-        data: {
+        basic: {
           collaborators: {
             $set: action.payload.data,
           },
@@ -402,7 +407,7 @@ const nodeEditReducer = mapHandleActions(
         payload: { editPermission },
       } = action;
       return update(nodeState, {
-        data: {
+        basic: {
           permission: { $set: editPermission },
         },
       });
@@ -429,7 +434,7 @@ const nodeEditReducer = mapHandleActions(
         payload: { data },
       } = action;
       return update(nodeState, {
-        data: {
+        basic: {
           $merge: data,
         },
         cachedTemplate: { $set: undefined },
@@ -455,6 +460,26 @@ const nodeEditReducer = mapHandleActions(
         },
       }),
     [combineActions(resetBundle, separateNode.SUCCESS)]: () => undefined,
+    [patchNodeData]: (nodeState, action) => {
+      const { blocks, contentList, mutators } = action.payload;
+      const newState = { ...nodeState };
+      if (blocks) {
+        newState.blocks = {
+          ...nodeState.blocks,
+          ...blocks,
+        };
+      }
+      if (contentList) {
+        newState.contentList = contentList;
+      }
+      if (mutators) {
+        return mutators.reduce(
+          (prevState, mutator) => update(prevState, mutator),
+          newState,
+        );
+      }
+      return newState;
+    },
   },
   undefined,
   (action) => action.payload.nodeId,

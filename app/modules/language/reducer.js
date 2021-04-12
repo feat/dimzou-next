@@ -24,6 +24,7 @@ import {
   fetchLocales,
   createLocale,
   setLocale,
+  deleteTranslation,
 } from './actions';
 
 const initialState = {
@@ -149,6 +150,19 @@ const languageReducer = handleActions(
           },
         },
       }),
+    [deleteTranslation.SUCCESS]: (state, action) =>
+      update(state, {
+        userTranslations: {
+          [action.payload.locale]: {
+            $unset: [action.payload.key],
+          },
+        },
+        fetched: {
+          [action.payload.locale]: {
+            $set: action.payload.date,
+          },
+        },
+      }),
     [enableTranslationMode]: (state, action) => ({
       ...state,
       isTranslateModeEnabled: true,
@@ -181,7 +195,5 @@ const languageReducer = handleActions(
   },
   initialState,
 );
-
-export const REDUCER_KEY = 'language';
 
 export default languageReducer;

@@ -1,14 +1,14 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
+import Head from 'next/head';
 
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
+import { concatHeaders } from '@/utils/router';
 import Avatar from '@feat/feat-ui/lib/avatar/Avatar';
+import ActionButton from '@/components/ActionButton';
 
-import { formatMessage } from '@/services/intl';
-import { getAvatar, getUsername } from '@/utils/user';
-
+import { getAvatar, getUsername } from '@/modules/user/utils';
 import {
   EDIT_MODE_ORIGIN,
   EDIT_MODE_TRANSLATION,
@@ -25,9 +25,9 @@ import BlockSectionFooter from '../BlockSectionFooter';
 import DimzouEditor from '../DimzouEditor';
 import PubDate from '../PubDate';
 import RewordingList from './RewordingList';
-// import BlockTailingWidget from '../BlockTailingWidget';
+import BlockTailingWidget from '../BlockTailingWidget';
 import RewordingCommentBundle from '../RewordingCommentBundle';
-import { useMeasure } from '../../context';
+import { getConfirmedText } from '../../utils/content';
 
 import intlMessages from '../../messages';
 
@@ -50,6 +50,7 @@ export default function ContentBlockRender(props) {
     editorPlaceholder,
 
     style,
+    shouldHighlighted,
 
     removeBlock,
     toggleExpanded,
@@ -61,8 +62,27 @@ export default function ContentBlockRender(props) {
 
     contentSuffix,
   } = props;
+  const { formatMessage } = useIntl();
   const domRef = useRef(null);
-  useMeasure([blockState, classifiedRewordings]);
+  const highlightTimer = useRef(null);
+  useEffect(
+    () => {
+      if (shouldHighlighted) {
+        const dom = domRef.current;
+        dom.classList.add('highlighted-block');
+        highlightTimer.current = setTimeout(() => {
+          dom.classList.remove('highlighted-block');
+        }, 3000);
+      }
+    },
+    [shouldHighlighted],
+  );
+  useEffect(
+    () => () => {
+      clearTimeout(highlightTimer.current);
+    },
+    [],
+  );
 
   const {
     currentVersion,
@@ -95,6 +115,16 @@ export default function ContentBlockRender(props) {
     },
   );
 
+  const currentVersionIsFromCurrentUser =
+    currentVersion && currentVersion.user?.uid === currentUser.uid;
+
+  let titleText;
+  if (structure === 'title') {
+    titleText = currentVersion
+      ? getConfirmedText(currentVersion.html_content)
+      : getConfirmedText(info?.translation || info?.origin);
+  }
+
   return (
     <div
       ref={domRef}
@@ -104,81 +134,120 @@ export default function ContentBlockRender(props) {
       // data-structure={structure}
       // data-id={blockId}
     >
-      <span className="dz-BlockSection__anchor" id={name} />
-      {(!currentVersion || mode === EDIT_MODE_TRANSLATION) && (
-        <div className="dz-BlockSection__paraNum">{props.sort}</div>
+      {structure === 'title' && (
+        <Head>
+          <title>
+            {titleText
+              ? concatHeaders(titleText + props.versionLabel)
+              : concatHeaders('Draft')}
+          </title>
+        </Head>
       )}
+      <div className="dz-BlockSection__leading">
+        {isEditModeEnabled &&
+          !currentVersionIsFromCurrentUser && (
+            <Avatar
+              key={currentUser.uid}
+              size="xxs"
+              round
+              avatar={getAvatar(currentUser, 'md')}
+              style={{ position: 'absolute', zIndex: 2 }}
+            />
+          )}
+        {currentVersion && (
+          <Avatar
+            size="xxs"
+            round
+            avatar={getAvatar(currentVersion.user, 'md')}
+            style={
+              isEditModeEnabled && !currentVersionIsFromCurrentUser
+                ? {
+                    position: 'relative',
+                    top: '4rem',
+                    right: 0,
+                  }
+                : {
+                    position: 'relative',
+                    top: 0,
+                    right: 0,
+                  }
+            }
+          />
+        )}
+        <div
+          className="dz-BlockSection__paraNum"
+          style={{ marginTop: '0.5rem' }}
+        />
+      </div>
+      <div className="dz-BlockSection__anchor" id={name} />
       <div className="dz-BlockSection__wrapper">
         <div className="dz-BlockSection__main">
           {/* origin */}
           {mode === EDIT_MODE_TRANSLATION &&
             info &&
             info.origin && (
-            <div className="dz-BlockSection__origin">
-              <DraggableBlockContent
-                disabled
-                rewording={{ html_content: info.origin, is_origin: true }}
-                onClick={enterEditMode}
-                onDrop={postMediaRewording}
-                renderLevel="origin"
-                isSubmittingFile={blockState.isSubmittingFileFromOrigin}
-                fileSubmitting={blockState.fileSubmitting}
-                contentSuffix={contentSuffix}
-              />
-            </div>
-          )}
+              <div className="dz-BlockSection__origin">
+                <DraggableBlockContent
+                  disabled
+                  rewording={{ html_content: info.origin, is_origin: true }}
+                  onClick={enterEditMode}
+                  onDrop={postMediaRewording}
+                  renderLevel="origin"
+                  isSubmittingFile={blockState.isSubmittingFileFromOrigin}
+                  fileSubmitting={blockState.fileSubmitting}
+                  contentSuffix={contentSuffix}
+                />
+              </div>
+            )}
           {/* main */}
           {isEditModeEnabled &&
             blockState.editorState && (
-            <div className="dz-BlockSection__current dz-BlockSectionCurrent">
-              <div className="dz-BlockSectionCurrent__avatar">
-                <Avatar size="sm" avatar={getAvatar(currentUser, 'md')} />
-                {mode === EDIT_MODE_ORIGIN && (
-                  <div className="dz-BlockSection__paraNum">{props.sort}</div>
-                )}
-              </div>
-              <div className="dz-BlockSectionCurrent__main">
-                <div className="dz-BlockSectionCurrent__userInfo">
-                  <span className="dz-BlockSectionCurrent__username">
-                    {getUsername(currentUser)}
-                  </span>
-                  <span className="dz-BlockSectionCurrent__expertise">
-                    {currentUser.expertise}
-                  </span>
-                  <FormattedMessage {...intlMessages.editing} />
+              <div className="dz-BlockSection__current dz-BlockSectionCurrent">
+                <div className="dz-BlockSectionCurrent__main">
+                  <div className="dz-BlockSectionCurrent__userInfo">
+                    <span className="dz-BlockSectionCurrent__username">
+                      {getUsername(currentUser)}
+                    </span>
+                    <span className="dz-BlockSectionCurrent__expertise">
+                      {currentUser.expertise}
+                    </span>
+                    <FormattedMessage {...intlMessages.editing} />
+                  </div>
+                  <div className="dz-BlockSectionCurrent__content">
+                    <DimzouEditor
+                      className="dz-Typo dz-ContentEditRegion"
+                      structure={structure}
+                      stripPastedStyles={structure !== 'content'}
+                      mode={blockState.editorMode}
+                      editorState={blockState.editorState}
+                      onChange={updateEditor}
+                      placeholder={editorPlaceholder}
+                      currentUser={currentUser}
+                    />
+                  </div>
                 </div>
-                <DimzouEditor
-                  className="typo-Article"
-                  structure={structure}
-                  mode={blockState.editorMode}
-                  editorState={blockState.editorState}
-                  onChange={updateEditor}
-                  placeholder={editorPlaceholder}
-                  currentUser={currentUser}
-                />
               </div>
-            </div>
-          )}
+            )}
           {isEditModeEnabled &&
             blockState.isFetchingTranslation && (
-            <div className="dz-BlockSection__loadingPlaceholder" />
-          )}
+              <div className="dz-BlockSection__loadingPlaceholder" />
+            )}
           {isEditModeEnabled && (
             <div className="dz-BlockSectionFooter">
               <div className="dz-BlockSectionFooter__left" />
               <div className="dz-BlockSectionFooter__right">
                 {!blockState.isEditModeForced && (
-                  <IconButton
+                  <ActionButton
                     className="dz-BlockSectionFooter__btn"
-                    svgIcon="no-btn"
+                    type="no"
                     size="md"
                     onClick={exitEditMode}
                     disabled={blockState.submitting}
                   />
                 )}
-                <IconButton
+                <ActionButton
                   className="dz-BlockSectionFooter__btn"
-                  svgIcon="ok-btn"
+                  type="ok"
                   size="md"
                   onClick={postRewording}
                   disabled={blockState.submitting}
@@ -188,65 +257,85 @@ export default function ContentBlockRender(props) {
           )}
           {!isEditModeEnabled &&
             currentVersion && (
-            <div className="dz-BlockSection__current dz-BlockSectionCurrent">
-              <div className="dz-BlockSectionCurrent__avatar">
-                <Avatar
-                  size="sm"
-                  uid={currentVersion.user.uid}
-                  avatar={getAvatar(currentVersion.user, 'md')}
-                />
-                {mode === EDIT_MODE_ORIGIN && (
-                  <div className="dz-BlockSection__paraNum">{props.sort}</div>
-                )}
-              </div>
-              <div className="dz-BlockSectionCurrent__main">
-                <div className="dz-BlockSectionCurrent__userInfo">
-                  <span className="dz-BlockSectionCurrent__username">
-                    {getUsername(currentVersion.user)}
-                  </span>
-                  <span className="dz-BlockSectionCurrent__expertise">
-                    {currentVersion.user.expertise}
-                  </span>
-                  <span className="dz-BlockSectionCurrent__date">
-                    <PubDate
-                      date={
-                        currentVersion.last_modified ||
+              <div className="dz-BlockSection__current dz-BlockSectionCurrent">
+                <div className="dz-BlockSectionCurrent__main">
+                  <div className="dz-BlockSectionCurrent__userInfo">
+                    <span className="dz-BlockSectionCurrent__username">
+                      {getUsername(currentVersion.user)}
+                    </span>
+                    <span className="dz-BlockSectionCurrent__expertise">
+                      {currentVersion.user.expertise}
+                    </span>
+                    <span className="dz-BlockSectionCurrent__date">
+                      <PubDate
+                        date={
+                          currentVersion.last_modified ||
                           currentVersion.create_time
+                        }
+                        format="yy MM dd HH:mm"
+                      />
+                    </span>
+                  </div>
+                  <div className="dz-BlockSectionCurrent__content">
+                    <DraggableBlockContent
+                      blockId={blockId}
+                      sort={props.sort}
+                      disabled={
+                        structure !== 'content' || !userCapabilities.canEdit
                       }
-                      format="yy MM dd HH:mm"
+                      rewording={currentVersion}
+                      onRemove={removeBlock}
+                      onClick={enterEditMode}
+                      onDrop={postMediaRewording}
+                      renderLevel="block"
+                      isSubmittingFile={blockState.isSubmittingFile}
+                      fileSubmitting={blockState.fileSubmitting}
+                      contentSuffix={contentSuffix}
                     />
-                  </span>
+                  </div>
                 </div>
-                <DraggableBlockContent
-                  blockId={blockId}
-                  sort={props.sort}
-                  disabled={structure !== 'content'}
-                  rewording={currentVersion}
-                  onRemove={removeBlock}
-                  onClick={enterEditMode}
-                  onDrop={postMediaRewording}
-                  renderLevel="block"
-                  isSubmittingFile={blockState.isSubmittingFile}
-                  fileSubmitting={blockState.fileSubmitting}
-                  contentSuffix={contentSuffix}
-                />
               </div>
-            </div>
-          )}
+            )}
           {!isEditModeEnabled &&
             currentVersion && (
-            <BlockSectionFooter
-              currentUser={currentUser}
-              bundleId={bundleId}
-              nodeId={nodeId}
-              structure={structure}
-              blockId={blockId}
-              currentVersion={currentVersion}
-              historyCount={historicVersions.length}
-              expandedType={blockState.expandedType}
-              canInvite={userCapabilities.canInviteCollaborator}
-              toggleExpanded={toggleExpanded}
-            />
+              <BlockSectionFooter
+                currentUser={currentUser}
+                bundleId={bundleId}
+                nodeId={nodeId}
+                structure={structure}
+                blockId={blockId}
+                currentVersion={currentVersion}
+                historyCount={historicVersions.length}
+                expandedType={blockState.expandedType}
+                canInvite={userCapabilities.canInviteCollaborator}
+                toggleExpanded={toggleExpanded}
+              />
+            )}
+          {currentVersion && (
+            <>
+              <RewordingCommentBundle
+                key={currentVersion.id}
+                bundleId={bundleId}
+                nodeId={nodeId}
+                structure={structure}
+                blockId={blockId}
+                rewordingId={currentVersion.id}
+                rootCount={currentVersion.comments_count}
+                shouldRender
+                isCommentActive={
+                  blockState.expandedType === BLOCK_EXPANDED_SECTION_COMMENTS
+                }
+                initialData={currentVersion.comments}
+                entityCapabilities={{
+                  canComment: true,
+                  commentLimit: 1,
+                  maxReplyLimit: 1,
+                }}
+                onCommentFormSubmit={() => {
+                  toggleExpanded('comment');
+                }}
+              />
+            </>
           )}
           {/* footer */}
           {!!candidateVersions.length && (
@@ -299,37 +388,10 @@ export default function ContentBlockRender(props) {
                   contentSuffix={contentSuffix}
                 />
               </>
-          )}
-          {currentVersion && (
-            <>
-              <div
-                className={classNames({
-                  'dz-BlockSection__line': currentVersion.comments_count,
-                })}
-              />
-              <RewordingCommentBundle
-                key={currentVersion.id}
-                bundleId={bundleId}
-                nodeId={nodeId}
-                structure={structure}
-                blockId={blockId}
-                rewordingId={currentVersion.id}
-                rootCount={currentVersion.comments_count}
-                shouldRender
-                isCommentActive={
-                  blockState.expandedType === BLOCK_EXPANDED_SECTION_COMMENTS
-                }
-                initialData={currentVersion.comments}
-                entityCapabilities={{
-                  canComment: true,
-                  commentLimit: 1,
-                  maxReplyLimit: 1,
-                }}
-              />
-            </>
-          )}
+            )}
+
           {blockState.expandedType === BLOCK_EXPANDED_SECTION_VERSIONS && (
-            <React.Fragment>
+            <>
               {!!historicVersions.length && (
                 <div
                   className={classNames('dz-rewordings', {
@@ -384,13 +446,14 @@ export default function ContentBlockRender(props) {
                       contentSuffix={contentSuffix}
                     />
                   </>
-              )}
-            </React.Fragment>
+                )}
+            </>
           )}
         </div>
       </div>
-      {/* {canEdit && structure === 'content' &&
-        canAppendContent &&
+      {userCapabilities.canEdit &&
+        structure === 'content' &&
+        userCapabilities.canAppendContent &&
         blockIsAccepted && (
           <BlockTailingWidget
             bundleId={props.bundleId}
@@ -398,8 +461,9 @@ export default function ContentBlockRender(props) {
             blockId={props.blockId}
             sort={props.sort}
             userCapabilities={userCapabilities}
+            disabled={props.hasAppendingBlock}
           />
-        )} */}
+        )}
     </div>
   );
 }
@@ -420,6 +484,9 @@ ContentBlockRender.propTypes = {
   currentUser: PropTypes.object,
   userCapabilities: PropTypes.object,
   blockUserMeta: PropTypes.object,
+  versionLabel: PropTypes.string,
+
+  hasAppendingBlock: PropTypes.bool,
 
   removeBlock: PropTypes.func,
   toggleExpanded: PropTypes.func,

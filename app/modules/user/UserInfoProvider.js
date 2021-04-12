@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 
-import { createStructuredSelector } from 'reselect'
+import { createStructuredSelector } from 'reselect';
 import { asyncFetchUserInfo } from './actions';
 import { selectRequestState, selectUserInfo } from './selectors';
 
@@ -22,11 +22,13 @@ class UserInfoContext extends React.PureComponent {
     return (
       <UserInfo.Provider
         value={{
-          request, data: userInfo,
-        }}>
+          request,
+          data: userInfo,
+        }}
+      >
         {this.props.children}
       </UserInfo.Provider>
-    )
+    );
   }
 }
 
@@ -41,7 +43,7 @@ UserInfoContext.propTypes = {
 const mapStateToProps = createStructuredSelector({
   request: selectRequestState,
   userInfo: selectUserInfo,
-})
+});
 const mapDispatchToProps = {
   fetchUserInfo: asyncFetchUserInfo,
 };
@@ -51,6 +53,4 @@ const withConnect = connect(
   mapDispatchToProps,
 );
 
-export default compose(
-  withConnect,
-)(UserInfoContext);
+export default compose(withConnect)(UserInfoContext);

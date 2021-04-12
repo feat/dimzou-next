@@ -1,7 +1,5 @@
 import reducer from '../reducer';
-import { updateUserSecurityInfo } from "../../settings/actions/security";
 import { setCurrentUser } from '../actions';
-
 
 describe('Auth Module Test', () => {
   let state = reducer(undefined, { type: 'INIT' });
@@ -16,8 +14,4 @@ describe('Auth Module Test', () => {
       a: 1,
     });
   });
-  it('updateUserSecurityInfo success', () => {
-    state = reducer(state, updateUserSecurityInfo.success());
-    expect(state.userMeta.security_question_initialized).toBe(true);
-  })
 });

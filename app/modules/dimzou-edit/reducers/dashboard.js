@@ -1,3 +1,5 @@
+import { stringify } from 'query-string';
+import { combineReducers } from 'redux';
 import { handleActions } from 'redux-actions';
 import update from 'immutability-helper';
 
@@ -7,10 +9,108 @@ import {
   fetchReaderTaste,
   deleteBundle,
   fetchReaderCommented,
+  setResourceStatsQuery,
+  fetchResourceStats,
 } from '../actions';
 
-export const initialState = {
-  dimzouReports: {
+const readerReport = handleActions(
+  {
+    [fetchReaderReport]: (state) => ({
+      ...state,
+      onceFetched: true,
+      fetchError: null,
+    }),
+    [fetchReaderReport.REQUEST]: (state) => ({
+      ...state,
+      loading: true,
+    }),
+    [fetchReaderReport.SUCCESS]: (state, action) => ({
+      ...state,
+      data: action.payload,
+    }),
+    [fetchReaderReport.FAILURE]: (state, action) => ({
+      ...state,
+      fetchError: action.payload,
+    }),
+    [fetchReaderReport.FULFILL]: (state) => ({
+      ...state,
+      loading: false,
+    }),
+  },
+  {
+    loading: false,
+    onceFetched: false,
+    data: null,
+    fetchError: null,
+  },
+);
+
+const commented = handleActions(
+  {
+    [fetchReaderCommented.TRIGGER]: (state) => ({
+      ...state,
+      onceFetched: true,
+      fetchError: null,
+    }),
+
+    [fetchReaderCommented.REQUEST]: (state) => ({
+      ...state,
+      loading: true,
+    }),
+
+    [fetchReaderCommented.SUCCESS]: (state, action) => ({
+      ...state,
+      data: action.payload.data,
+    }),
+
+    [fetchReaderCommented.FAILURE]: (state, action) => ({
+      ...state,
+      fetchError: action.payload,
+    }),
+    [fetchReaderCommented.FULFILL]: (state) => ({
+      ...state,
+      loading: false,
+    }),
+  },
+  {
+    data: [],
+    onceFetched: false,
+    fetchError: null,
+    loading: false,
+  },
+);
+
+const dimzouReports = handleActions(
+  {
+    [fetchDimzouReports]: (state) => ({
+      ...state,
+      onceFetched: true,
+      fetchError: null,
+    }),
+    [fetchDimzouReports.REQUEST]: (state) => ({
+      ...state,
+      loading: true,
+    }),
+    [fetchDimzouReports.SUCCESS]: (state, action) => ({
+      ...state,
+      list: [...state.list, ...action.payload.list],
+      next: action.payload.next,
+      hasMore: action.payload.hasMore,
+    }),
+    [fetchDimzouReports.FAILURE]: (state, action) => ({
+      ...state,
+      fetchError: action.payload,
+    }),
+    [fetchDimzouReports.FULFILL]: (state) => ({
+      ...state,
+      loading: false,
+    }),
+    [deleteBundle.SUCCESS]: (state, action) => ({
+      ...state,
+      list: state.list.filter((item) => item !== action.payload.bundleId),
+    }),
+  },
+  {
     loading: false,
     onceFetched: false,
     list: [],
@@ -18,19 +118,40 @@ export const initialState = {
     hasMore: true,
     fetchError: null,
   },
-  readerReport: {
-    loading: false,
-    onceFetched: false,
-    data: null,
-    fetchError: null,
+);
+
+const readerTaste = handleActions(
+  {
+    [fetchReaderTaste]: (state) => ({
+      ...state,
+      onceFetched: true,
+      fetchError: null,
+    }),
+    [fetchReaderTaste.REQUEST]: (state) => ({
+      ...state,
+      loading: true,
+    }),
+    [fetchReaderTaste.SUCCESS]: (state, action) => ({
+      ...state,
+      list: [...state.list, ...action.payload.list],
+      templates: action.payload.templates,
+      next: action.payload.next,
+      hasMore: action.payload.hasMore,
+    }),
+    [fetchReaderTaste.FAILURE]: (state, action) => ({
+      ...state,
+      fetchError: action.payload,
+    }),
+    [fetchReaderTaste.FULFILL]: (state) => ({
+      ...state,
+      loading: false,
+    }),
+    [deleteBundle.SUCCESS]: (state, action) => ({
+      ...state,
+      list: state.list.filter((item) => item !== action.payload.bundleId),
+    }),
   },
-  commented: {
-    data: [],
-    onceFetched: false,
-    fetchError: null,
-    loading: false,
-  },
-  readerTaste: {
+  {
     loading: false,
     onceFetched: false,
     list: [],
@@ -39,180 +160,56 @@ export const initialState = {
     hasMore: true,
     fetchError: null,
   },
-};
-
-const reducer = handleActions(
-  {
-    [fetchDimzouReports]: (state) =>
-      update(state, {
-        dimzouReports: (subState) => ({
-          ...subState,
-          onceFetched: true,
-          fetchError: null,
-        }),
-      }),
-    [fetchDimzouReports.REQUEST]: (state) =>
-      update(state, {
-        dimzouReports: (subState) => ({
-          ...subState,
-          loading: true,
-        }),
-      }),
-    [fetchDimzouReports.SUCCESS]: (state, action) =>
-      update(state, {
-        dimzouReports: (subState) => ({
-          ...subState,
-          list: [...subState.list, ...action.payload.list],
-          next: action.payload.next,
-          hasMore: action.payload.hasMore,
-        }),
-      }),
-    [fetchDimzouReports.FAILURE]: (state, action) =>
-      update(state, {
-        dimzouReports: (subState) => ({
-          ...subState,
-          fetchError: action.payload,
-        }),
-      }),
-    [fetchDimzouReports.FULFILL]: (state) =>
-      update(state, {
-        dimzouReports: (subState) => ({
-          ...subState,
-          loading: false,
-        }),
-      }),
-
-    [fetchReaderReport]: (state) =>
-      update(state, {
-        readerReport: (subState) => ({
-          ...subState,
-          onceFetched: true,
-          fetchError: null,
-        }),
-      }),
-    [fetchReaderReport.REQUEST]: (state) =>
-      update(state, {
-        readerReport: (subState) => ({
-          ...subState,
-          loading: true,
-        }),
-      }),
-    [fetchReaderReport.SUCCESS]: (state, action) =>
-      update(state, {
-        readerReport: (subState) => ({
-          ...subState,
-          data: action.payload,
-        }),
-      }),
-    [fetchReaderReport.FAILURE]: (state, action) =>
-      update(state, {
-        readerReport: (subState) => ({
-          ...subState,
-          fetchError: action.payload,
-        }),
-      }),
-    [fetchReaderReport.FULFILL]: (state) =>
-      update(state, {
-        readerReport: (subState) => ({
-          ...subState,
-          loading: false,
-        }),
-      }),
-
-    [fetchReaderTaste]: (state) =>
-      update(state, {
-        readerTaste: (subState) => ({
-          ...subState,
-          onceFetched: true,
-          fetchError: null,
-        }),
-      }),
-    [fetchReaderTaste.REQUEST]: (state) =>
-      update(state, {
-        readerTaste: (subState) => ({
-          ...subState,
-          loading: true,
-        }),
-      }),
-    [fetchReaderTaste.SUCCESS]: (state, action) =>
-      update(state, {
-        readerTaste: (subState) => ({
-          ...subState,
-          list: [...subState.list, ...action.payload.list],
-          templates: action.payload.templates,
-          next: action.payload.next,
-          hasMore: action.payload.hasMore,
-        }),
-      }),
-    [fetchReaderTaste.FAILURE]: (state, action) =>
-      update(state, {
-        readerTaste: (subState) => ({
-          ...subState,
-          fetchError: action.payload,
-        }),
-      }),
-    [fetchReaderTaste.FULFILL]: (state) =>
-      update(state, {
-        readerTaste: (subState) => ({
-          ...subState,
-          loading: false,
-        }),
-      }),
-
-    [deleteBundle.SUCCESS]: (state, action) =>
-      update(state, {
-        dimzouReports: {
-          list: (list) =>
-            list.filter((item) => item !== action.payload.bundleId),
-        },
-        readerTaste: {
-          list: (list) =>
-            list.filter((item) => item !== action.payload.bundleId),
-        },
-      }),
-
-    [fetchReaderCommented.TRIGGER]: (state) =>
-      update(state, {
-        commented: (subState) => ({
-          ...subState,
-          onceFetched: true,
-          fetchError: null,
-        }),
-      }),
-
-    [fetchReaderCommented.REQUEST]: (state) =>
-      update(state, {
-        commented: (subState) => ({
-          ...subState,
-          loading: true,
-        }),
-      }),
-
-    [fetchReaderCommented.SUCCESS]: (state, action) =>
-      update(state, {
-        commented: (subState) => ({
-          ...subState,
-          data: action.payload.data,
-        }),
-      }),
-
-    [fetchReaderCommented.FAILURE]: (state, action) =>
-      update(state, {
-        commented: (subState) => ({
-          ...subState,
-          fetchError: action.payload,
-        }),
-      }),
-    [fetchReaderCommented.FULFILL]: (state) =>
-      update(state, {
-        commented: (subState) => ({
-          ...subState,
-          loading: false,
-        }),
-      }),
-  },
-  initialState,
 );
 
-export default reducer;
+const resourceBriefReport = handleActions(
+  {},
+  {
+    loading: false,
+    onceFetched: false,
+    fetchError: null,
+    data: null, // breif
+  },
+);
 
+const resourceStats = handleActions(
+  {
+    [setResourceStatsQuery]: (state, action) => ({
+      ...state,
+      query: action.payload,
+    }),
+    [fetchResourceStats.REQUEST]: (state) => ({
+      ...state,
+      loading: true,
+    }),
+    [fetchResourceStats.SUCCESS]: (state, action) =>
+      update(state, {
+        requests: {
+          [stringify(action.payload.query)]: {
+            $set: {
+              data: action.payload.data,
+              pagination: action.payload.pagination,
+            },
+          },
+        },
+      }),
+    [fetchResourceStats.FULFILL]: (state) => ({
+      ...state,
+      loading: false,
+    }),
+  },
+  {
+    query: {},
+    loading: false,
+    requests: {},
+  },
+);
+
+export default combineReducers({
+  readerReport,
+  commented,
+  dimzouReports,
+  readerTaste,
+  resourceBriefReport,
+  resourceStats,
+});

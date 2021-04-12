@@ -2,7 +2,7 @@
 const express = require('express');
 const createError = require('http-errors');
 const path = require('path');
-const session = require('express-session')
+const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const morganDebug = require('morgan-debug');
 const Sentry = require('@sentry/node');
@@ -32,7 +32,7 @@ if (SERVER_SENTRY_DSN) {
 
 const handle = nextApp.getRequestHandler();
 
-const RedisStore = require('connect-redis')(session)
+const RedisStore = require('connect-redis')(session);
 
 const skipRoutes = (regex, middleware) => (req, res, next) => {
   if (regex.test(req.url)) {
@@ -48,14 +48,14 @@ const getSessionTTL = () => {
   } catch (err) {
     return 172800000; // 48h
   }
-}
+};
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 if (SERVER_SENTRY_DSN) {
   app.use(Sentry.Handlers.requestHandler());
 }
-app.use(morganDebug('feat-web:request', 'dev'));
+app.use(morganDebug('dimzou-next:request', 'dev'));
 app.use(skipRoutes(/^\/api\//, express.json()));
 app.use(skipRoutes(/^\/api\//, express.urlencoded({ extended: false })));
 app.use(cookieParser());
@@ -66,10 +66,10 @@ app.use(
     saveUninitialized: false,
     resave: false,
     cookie: {
-      maxAge: getSessionTTL(),  // 24h
+      maxAge: getSessionTTL(), // 24h
     },
-  })
-)
+  }),
+);
 app.use(skipRoutes(/^\/_next\//, authMiddleware));
 app.use(skipRoutes(/^\/sockect\.io/, localeMiddleware));
 app.use(appSetupMiddleware);
@@ -96,7 +96,6 @@ if (process.env.STORAGE_ENDPOINT) {
   );
 }
 
-
 app.get('*', (req, res) => {
   const parsedUrl = parse(req.url, true);
   handle(req, res, parsedUrl);
@@ -108,15 +107,17 @@ app.use((req, res, next) => {
 });
 
 if (SERVER_SENTRY_DSN) {
-  app.use(Sentry.Handlers.errorHandler({
-    shouldHandleError(error) {
-      // Capture all 404 and 500 errors
-      if (error.status === 404 || error.status === 500) {
-        return true
-      }
-      return false
-    },
-  }));
+  app.use(
+    Sentry.Handlers.errorHandler({
+      shouldHandleError(error) {
+        // Capture all 404 and 500 errors
+        if (error.status === 404 || error.status === 500) {
+          return true;
+        }
+        return false;
+      },
+    }),
+  );
 }
 
 // error handler

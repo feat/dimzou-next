@@ -8,8 +8,22 @@
 }
 
 @include block(LikeToggle) {
+  padding: px-to-rem(1);
+  line-height: 0;
   @include state(liking) {
     animation: 1s linear 0s infinite like-heartbeat;
     pointer-events: none;
   }
+  @include state(active) {
+    .icon-heart__storke {
+      fill: transparent;
+    }
+    .icon-heart__fill {
+      fill: #c1272d;
+    }
+  }
+}
+
+.icon-heart__fill:hover {
+  fill: #c1272d;
 }

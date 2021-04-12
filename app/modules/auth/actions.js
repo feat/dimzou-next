@@ -5,11 +5,6 @@ import message from '@feat/feat-ui/lib/message';
 
 import storage from '@/utils/storage';
 import { formatMessage } from '@/services/intl';
-// import {
-//   authWithPhoneAndPassword as authWithPhoneAndPasswordRequest,
-//   logout as logoutRequest,
-//   // registerWithPhone as registerWithPhoneRequest,
-// } from '@/client/auth';
 
 import ssoAction from '@/utils/ssoAction';
 import intlMessages from './messages';
@@ -76,7 +71,7 @@ export const asyncLogout = () => async (dispatch) => {
     const res = await request({
       url: `${window.location.origin}/auth/logout`,
       method: 'POST',
-    })
+    });
     if (res.data && res.data.sso) {
       await Promise.all(res.data.sso.map(ssoAction)).catch((err) => {
         logging.warn(err);

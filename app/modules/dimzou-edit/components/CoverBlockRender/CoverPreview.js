@@ -4,11 +4,13 @@ import classNames from 'classnames';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
+import ActionButton from '@/components/ActionButton';
+import ButtonBase from '@feat/feat-ui/lib/button/ButtonBase';
 
 import RewordingLikeWidget from '../RewordingLike';
 import RewordingCommentBundle from '../RewordingCommentBundle';
 import RewordingCommentTrigger from '../RewordingCommentTrigger';
+import Icon from '../Icon';
 
 import { getTemplateCoverRatio } from '../../utils/template';
 import { isPendingRecord, isRejectedRecord } from '../../utils/rewordings';
@@ -104,12 +106,13 @@ class CoverPreview extends React.PureComponent {
         />
         <div className="dz-CoverPreview__footer">
           <span className="margin_r_36">
-            <IconButton
+            <ButtonBase
               className="margin_r_5"
-              svgIcon="edition"
               isActive={isNavigatePanelOpened}
               onClick={this.handleNavigationToggle}
-            />
+            >
+              <Icon name="reword" className="size_xs" />
+            </ButtonBase>
             {[candidateCount, historyCount, rejectedCount].join(' | ')}
           </span>
           <span className="margin_r_36">
@@ -134,24 +137,24 @@ class CoverPreview extends React.PureComponent {
           </span>
           {isPendingRecord(this.props.data) &&
             canElect && (
-            <IconButton
-              className="margin_l_36"
-              svgIcon="no-btn"
-              disabled={this.props.electingRewording}
-              onClick={this.handleReject}
-            />
-          )}
+              <ActionButton
+                className="margin_l_36"
+                type="no"
+                disabled={this.props.electingRewording}
+                onClick={this.handleReject}
+              />
+            )}
           {isPendingRecord(this.props.data) &&
             canElect && (
-            <IconButton
-              className="margin_l_24"
-              svgIcon="ok-btn"
-              disabled={this.props.electingRewording}
-              onClick={this.handleElect}
-            />
-          )}
+              <ActionButton
+                className="margin_l_24"
+                type="ok"
+                disabled={this.props.electingRewording}
+                onClick={this.handleElect}
+              />
+            )}
           {this.state.isCommentPanelOpened && (
-            <div 
+            <div
               className="dz-CoverPreview__commentBundle"
               onClick={(e) => {
                 e.stopPropagation();
@@ -168,7 +171,11 @@ class CoverPreview extends React.PureComponent {
                 pageLayout={false}
                 isCommentActive={this.state.isCommentPanelOpened}
                 initialData={data.comments}
-                entityCapabilities={{ canComment: true, commentLimit: 1, maxReplyLimit: 1 }}
+                entityCapabilities={{
+                  canComment: true,
+                  commentLimit: 1,
+                  maxReplyLimit: 1,
+                }}
               />
             </div>
           )}

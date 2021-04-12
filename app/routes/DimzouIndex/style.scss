@@ -1,46 +1,66 @@
 @import 'base.scss';
 
+$dimzou-index-sticky-header-height: 50px;
+$dimzou-grid-gap: 16px;
+$dimzou-padding-top: 16px;
+
+@mixin pp {
+  padding-left: $dimzou-grid-gap;
+  padding-right: $dimzou-grid-gap;
+  padding-top: $dimzou-padding-top;
+}
+
 @include block(ns(DimzouIndex, p)) {
-  padding-left: px-to-rem($site-sidebar-width - 12);
-  padding-top: px-to-rem(24);
-  padding-right: px-to-rem(12);
   display: flex;
+  padding-left: 4px;
+  
   @include element(side) {
-    position: fixed;
-    left: px-to-rem(24);
+    width: $site-fixed-nav-width;
   }
-  @include element(nav) {
-    padding-top: px-to-rem(56);
+
+  @include element(sideInner) {
+    @include pp;
+    position: sticky;
+    display: flex;
+    flex-direction: column;
   }
+
   @include element(main) {
-    padding-left: px-to-rem(12);
-    padding-right: px-to-rem(12);
+    @include pp;
     flex: 1;
     min-width: 0;
   }
   @include element(right) {
-    padding-left: px-to-rem(12);
-    padding-right: px-to-rem(12);
+    padding-left: $dimzou-grid-gap;
+    padding-right: $dimzou-grid-gap;
+    padding-top: $dimzou-padding-top;
+    width: 200px;
+    // padding-left: px-to-rem(12);
+    // padding-right: px-to-rem(12);
     flex-shrink: 0;
-    width: px-to-rem(304);
     flex-grow: 0;
     min-width: 0;
-  }
-}
-
-@include block(DimzouIndexSidebar) {
-  width: px-to-rem($site-nav-width);
-  flex: 1;
-  overflow: hidden;
-  padding-top: 16px;
-  padding-bottom: 16px;
-  height: 90vh;
-
-  &:hover {
-    overflow-y: auto;
+    // padding-top: px-to-rem($dimzou-index-sticky-header-height);
   }
 
-  .ft-Button_anchor {
-    text-align: start;
+  @include element(filter) {
+    margin-bottom: 12px;
   }
+
+  @include element(noCategoryHint) {
+    font-size: 14px;
+    padding: 20px;
+    background-color: $gray-1;
+    margin-top: 40px;
+  }
+
+  // .InlineFilterForm {
+  //   margin-top: 2px;
+  //   max-width: 400px;
+  //   margin-left: 12px;
+  //   margin-right: 12px;
+  //   @media (min-width: $screen-xxl-min) {
+  //     max-width: px-to-rem(500);
+  //   }
+  // }
 }

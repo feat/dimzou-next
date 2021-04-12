@@ -11,10 +11,7 @@ import FeedTemplateIX from './FeedTemplateIX';
 import FeedTemplateX from './FeedTemplateX';
 import FeedTemplateXIII from './FeedTemplateXIII';
 
-const Placeholder = () => (
-  <div style={{ height: 500 }}>TODO</div>
-);
-
+const Placeholder = () => <div style={{ height: 500 }}>TODO</div>;
 
 const FeedTemplateIS = Placeholder;
 const FeedTemplateIIS = Placeholder;

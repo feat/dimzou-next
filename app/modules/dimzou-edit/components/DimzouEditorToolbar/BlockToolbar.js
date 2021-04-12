@@ -5,9 +5,10 @@ import { RichUtils } from '@feat/draft-js';
 import StyleButton from './StyleButton';
 
 function BlockToolbar(props) {
-  const blockType = props.editorState && RichUtils.getCurrentBlockType(props.editorState);
+  const blockType =
+    props.editorState && RichUtils.getCurrentBlockType(props.editorState);
   return (
-    <div className="dz-EditorControls dz-EditorControls_block">
+    <div className="dz-DockerButtonGroup">
       {props.buttons.map((button) => (
         <StyleButton
           key={button.style}
@@ -18,7 +19,7 @@ function BlockToolbar(props) {
         />
       ))}
     </div>
-  )
+  );
 }
 
 BlockToolbar.propTypes = {

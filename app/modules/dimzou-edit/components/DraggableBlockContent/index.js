@@ -4,13 +4,12 @@ import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import { DragSource } from 'react-dnd';
 
-import { formatMessage } from '@/services/intl';
-
 import Modal from '@feat/feat-ui/lib/modal';
+import { injectIntl } from 'react-intl';
 import RewordingPreviewWidget from '../RewordingPreviewWidget';
 import { extractWidgetInfo } from '../../utils/rewordings';
 import { alert as alertMessages } from '../../messages';
-import { DRAGGABLE_TYPE_BLOCK } from '../../constants';
+import { DRAGGABLE_TYPE_BLOCK, DRAG_TO_DELETE_DELTA } from '../../constants';
 
 class DraggableBlockContent extends React.PureComponent {
   blockRef = (n) => {
@@ -78,36 +77,32 @@ const rewordingSource = {
   canDrag(props) {
     return !props.disabled;
   },
-  endDrag(props, monitor, component) {
+  endDrag(props, monitor) {
     if (monitor.didDrop()) {
       return;
     }
-    if (!component) {
-      return;
-    }
-    const box = component.dom.getBoundingClientRect();
-    const sourceClientOffset = monitor.getSourceClientOffset();
     if (!props.rewording.img && !props.rewording.content) {
       return;
     }
-
+    const difference = monitor.getDifferenceFromInitialOffset();
     if (
-      sourceClientOffset && (
-        sourceClientOffset.x > box.right ||
-        sourceClientOffset.x < box.left - box.width ||
-        sourceClientOffset.y > box.bottom ||
-        sourceClientOffset.y < box.top - box.top
-      )
+      Math.abs(difference.x) < DRAG_TO_DELETE_DELTA &&
+      Math.abs(difference.y) < DRAG_TO_DELETE_DELTA
     ) {
-      Modal.confirm({
-        title: formatMessage(alertMessages.confirmLabel),
-        content: formatMessage(alertMessages.removeBlockConfirm),
-        onConfirm: () => {
-          props.onRemove(props.rewording);
-        },
-        onCancel: () => {},
-      });
+      return;
     }
+    const {
+      intl: { formatMessage },
+    } = props;
+
+    Modal.confirm({
+      title: formatMessage(alertMessages.confirmLabel),
+      content: formatMessage(alertMessages.removeBlockConfirm),
+      onConfirm: () => {
+        props.onRemove(props.rewording);
+      },
+      onCancel: () => {},
+    });
   },
 };
 
@@ -116,8 +111,9 @@ const sourceCollect = (collect, monitor) => ({
   isDragging: monitor.isDragging(),
 });
 
-export default DragSource(
-  DRAGGABLE_TYPE_BLOCK,
-  rewordingSource,
-  sourceCollect,
-)(DraggableBlockContent);
+export default injectIntl(
+  DragSource(DRAGGABLE_TYPE_BLOCK, rewordingSource, sourceCollect)(
+    DraggableBlockContent,
+  ),
+  { forwardRef: true },
+);

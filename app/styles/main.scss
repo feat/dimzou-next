@@ -8,6 +8,7 @@
 @import '~slick-carousel/slick/slick-theme.scss';
 @import '~react-image-crop/dist/ReactCrop.css';
 @import '~@feat/draft-js/dist/Draft.css';
+@import '~@/modules/dimzou-edit/typo.scss';
 
 // @import "~prismjs/themes/prism.css";
 
@@ -25,6 +26,16 @@
 @import './mobile.scss';
 
 @include make-flex-grid(7);
+
+
+:root {
+  --main-bg-color: #{$main-container-bg-color};
+  --yellow-100: #fbf2d4;
+}
+
+.ReactModal__Body--open {
+  overflow: hidden;
+}
 
 #app {
   // min-width: px-to-rem(320);
@@ -77,6 +88,7 @@ a {
   border-radius: px-to-rem(2);
   color: $gray-10;
   max-width: 100%;
+  font-size: 14px;
   @include text-truncate();
   
   &.is-selected {

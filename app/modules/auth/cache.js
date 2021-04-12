@@ -7,7 +7,10 @@ let isDirty = false;
 const cache = {
   update: (data) => {
     if (!isDirty) {
-      if (data.phone !== cacheInfo.phone || data.country !== cacheInfo.country) {
+      if (
+        data.phone !== cacheInfo.phone ||
+        data.country !== cacheInfo.country
+      ) {
         isDirty = true;
       }
     }
@@ -24,6 +27,6 @@ const cache = {
     initType = 'last_logined';
   },
   isDirty: () => isDirty,
-}
+};
 
 export default cache;

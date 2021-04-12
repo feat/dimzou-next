@@ -108,7 +108,8 @@ export const getText = (editorState) => {
     .join('\n');
 };
 
-export const getHTML = (editorState) => contentStateToHTML(editorState.getCurrentContent())
+export const getHTML = (editorState) =>
+  contentStateToHTML(editorState.getCurrentContent());
 
 export const splitHtmlContent = (html) => {
   const dom = document.createElement('div');
@@ -242,7 +243,6 @@ export const clearHtml = (html, config = {}) => {
     });
   }
 
- 
   const codeLines = dom.querySelectorAll(':scope > .line');
   if (codeLines.length) {
     let wrap = document.createElement('pre');
@@ -344,4 +344,4 @@ export const clearContent = (editorState) => {
   contentState = Modifier.removeRange(contentState, allSelected, 'backward');
   const reset = EditorState.push(editorState, contentState, 'remove-range');
   return EditorState.forceSelection(reset, contentState.getSelectionAfter());
-}
+};

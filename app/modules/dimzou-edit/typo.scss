@@ -1,0 +1,320 @@
+@import 'base.scss';
+$dz-title-font: $sans-serif-title-font !default;
+$dz-text-font: $serif-text-font !default;
+$dz-text-size-base: 18px !default;
+$dz-code-line-height: 1.5em !default;
+$dz-annotation-delete-bg-color: rgba(245, 176, 211, 0.8) !default;
+$dz-annotation-add-bg-color: rgba(177, 223, 240, 0.8) !default;
+
+
+@mixin articletext-header-one {
+    font-family: $dz-title-font;
+    font-size: 2.5em;
+    font-weight: bold;
+}
+
+
+@include block(ns(Typo, dz)) {
+    // reset
+    font-family: $dz-text-font;
+    font-size: px-to-rem($dz-text-size-base);
+    line-height: 1.6em;
+    word-wrap: break-word;
+    hyphens: auto;
+    // -webkit-font-smoothing: antialiased;
+    // hyphens: none;
+    // font-family: 'Source Sans Pro', sans-serif;
+    // font-size: px-to-rem(17);
+  
+  
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      font-family: $dz-title-font;
+      line-height: 1.1;
+    }
+  
+    h1 {
+      font-size: 2.5em;
+      font-weight: bold;
+      margin-top: 0.75em;
+    }
+  
+    h2 {
+      font-size: 1.75em;
+      margin-top: 1.75em;
+      margin-bottom: 1.25em;
+    }
+  
+    h3 {
+      font-size: 1.5em;
+      margin-bottom: 1em;
+    }
+  
+    h4 {
+      font-size: 1.25em;
+    }
+  
+    h3,
+    h4,
+    h5 {
+      margin-top: 1.5em;
+    }
+  
+    p,
+    ul,
+    ol {
+      font-size: 1em;
+    }
+  
+    p {
+      margin-top: 0;
+      margin-bottom: 1em;
+    }
+  
+    ul,
+    ol {
+      padding-left: 1.5em;
+      margin-bottom: 0.5em;
+    }
+  
+    li > ul,
+    li > ol {
+      margin-top: 0.25em;
+      margin-bottom: 0;
+    }
+    
+    // TODO: may use custom counter;
+    ul {
+      list-style: disc;
+    }
+  
+    ul ul {
+      list-style: circle;
+    }
+  
+    ul ul ul {
+      list-style: square;
+    }
+  
+    ol {
+      list-style: decimal;
+    }
+    ol ol {
+      list-style: lower-alpha;
+    }
+    ol ol ol {
+      list-style: lower-roman;
+    }
+    
+    li {
+      margin-bottom: 0.25em;
+    }
+  
+  
+    :not(pre) > code[class*='language-'],
+    pre[class*='language-'] {
+      background-color: white;
+      margin-bottom: 0.5em;
+      font-size: 1.25em;
+      position: relative;
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+  
+      code {
+        &::after {
+          content: attr(data-language);
+          position: absolute;
+          top: 0.25em;
+          right: 1em;
+          color: $gray-6;
+          font-size: 1em;
+        }
+      }
+    }
+  
+    code {
+      border: none;
+    }
+  
+    strong {
+      font-size: 1.1em;
+      -webkit-font-smoothing: antialiased;
+    }
+  
+    figure {
+      margin-left: 0;
+      margin-right: 0;
+      margin-bottom: 0.5em;
+      background-color: $gray-1;
+    }
+  
+    figure img {
+      display: block;
+      max-width: 100%;
+      // width: 100%;
+      margin: 0 auto;
+      height: auto;
+      // min-height: 100px;
+      background-color: $gray-1;
+    }
+  
+    blockquote {
+      margin-bottom: 0.5rem;
+      margin-left: -0.325em;
+      margin-right: 0;
+      padding-left: 0.325em;
+      border-left: 2px solid $blockquote-bd-color;
+      font-style: italic;
+    }
+  
+    pre[data-language] {
+      background-color: $gray-1;
+  
+      code {
+        background-color: transparent;
+      }
+    }
+  
+    @include element(avatar) {
+      margin-top: 1.25em;
+      margin-bottom: 1.25em;
+      display: flex;
+      align-items: center;
+      img {
+      }
+    }
+  
+    @include element(titlePlaceholder) {
+      line-height: 1.1;
+      @include articletext-header-one;
+    }
+    @include element(headerOne) {
+      line-height: 1.1;
+      @include articletext-header-one;
+    }
+  
+    @include modifier(cover) {
+      font-size: 1.5em;
+      h1 {
+        font-size: 3em;
+      }
+    }
+  
+    @include element(author) {
+      @include modifier(cover) {
+        font-weight: bold;
+      }
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+    }
+  
+    @include element(summary) {
+      font-size: 1.125em;
+      color: $gray-8;
+      font-style: italic;
+      line-height: 1.5;
+      margin-top: 1em;
+      margin-bottom: 1em;
+    }
+  
+    @include element(meta) {
+      color: $gray-8;
+      margin-bottom: 2rem;
+    }
+    @include element(category) {
+      color: inherit;
+      span {
+        padding: 0.5em;
+      }
+      &:hover {
+        background-color: #ededed;
+      }
+    }
+    @include element(meta) {
+      overflow: hidden;
+    }
+    .public-DraftStyleDefault-unstyled {
+      margin-top: 0;
+      margin-bottom: 1em;
+    }
+  
+    .public-DraftStyleDefault-image {
+      display: block;
+      max-width: 100%;
+      width: 100%;
+      margin: 0 auto;
+      height: auto;
+    }
+  
+    .public-DraftStyleDefault-ul,
+    .public-DraftStyleDefault-ol {
+      margin-top: 0;
+      padding-left: 0;
+    }
+    .public-DraftStyleDefault-orderedListItem.public-DraftStyleDefault-listLTR:before {
+      left: px-to-em(-36);
+      width: px-to-em(30);
+    }
+  
+    .public-DraftStyleDefault-pre {
+      margin-top: 0;
+    }
+    
+    .public-DraftStyleDefault-codeBlock {
+      background-color: #f3f3f3;
+      counter-reset: code-line;
+      margin-top: 0;
+  
+      .public-DraftStyleDefault-codeBlock-content {
+        padding: px-to-em(16) px-to-em(24);
+      }
+      
+      // .public-DraftStyleDefault-codeBlock-content {
+      //     margin-left: 2.75em;
+      //     padding-left: 0.5em;
+      //     padding-right: 0.5em;
+      //     border-left: 4px solid $gray-4;
+      //     line-height: $code-line-height;
+      // }
+      // .line {
+      //     counter-increment: code-line;
+      //     position: relative;
+      //     &::before {
+      //         content: counter(code-line);
+      //         position: absolute;
+      //         margin-left: -4.25em;
+      //         width: 3em;
+      //         text-align: right;
+      //         user-select: none;
+      //       }
+      // }
+      .is-empty::before {
+          margin-top: -$dz-code-line-height;
+        }
+      .public-DraftStyleDefault-codeBlock-hint {
+        padding: 3px px-to-em(24);
+        color: #aaa;
+      }
+    }
+  
+    .t-light {
+      font-family: Garamond, serif;
+    }
+  }
+  
+  
+  [data-entity-type='annotation:add'] {
+    // background-color: rgb(152, 247, 136);
+    background-color: $dz-annotation-add-bg-color;
+    padding: 6px 2px;
+    border-radius: 24px;
+  }
+  
+  [data-entity-type='annotation:delete'] {
+    // background-color: rgb(239, 100, 105);
+    background-color: $dz-annotation-delete-bg-color;
+    padding: 6px 2px;
+    border-radius: 24px;
+  }

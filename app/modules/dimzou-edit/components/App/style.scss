@@ -1,5 +1,43 @@
 @import 'base.scss';
 
+$sidebar-first-width: 224px;
+$sidebar-second-width: 250px;
+$sidebar-third-width: 180px; // ads-panel;
+
+@include block(ns(App, dz)) {
+  height: 100%;
+  min-height: calc(100vh - #{$header-height});
+  @include element(sidebarFirst) {
+    width: $sidebar-first-width;
+    // border-right: 1px solid $gray-1;
+    flex-shrink: 0;
+    z-index: $dimzou-sidebar-z-index;
+    padding-left: px-to-em(12);
+    padding-right: px-to-em(8);
+    // z-index: 1000; // 为用户 dimzou 页面 设置
+  }
+  @include element(main) {
+    padding-top: 16px;
+    flex: 1;
+  }
+  @include element(sidebarSecond) {
+    width: $sidebar-second-width;
+    padding-left: px-to-em(12);
+    padding-right: px-to-em(24);
+    // border-left: 1px solid $gray-1;
+    flex-shrink: 0;
+    
+    .ft-Block {
+      margin-top: 16px;
+    }
+
+    @include modifier(ads) {
+      width: $site-adPanel-width;
+    }
+  }
+}
+
+
 @include block(ns(Section, dz)) {
   position: relative;
   margin-bottom: 24px;
@@ -15,17 +53,10 @@
 }
 
 @include block(ns(EditPermissionPanel, dz)) {
-  margin-bottom: px-to-rem(12);
+  margin-top: px-to-rem(4);
+  margin-bottom: px-to-rem(8);
   display: flex;
   justify-content: flex-end;
-}
-
-@include block(ns(EditPermissionOption, dz)) {
-  .ft-SvgIcon {
-    width: px-to-rem(14);
-    height: px-to-rem(14);
-    line-height: 0;
-  }
 }
 
 @include block(ns(Edit, dz)) {
@@ -64,7 +95,7 @@
     }
   }
   @include element(main) {
-    max-width: px-to-rem(720);
+    max-width: px-to-rem(600);
     min-height: 100vh;
     margin: 0 auto;
     position: relative;
@@ -73,6 +104,7 @@
     min-height: px-to-rem(600);
     position: relative;
     margin: 0 auto;
+    padding-bottom: px-to-rem(240);
   }
 }
 

@@ -54,14 +54,28 @@ export function getPageLink(item) {
         as: `/dimzou/${item.bundle_id}/${item.node_id}`,
       };
     case 'node':
-      // return `/draft/${item.bundle_id}/${item.node_sort}`;
+      if (item.is_draft) {
+        return {
+          href: {
+            pathname: '/dimzou-edit',
+            query: {
+              pageName: 'draft',
+              bundleId: item.bundle_id,
+              nodeId: item.entity_id,
+            },
+          },
+          as: `/draft/${item.bundle_id}/${item.entity_id}`,
+        };
+      }
       return {
         href: {
-          pathname: '/dimzou-edit',
-          query: { bundledId: item.bundle_id },
+          pathname: '/dimzou-view',
+          query: { bundleId: item.bundle_id },
         },
-        as: `/draft/${item.bundle_id}`,
+        as: `/dimzou/${item.bundle_id}`,
       };
+    // return `/draft/${item.bundle_id}/${item.node_sort}`;
+
     case 'awesome':
       return {
         href: {

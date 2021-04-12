@@ -12,9 +12,14 @@ const TranslatableModeHint = ({
 }) =>
   isTranslateModeEnabled ? (
     <div style={{ position: 'fixed', right: 20, bottom: 80 }}>
-      <span>{sourceLocale}</span>
-      &nbsp;•••&nbsp;
-      <span>{targetLocale}</span>
+      <div>
+        <span>{sourceLocale}</span>
+        &nbsp;•••&nbsp;
+        <span>{targetLocale}</span>
+      </div>
+      <div>
+        Press <kbd>Enter</kbd> to submit
+      </div>
     </div>
   ) : null;
 

@@ -41,8 +41,10 @@ class TextField extends React.PureComponent {
     const { field, label, form, ...custom } = this.props;
     // const validateStatus = getValidateStatus(meta);
     const error = form.errors[field.name];
-    const validateStatus = (form.submitCount || 
-      form.touched[field.name]) && error ? 'error' : undefined;
+    const validateStatus =
+      (form.submitCount || form.touched[field.name]) && error
+        ? 'error'
+        : undefined;
     const asyncValidating = false;
     return (
       <FormItem

@@ -2,10 +2,6 @@
 
 @include block(ns(RewordingLikeWidget, dz)) {
   display: inline-block;
-  .LikeToggle {
-    padding: 2px;
-    margin-right: 4px;
-  }
 }
 
 @include block(ns(CoverPreview, dz)) {

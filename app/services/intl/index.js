@@ -22,6 +22,9 @@ function getHandler(options = {}) {
   } = options;
   return {
     get(obj, prop) {
+      if (prop === '$$typeof' || prop === 'prototype') {
+        return obj[prop];
+      }
       if (!(prop in obj)) {
         if (process.env.NODE_ENV !== 'production' || shouldLog) {
           if (typeof logging === 'object') {
@@ -32,7 +35,7 @@ function getHandler(options = {}) {
           return obj.fallback;
         }
         if (fallback) {
-          return fallback;
+          return fallback(prop);
         }
       }
       return obj[prop];

@@ -1,11 +1,10 @@
 import get from 'lodash/get';
 import update from 'immutability-helper';
 
-import { 
-  loadNodeEditInfo, 
-  submitBlock, 
+import {
+  initNodeEdit,
+  submitBlock,
   commitBlock,
-
   createAppendBlock,
   updateAppendBlock,
   removeAppendBlock,
@@ -26,15 +25,15 @@ describe('appendings', () => {
     expect(appendingsState).toEqual({});
   });
 
-  it('create tailing append block when loading edit info', () => {
+  it('create tailing append block when node has no content', () => {
     const payload = {
       bundleId: BUNDLE_ID,
       nodeId: NODE_ID,
-      data: {
-        content: [],
+      basic: {
+        node_paragraphs_count: 0,
       },
     };
-    const action = loadNodeEditInfo(payload);
+    const action = initNodeEdit.success(payload);
     const state = appendingReducer(appendingsState, action);
     const key = getAppendingKey(payload);
     expect(get(state, [key, TAILING_PIVOT])).toBeTruthy();

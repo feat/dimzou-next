@@ -1,0 +1,33 @@
+@import 'base.scss';
+
+.container {
+    padding: 20px;
+    z-index: 10;
+}
+
+.actions {
+    cursor: move;
+}
+.actionBtn {
+    border: 1px solid $gray-6;
+    border-radius: px-to-rem(14);
+    padding: 0 px-to-rem(10);
+    background-color: white;
+
+    & + & {
+        margin-left: 12px;
+    }
+
+    &.isActive {
+        background-color: $gray-10;
+        color: white;
+    }
+}
+
+.commentBoard {
+    padding: 12px;
+    background-color: white;
+    max-width: 400px;
+    margin-bottom: 12px;
+    @include pop-shadow;
+}

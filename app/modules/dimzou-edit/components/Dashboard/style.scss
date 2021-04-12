@@ -2,29 +2,170 @@
 
 
 $column-gap: 12px;
+$block-gap: 24px;
 
 @include block(ns(Dashboard, dz)) {
-    display: flex;
-    margin-left: px-to-rem(- $column-gap);
-    margin-right: px-to-rem(- $column-gap);
+    padding-left: 20px;
+    padding-right: 20px;
 
-    &__col1,
-    &__col2,
-    &__col3 {
-        min-width: 0;
-        padding-left: px-to-rem($column-gap);
-        padding-right: px-to-rem($column-gap);
-    }
-    
-    @include element(col1) {
-        flex-basis: 25%;
-    }
-    
-    @include element(col2) {
-        flex-basis: 50%;
-    }
-    @include element(col3) {
-        flex-basis: 25%;
-    }
+    // display: flex;
+    // margin-left: px-to-rem(- $column-gap);
+    // margin-right: px-to-rem(- $column-gap);
 
+    // &__col1,
+    // &__col2,
+    // &__col3 {
+    //     min-width: 0;
+    //     padding-left: px-to-rem($column-gap);
+    //     padding-right: px-to-rem($column-gap);
+    // }
+    
+    // @include element(col1) {
+    //     flex-basis: 25%;
+    // }
+    
+    // @include element(col2) {
+    //     flex-basis: 50%;
+    // }
+    // @include element(col3) {
+    //     flex-basis: 25%;
+    // }
+
+}
+
+@include block(ns(ReaderReport, dz)) {
+  @include element(grid) {
+    display: grid;
+    grid-template-columns: repeat( auto-fill, minmax(300px, 1fr) );
+    grid-column-gap: 20px;
+  }
+}
+
+@include block(ns(LatestComment, dz)) {
+  @include element(content) {
+    column-width: 300px;
+    column-gap: 20px;
+  }
+  .cm-CommentBoard {
+      border-bottom: none;
+  }
+  .cm-CommentBoard__header {
+      column-span: all;
+  }
+  .cm-CommentBoard__title {
+      padding-top: 12px;
+      padding-bottom: 12px;
+  }
+}
+
+
+@include block(breadcrumb) {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 0;
+  margin-bottom: 1rem;
+  list-style: none;
+  font-size: 14px;
+
+  &__item + &__item {
+    padding-left: .5rem;
+    &::before {
+      float: left;
+      padding-right: .5rem;
+      color: $gray-6;
+      content: var(--ft-breadcrumb-divider, "/");
+    }
+  }
+
+  &__item {
+    @include state(active) {
+      color: $gray-6;
+    }
+  }
+}
+
+
+@include block(ns(ResourceStatistics, dz)) {
+  @include element(content) {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  @include element(block) {
+    margin-bottom: $block-gap;
+  }
+}
+@include block(ns(ResourceBasic, dz)) {
+  display: flex;
+  @include element(main) {
+    padding-left: 8px;
+    padding-right: 8px;
+    flex: 1;
+  }
+  @include element(data) {
+    max-width: 320px;
+    min-width: 250px;
+    flex-basis: 20%;
+  }
+  @include element(title) {
+    font-size: 26px;
+    margin-bottom: 12px;
+  }
+  @include element(avatar) {
+    margin-bottom: 12px;
+  }
+  @include element(summary) {
+    font-size: 14px;
+  }
+}
+
+.l-UserApp__main {
+  .dz-SidebarName {
+    display: none;
+  }
+}
+
+@include block(ns(ResourceReport, dz)) {
+  @include element(brief) {
+    
+  }
+  @include element(table) {
+    
+  }
+}
+
+@include block(ns(ResourceReportBrief, dz)) {
+  display: flex;
+  flex-wrap: wrap;
+  @include element(item) {
+    min-width: 100px;
+    background-color: $gray-1;
+    flex: 1;
+    padding: 6px 5px;
+  }
+  @include element(title) {
+    
+  }
+  @include element(data) {
+    
+  }
+}
+
+@include block(ns(ResourceReportTable, dz)) {
+  @include element(rangeSelect) {
+    display: flex; 
+    justify-content: flex-end;
+    height: 36px;
+  }
+  @include element(content) {
+    margin-top: 12px;
+  }
+  @include element(footer) {
+    display: flex; 
+    justify-content: flex-end;
+    padding-right: 8px;
+    margin-top: .25em;
+  }
+  .ft-Table {
+    font-size: 14px;
+  }
 }

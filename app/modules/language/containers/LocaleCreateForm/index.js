@@ -4,7 +4,6 @@ import { Formik, Field } from 'formik';
 
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { bindPromiseCreators } from 'redux-saga-routines';
 
 import { selectCountries } from '@/modules/choices/selectors';
 import { fetchCountries } from '@/modules/choices/actions';
@@ -13,7 +12,7 @@ import CountrySelectField from '@/components/Formik/CountrySelectField';
 import TextField from '@/components/Formik/TextField';
 import DropdownSelectField from '@/components/Formik/DropdownSelectField';
 
-import { createLocalePromiseCreator, fetchLanguages } from '../../actions';
+import { fetchLanguages, asyncCreateLocale } from '../../actions';
 import { selectLanguages } from '../../selectors';
 
 class LanguageCreateForm extends React.Component {
@@ -33,10 +32,7 @@ class LanguageCreateForm extends React.Component {
       return <div>Loading...</div>;
     }
     return (
-      <Formik
-        initialValues={initialValues}
-        onSubmit={onSubmit}
-      >
+      <Formik initialValues={initialValues} onSubmit={onSubmit}>
         {(props) => (
           <form onSubmit={props.onSubmit}>
             <Field
@@ -98,16 +94,11 @@ const mapStateToProps = createStructuredSelector({
   country: selectCountries,
 });
 
-const mapDisptachToProps = (dispatch) => ({
-  ...bindPromiseCreators(
-    {
-      onSubmit: createLocalePromiseCreator,
-    },
-    dispatch,
-  ),
-  fetchCountries: () => dispatch(fetchCountries()),
-  fetchLanguages: () => dispatch(fetchLanguages()),
-});
+const mapDisptachToProps = {
+  onSubmit: asyncCreateLocale,
+  fetchCountries,
+  fetchLanguages,
+};
 
 export default connect(
   mapStateToProps,

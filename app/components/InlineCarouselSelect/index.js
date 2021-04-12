@@ -61,10 +61,10 @@ class InlineCarouselSelect extends React.Component {
             style={
               this.state.slideIndex > 0 && this.state.slideWidth
                 ? {
-                  transform: `translate3d(${-1 *
+                    transform: `translate3d(${-1 *
                       this.state.slideIndex *
                       this.state.slideWidth}px, 0, 0)`,
-                }
+                  }
                 : {}
             }
             ref={(n) => {
@@ -90,8 +90,8 @@ class InlineCarouselSelect extends React.Component {
           style={
             this.setState.slideCount === 1
               ? {
-                opacity: 0,
-              }
+                  opacity: 0,
+                }
               : {}
           }
         >

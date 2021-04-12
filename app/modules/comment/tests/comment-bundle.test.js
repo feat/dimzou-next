@@ -1,4 +1,5 @@
-import bundleReducer, { getBundleKey } from '../reducers/bundle';
+import bundleReducer from '../reducers/bundle';
+import { getBundleKey } from '../config';
 
 import {
   registerBundle,

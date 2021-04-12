@@ -1,0 +1,97 @@
+@import 'base.scss';
+
+@include block(ns(EditDockerWrap, dz)) {
+  // height: px-to-rem(160);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: fixed;
+  cursor: grab;
+  z-index: $dimzou-docker-z-index;
+
+  @include state(dragging) {
+    opacity: 0;
+  }
+}
+
+@include block(ns(EditDockerMenu, dz)) {
+  position: absolute;
+  bottom: calc(100% - #{px-to-rem(10)});
+  left: 0;
+  opacity: 0;
+  max-height: px-to-rem(10);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  padding-top: px-to-rem(12);
+  padding-bottom: px-to-rem(12);
+  width: 100%;
+  border-top-left-radius: px-to-rem(8);
+  border-top-right-radius: px-to-rem(8);
+
+  @include state(opened) {
+    opacity: 1;
+    bottom: 100%;
+    max-height: initial;
+    background-color: $gray-2;
+  }
+
+  @include element(item) {
+    display: block;
+    width: 100%;
+    margin-bottom: px-to-rem(5);
+  }
+}
+
+
+@include block(ns(EditDocker, dz)) {
+  position: relative;
+  padding-left: px-to-rem(8);
+  padding-right: px-to-rem(8);
+  padding-top: px-to-rem(6);
+  padding-bottom: px-to-rem(2);
+  background-color: $gray-2;
+
+  // background-color: transparentize($gray-2, .7);
+  // border: 1px solid $gray-1;
+  // backdrop-filter: blur(2px);
+  border-radius: px-to-rem(8);
+
+  // @include element(section) {
+  //   // background-color: $gray-2;
+  //   & + & {
+  //     margin-top: px-to-rem(10);
+  //   }
+  // }
+}
+
+@include block(ns(DockerButton, dz)) {
+  height: px-to-rem(32);
+  width: px-to-rem(32);
+  padding: px-to-rem(4);
+  margin-bottom: px-to-rem(4);
+  margin-right: px-to-rem(4);
+  border-radius: px-to-rem($btn-xs-border-radius);
+
+
+  @include modifier('header-two') {
+    padding: px-to-rem(2);
+  }
+  @include state(active) {
+    background-color: $gray-10;
+    color: white;
+  }
+}
+
+@include block(ns(DockerButtonGroup, dz)) {
+  display: inline-block;
+}
+
+@include block(ns(DockerSeparator, dz)) {
+  display: inline-block;
+  margin-left: px-to-rem(2);
+  margin-right: px-to-rem(5);
+  width: 1px;
+  height: 1em;
+  background-color: $gray-3;
+  position: relative;
+}

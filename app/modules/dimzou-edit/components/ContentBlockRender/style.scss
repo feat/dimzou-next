@@ -8,7 +8,7 @@
   padding-left: 48px;
   margin-left: -48px;
   margin-right: 0;
-  padding-bottom: px-to-rem(12);
+  padding-top: px-to-rem(12);
   position: relative;
   @include clearfix;
 
@@ -16,10 +16,20 @@
     margin-bottom: px-to-rem(24);
 
     // should sync with typo.scss summary
-    .typo-Article {
+    .dz-Typo {
       color: $gray-8;
       font-style: italic;
     }
+  }
+
+  @include element(leading) {
+    position: absolute;
+    right: calc(100% - #{px-to-rem(48 - 8)});
+    z-index: 10;
+    // .ft-Avatar {
+    //   width: px-to-rem(28);
+    //   height: px-to-rem(28);
+    // }
   }
 
   @include modifier(content) {
@@ -29,16 +39,19 @@
       font-family: $serif-title-font;
       color: $color-secondary;
       font-size: px-to-rem(14);
-      line-height: 1.5;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
       font-style: italic;
-      position: absolute;
-      right: calc(100% - 32px);
-      text-align: right;
+      padding-right: px-to-rem(8);
+      height: px-to-rem(24);
+      // position: absolute;
+      // right: calc(100% - #{px-to-rem(24)});
 
-      // &::before {
-      //   content: counter(para);
-      //   // color: $color-primary;
-      // }
+      &::before {
+        content: counter(para);
+        // color: $color-primary;
+      }
     }
   }
 
@@ -63,6 +76,31 @@
   @include element(currentAvatar) {
     position: absolute;
     left: 0;
+  }
+
+  @include element(main) {
+    .cm-CommentBundle {
+      position: relative;
+      z-index: 100;
+      margin-bottom: 0px;
+      margin-left: px-to-rem(-5);
+      margin-right: px-to-rem(-5);
+      margin-top: px-to-rem(8);
+    }
+    .cm-RootCommentForm__wrap {
+      width: 50%;
+    }
+    .cm-RootCommentForm__avatar > .ft-Avatar {
+      width: px-to-rem(28);
+      height: px-to-rem(28);
+    }
+    .cm-RootCommentForm__note,
+    .cm-CommentBundle__sectionHeader {
+      font-size: px-to-rem(18);
+    }
+    .cm-CommentSection + .cm-CommentSection_root {
+      margin-top: 2rem;
+    }
   }
 
   @include element(anchor) {
@@ -104,7 +142,7 @@
 
   @include modifier(placeholder) {
     margin-bottom: px-to-rem(36);
-    .typo-Article {
+    .dz-Typo {
       opacity: 0.5;
     }
   }
@@ -193,11 +231,11 @@
   }
 
   @include element(sectionTitle) {
-    font-size: px-to-rem(18);
+    font-size: px-to-rem(16);
     font-style: italic;
     color: $gray-8;
-    margin-top: px-to-rem(24);
-    margin-bottom: px-to-rem(12);
+    margin-top: px-to-rem(12);
+    margin-bottom: px-to-rem(8);
   }
 
   @include element(historicList) {
@@ -222,17 +260,17 @@
     margin-top: px-to-rem(24);
   }
 
-  // reset
-  .typo-Article {
-    h1:last-child,
-    h2:last-child,
-    figure:last-child,
-    pre:last-child,
-    p:last-child,
-    .public-DraftStyleDefault-unstyled:last-child {
-      margin-bottom: 0;
-    }
-  }
+  // // reset
+  // .dz-Typo {
+  //   h1:last-child,
+  //   h2:last-child,
+  //   figure:last-child,
+  //   pre:last-child,
+  //   p:last-child,
+  //   .public-DraftStyleDefault-unstyled:last-child {
+  //     margin-bottom: 0;
+  //   }
+  // }
 
   // Tablet
   @media (max-width: $screen-xs-max) {
@@ -282,16 +320,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: px-to-rem(14);
+  // margin-top: px-to-rem(14);
   height: px-to-rem(40);
   padding-right: px-to-rem(16);
 
   @include element(action) {
     margin-right: px-to-rem(24);
-    .ft-IconButton {
-      width: px-to-rem(28);
-      height: px-to-rem(28);
-    }
+    display: inline-block;
   }
   @include element(btn) {
     margin-left: px-to-rem(24);
@@ -306,12 +341,19 @@
   padding-left: px-to-rem(48);
   @include element(avatar) {
     position: absolute;
-    left: px-to-rem(4);
+    right: calc(100% - #{px-to-rem(48 - 8)});
     top: 0;
+    @include modifier(origin) {
+      padding-top: px-to-rem(20);
+    }
   }
   @include element(main) {
   }
   @include element(userInfo) {
+    height: px-to-rem(24);
+    display: flex;
+    align-items: center;
+    font-size: px-to-rem(14);
     span {
       display: inline-block;
       margin-right: 12px;
@@ -326,16 +368,46 @@
   @include element(date) {
     color: $gray-6;
   }
-  .typo-Article {
-    h1,
-    h2,
-    h3,
-    h4 {
-      margin-top: 0;
-    }
+  @include element(content) {
+    padding-top: px-to-rem(8);
+    padding-bottom: px-to-rem(8);
   }
 }
 
 // .dz-BlockSectionFooter + .dz-BlockSection__sectionTitle {
 //   margin-top: px-to-rem(12);
 // }
+@keyframes highlighted-block-fade {
+  0% {
+    background-color: var(--yellow-100);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+}
+.highlighted-block {
+  animation: highlighted-block-fade 3s;
+  animation-timing-function: ease-out;
+}
+
+// 展示区域的样式
+@include block(ns(ContentPreviewRegion, dz)) {
+  & > :first-child {
+    margin-top: 0;
+  }
+  & > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+// 编辑区域的样式
+@include block(ns(ContentEditRegion, dz)) {
+  div[data-contents="true"] {
+    & > :first-child {
+      margin-top: 0;
+    }
+    & > :last-child {
+      margin-bottom: 0;
+    }
+  }
+}

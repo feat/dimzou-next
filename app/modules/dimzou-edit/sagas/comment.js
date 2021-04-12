@@ -1,10 +1,10 @@
 import { call, put, takeEvery, select } from 'redux-saga/effects';
 import { normalize } from 'normalizr';
 
-import { rewordingComment as rewordingCommentSchema } from '@/schema';
 import ApiError from '@/errors/ApiError';
 
 import notification from '@feat/feat-ui/lib/notification';
+import { rewordingComment as rewordingCommentSchema } from '../schema';
 
 import {
   removeRewordingComment,
@@ -62,7 +62,6 @@ function* getRewordingCommentsAsync(action) {
   }
 }
 
-
 export function* tryToFetchNewComment(action) {
   const {
     nodeId,
@@ -81,8 +80,12 @@ export function* tryToFetchNewComment(action) {
   if (commentBundleState && commentBundleState.isInitialized) {
     // fetch comment an ...
     try {
-      let comment
-      if (action.payload.data && action.payload.data.content && action.payload.data.user) {
+      let comment;
+      if (
+        action.payload.data &&
+        action.payload.data.content &&
+        action.payload.data.user
+      ) {
         comment = action.payload.data;
       } else {
         const res = yield call(getCommentRequest, {
@@ -129,8 +132,12 @@ export function* tryToFetchUpdatedComment(action) {
     return;
   }
   try {
-    let comment
-    if (action.payload.data && action.payload.data.content && action.payload.data.user) {
+    let comment;
+    if (
+      action.payload.data &&
+      action.payload.data.content &&
+      action.payload.data.user
+    ) {
       comment = action.payload.data;
     } else {
       const res = yield call(getCommentRequest, {

@@ -1,0 +1,98 @@
+@import 'base.scss';
+
+@include block(ns(CategoryPanel, dz)) {
+  @include element(content) {
+    // margin-left: 24px;
+    // margin-right: 24px;
+    display: flex;
+  }
+  @include element(left) {
+    width: 175px;
+    min-width: 0;
+    flex-shrink: 0;
+    padding-top: 16px;
+    padding-right: 8px;
+    padding-left: 24px;
+    margin-right: 16px;
+  }
+  @include element(right) {
+    flex: 1;
+    padding-top: 16px;
+    padding-right: 24px;
+    padding-left: 24px;
+    background-color: $gray-1;
+  }
+
+  @include element(rootSelect) {
+    max-width: 700px;
+  }
+
+  @include element(secondarySelect) {
+    text-align: right;
+    .ft-Button {
+      margin-bottom: px-to-rem(8);
+      @include text-truncate();
+      max-width: 100%;
+      &:hover {
+        box-shadow: 0 6px 0 0 white;
+      }
+      &.is-selected {
+        box-shadow: 0 6px 0 0 white;
+      }
+    }
+  }
+  @include element(secondaryOption) {
+    text-align: right;
+    height: 1.7*($btn-sm-size);
+  }
+  @include element(tertiarySelect) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    grid-template-rows: repeat(auto-fill, #{1.7*($btn-sm-size)});
+    grid-column-gap: 8px;
+
+    height: 100%;
+
+    .ft-Button {
+      &:hover {
+        background-color: $gray-2;
+        box-shadow: 0 6px 0 0 $gray-1;
+        &.is-selected {
+          background-color: $gray-10;
+        }
+      }
+      &.is-selected {
+        // box-shadow: 0 6px 0 0 $color-secondary;
+        box-shadow: 0 6px 0 0 $gray-1;
+      }
+    }
+  }
+
+  @include element(category) {
+    height: 1.7*$btn-sm-size;
+  }
+
+  @include element(category) {
+    height: 1.7*$btn-sm-size;
+  }
+
+  .ft-Button {
+    text-align: left;
+    @include text-truncate;
+    max-width: 100%;
+
+    &:hover {
+      height: auto;
+      white-space: initial;
+      line-height: 1.6;
+      z-index: 10;
+    }
+  }
+  .ft-Button.is-selected {
+    height: auto;
+    white-space: initial;
+    line-height: 1.6;
+    min-height: px-to-rem($btn-sm-size);
+    z-index: 8;
+  }
+}

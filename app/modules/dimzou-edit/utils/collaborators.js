@@ -52,11 +52,11 @@ export const classifyCollaborators = (collaborators = []) => {
   admins.sort(collaboratorSort);
   participators.sort(collaboratorSort);
   blocked.sort(collaboratorSort);
-  
+
   return {
     owner,
     admins,
     participators,
     blocked,
-  }
+  };
 };

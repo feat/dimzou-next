@@ -1,0 +1,54 @@
+@import 'base.scss';
+
+.block {
+    padding-top: 12px;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: bold;
+    padding-left: 5px;
+    padding-right: 5px;
+    line-height: 1.2;
+    border-bottom: 2px solid $gray-10;
+    margin-bottom: 5px;
+
+    a {
+        color: inherit;
+    }
+}
+
+.element {
+    overflow: hidden;
+}
+.node {
+    color: inherit;
+    display: flex;
+    padding-left: 8px;
+    padding-right: 8px;
+    height: 28px;
+    align-items: center;
+    font-size: 14px;
+    @include btn-animation();
+    &:hover {
+        background-color: $gray-1;
+    }
+   
+    & > span {
+        @include text-truncate();
+    }
+
+    &.depth1 {
+        // padding-left: 1em;
+    }
+    &.depth2 {
+        padding-left: 2em;
+    }
+
+    &.isActive {
+        background-color: $gray-10;
+        color: white;
+    }
+}

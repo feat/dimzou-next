@@ -1,18 +1,19 @@
 // import React from 'react';
 import { ROLE_OWNER, ROLE_ADMIN, ROLE_PARTICIPATOR } from '../../constants';
+import Icon from '../Icon';
 
 function RoleIcon({ role }) {
   if (!role) {
     return null;
   }
   if (role === ROLE_OWNER) {
-    return '\u265A';
+    return <Icon className="size_16" name="roleOwner" />;
   }
   if (role === ROLE_ADMIN) {
-    return '\u265D';
+    return <Icon className="size_16" name="roleAdmin" />;
   }
   if (role === ROLE_PARTICIPATOR) {
-    return '\u265E';
+    return <Icon className="size_16" name="roleParticipator" />;
   }
 }
 

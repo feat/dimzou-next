@@ -1,16 +1,13 @@
 import { combineReducers } from 'redux';
 import { mapHandleActions } from '@/utils/reducerCreators';
-import {
-  fetchBundlePublication,
-  fetchBundleDesc,
-} from '../actions'
+import { fetchBundlePublication, fetchBundleDesc } from '../actions';
 
 const initialNodeState = {
   data: null,
   isFetching: false,
   fetchError: null,
   fetchedAt: null,
-}
+};
 
 const initialBundleState = {
   onceFetched: false,
@@ -19,7 +16,7 @@ const initialBundleState = {
   fetchError: null,
   data: null,
   nodes: {},
-}
+};
 
 const bundleDescReducer = mapHandleActions(
   {
@@ -54,7 +51,7 @@ const nodeReducer = mapHandleActions(
       ...state,
       fetchError: null,
     }),
-    [fetchBundlePublication.REQUEST]: (state) =>({
+    [fetchBundlePublication.REQUEST]: (state) => ({
       ...state,
       isFetching: true,
     }),
@@ -73,9 +70,9 @@ const nodeReducer = mapHandleActions(
   },
   initialNodeState,
   (action) => action.payload.nodeId,
-)
+);
 
 export default combineReducers({
   desc: bundleDescReducer,
   nodes: nodeReducer,
-})
+});

@@ -14,9 +14,7 @@ import Comment from '@feat/feat-ui/lib/comment';
 import FormHelp from '@feat/feat-ui/lib/form/FormHelp';
 import notification from '@feat/feat-ui/lib/notification';
 
-import {
-  EditorState,
-} from '@feat/draft-js';
+import { EditorState } from '@feat/draft-js';
 
 import {
   Editor,
@@ -26,13 +24,12 @@ import {
   contentStateToHTML,
 } from '@feat/feat-editor';
 
-import {
-  handlePastedText,
-} from '@/utils/editor';
+import { handlePastedText } from '@/utils/editor';
 
 import './style.scss';
 
-const createWithHTML = (html) => EditorState.moveFocusToEnd(createWithContent(contentStateFromHTML(html)));
+const createWithHTML = (html) =>
+  EditorState.moveFocusToEnd(createWithContent(contentStateFromHTML(html)));
 
 class SimpleForm extends React.Component {
   state = {
@@ -87,7 +84,7 @@ class SimpleForm extends React.Component {
       const data = this.getOutput();
       this.updateCache(data);
     });
-    
+
     if (this.state.submitError) {
       this.setState({ submitError: null });
     }
@@ -97,7 +94,7 @@ class SimpleForm extends React.Component {
     if (this.props.updateCache) {
       this.props.updateCache(data);
     }
-  }
+  };
 
   handleSubmit = (e) => {
     e.preventDefault();
@@ -118,7 +115,7 @@ class SimpleForm extends React.Component {
         .catch((err) => {
           this.setState({
             submitError: err,
-          })
+          });
           this.setState({
             isSubmitting: false,
           });
@@ -160,10 +157,13 @@ class SimpleForm extends React.Component {
   };
 
   handleEditorBlur = () => {
-    if (!this.state.editorState.getCurrentContent().hasText() && this.props.onEmptyContentBlur) {
+    if (
+      !this.state.editorState.getCurrentContent().hasText() &&
+      this.props.onEmptyContentBlur
+    ) {
       this.props.onEmptyContentBlur();
     }
-  }
+  };
 
   renderPrimaryButton() {
     const { deleteButtonText, submitButtonText } = this.props;
@@ -199,10 +199,14 @@ class SimpleForm extends React.Component {
     const { submitError } = this.state;
     return (
       <FormHelp
-        validateStatus="error" 
-        data={submitError.code === 'VALIDATION_EXCEPTION' ? submitError.data : submitError.message} 
+        validateStatus="error"
+        data={
+          submitError.code === 'VALIDATION_EXCEPTION'
+            ? submitError.data
+            : submitError.message
+        }
       />
-    )
+    );
   }
 
   render() {

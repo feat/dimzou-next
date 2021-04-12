@@ -89,8 +89,12 @@ export default defineMessages({
     id: 'dz.release.summary-required',
     defaultMessage: 'Summary required',
   },
+  coverRequired: {
+    id: 'dz.release.cover-required',
+    defaultMessage: 'Cover required',
+  },
   sectionRelease: {
     id: 'dz.release.section-release',
     defaultMessage: 'Section Release',
   },
-})
+});

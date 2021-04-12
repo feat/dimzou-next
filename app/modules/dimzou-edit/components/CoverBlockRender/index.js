@@ -1,15 +1,22 @@
-import React, { useEffect, useCallback, useMemo, useRef } from 'react';
+import React, {
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+  useContext,
+} from 'react';
 import PropTypes from 'prop-types';
-
-import Dropzone from 'react-dropzone';
+import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import get from 'lodash/get';
+import { NativeTypes } from 'react-dnd-html5-backend';
 
 import notification from '@feat/feat-ui/lib/notification';
-import message from '@feat/feat-ui/lib/message';
-import { formatMessage } from '@/services/intl';
+import message, { getMessageInstance } from '@feat/feat-ui/lib/message';
+import AppDndHandlerService from '@/services/dnd/AppDndHandlerService';
+import { AppDndContext } from '@/services/dnd/AppDndService';
 
-import dropTips from '@/images/drop-tips.svg';
+import { useStateCallback } from '@/utils/hooks';
 
 import {
   getTemplateCoverRatio,
@@ -20,6 +27,9 @@ import CoverCropper from '../CoverCropper';
 import CoverPreview from './CoverPreview';
 import CoverPlaceholder from './CoverPlaceholder';
 import CoverThumbnail from './CoverThumbnail';
+
+import FileDropzone from '../FileDropzone';
+import CoverDropTips from '../CoverDropTips';
 
 import { ATTACHMENT_MAX_SIZE, REWORDING_STATUS_PENDING } from '../../constants';
 import './style.scss';
@@ -38,9 +48,15 @@ const preparePreview = (file) => {
 };
 
 function CoverBlockRender(props) {
-  const { userCapabilities: { canEdit }} = props;
+  const {
+    userCapabilities: { canEdit },
+    intl: { formatMessage },
+  } = props;
   const viewBoxRef = useRef(null);
   const wrapRef = useRef(null);
+  const [state, setState] = useStateCallback({
+    showContent: !!props.rewordings.length,
+  });
 
   const submitEditContent = useCallback((cropOutput) => {
     const { template, blockState } = props;
@@ -81,7 +97,8 @@ function CoverBlockRender(props) {
     }
     if (files.length) {
       // window.scrollTo(0, 0);
-      const box = viewBoxRef.current && viewBoxRef.current.getBoundingClientRect();
+      const box =
+        viewBoxRef.current && viewBoxRef.current.getBoundingClientRect();
       if (!box) {
         return;
       }
@@ -131,15 +148,16 @@ function CoverBlockRender(props) {
       rewording.status === REWORDING_STATUS_PENDING &&
       rewording.user.uid !== props.currentUser.uid
     ) {
-      message.info(formatMessage(intlMessages.canNotEditPendingRewording))
+      message.info(formatMessage(intlMessages.canNotEditPendingRewording));
       return;
     }
 
     const { img } = rewording;
 
-    const box = viewBoxRef.current && viewBoxRef.current.getBoundingClientRect();
+    const box =
+      viewBoxRef.current && viewBoxRef.current.getBoundingClientRect();
     if (!box) {
-      return ;
+      return;
     }
     const payload = {
       bundleId: props.bundleId,
@@ -160,10 +178,10 @@ function CoverBlockRender(props) {
       updateRewording: rewording.status === REWORDING_STATUS_PENDING,
     };
     props.initBlockEdit(payload);
-  }, null)
+  }, null);
 
-  const { 
-    blockState, 
+  const {
+    blockState,
     template,
     rewordings,
     classifiedRewordings,
@@ -176,28 +194,29 @@ function CoverBlockRender(props) {
     },
   } = props;
 
-  
-
   const coverImage = get(props, 'info.origin', props.coverImage);
   const ratio = getTemplateCoverRatio(template);
-  
-  const versionArray = useMemo(() => {
-    if (!rewordings || !rewordings.length) {
-      return [];
-    }
-    const {
-      currentVersion,
-      candidateVersions,
-      historicVersions,
-      rejectedVersions,
-    } = classifiedRewordings;
-    return [
-      ...(currentVersion ? [currentVersion] : []),
-      ...candidateVersions,
-      ...historicVersions,
-      ...rejectedVersions,
-    ]
-  }, [rewordings]);
+
+  const versionArray = useMemo(
+    () => {
+      if (!rewordings || !rewordings.length) {
+        return [];
+      }
+      const {
+        currentVersion,
+        candidateVersions,
+        historicVersions,
+        rejectedVersions,
+      } = classifiedRewordings;
+      return [
+        ...(currentVersion ? [currentVersion] : []),
+        ...candidateVersions,
+        ...historicVersions,
+        ...rejectedVersions,
+      ];
+    },
+    [rewordings],
+  );
 
   // GET Targeted rewordings
   let targetedRewordingIdWithDefault;
@@ -212,46 +231,115 @@ function CoverBlockRender(props) {
     if (userPending) {
       targetedRewordingIdWithDefault = userPending.id;
     } else {
-      targetedRewordingIdWithDefault = versionArray[0] ? versionArray[0].id : undefined;
+      targetedRewordingIdWithDefault = versionArray[0]
+        ? versionArray[0].id
+        : undefined;
     }
   }
-  
-  const shouldDisplayTips =
-  !versionArray.length ||
-  (versionArray.length &&
-    versionArray[versionArray.length - 1].is_selected &&
-    !versionArray[versionArray.length - 1].template_config);
 
-  useEffect(() => {
-    if (!wrapRef.current) {
-      return;
-    }
-    const dom = wrapRef.current.querySelector('[data-is-selected=true]');
-    if (!dom) {
-      return;
-    }
-    const { offsetTop } = dom;
-    wrapRef.current.style.transform = `translateY(-${offsetTop}px)`;
-    
-  }, [targetedRewordingIdWithDefault, rewordings]);
+  const shouldDisplayTips =
+    !versionArray.length ||
+    (versionArray.length &&
+      versionArray[versionArray.length - 1].is_selected &&
+      !versionArray[versionArray.length - 1].template_config);
+
+  const shouldDisplayContent =
+    !!rewordings.length || blockState.isEditModeEnabled;
+
+  useEffect(
+    () => {
+      if (!wrapRef.current) {
+        return;
+      }
+      const dom = wrapRef.current.querySelector('[data-is-selected=true]');
+      if (!dom) {
+        return;
+      }
+      const { offsetTop } = dom;
+      wrapRef.current.style.transform = `translateY(-${offsetTop}px)`;
+    },
+    [targetedRewordingIdWithDefault, rewordings],
+  );
+
+  const appDndContext = useContext(AppDndContext);
+
+  useEffect(
+    // eslint-disable-next-line consistent-return
+    () => {
+      if (
+        appDndContext.draggableIsFree &&
+        appDndContext.itemType === NativeTypes.FILE
+      ) {
+        getMessageInstance().then((instance) => {
+          instance.notice({
+            key: 'dimzou-add-cover-notice',
+            duration: null,
+            content: '拖放图片并设置封面',
+          });
+        });
+        return () => {
+          getMessageInstance().then((instance) => {
+            instance.removeNotice('dimzou-add-cover-notice');
+          });
+        };
+      }
+    },
+    [appDndContext.draggableIsFree],
+  );
+
+  useEffect(
+    () => {
+      if (shouldDisplayContent) {
+        return;
+      }
+
+      AppDndHandlerService.register(NativeTypes.FILE, {
+        drop: (item, monitor) => {
+          if (!monitor.didDrop) {
+            return;
+          }
+          const result = monitor.getDropResult();
+          if (result) {
+            return;
+          }
+          const { files } = item;
+          if (files.length && /image\/*/.test(files[0].type)) {
+            window.scrollTo(0, 0);
+            setState({ showContent: true }, () => {
+              handleCoverDropzone(item.files);
+            });
+          }
+        },
+      });
+
+      // eslint-disable-next-line consistent-return
+      return () => {
+        AppDndHandlerService.unregister(NativeTypes.FILE);
+      };
+    },
+    [shouldDisplayContent],
+  );
+
+  const previewVisible =
+    rewordings.length || state.showContent || blockState.isEditModeEnabled;
 
   const preview = (
-    <div className="dz-CoverSection__wrap">
-      <Dropzone
+    <div
+      className="dz-CoverSection__wrap"
+      style={previewVisible ? undefined : { maxHeight: 0, overflow: 'hidden' }}
+    >
+      <FileDropzone
+        accept="image/*"
         maxSize={ATTACHMENT_MAX_SIZE * 1024 * 1024}
         onDrop={handleCoverDropzone}
+        canDrop={(_, monitor) => monitor.isOver({ shallow: true })}
         multiple={false}
-        onClick={(e) => {
-          e.preventDefault();
-        }}
-        onDragOver={(e) => {
-          e.stopPropagation();
-        }}
+        noClick
       >
-        {({ getRootProps, getInputProps, isDragActive }) => (
+        {({ getRootProps, getInputProps, canDrop }) => (
           <div
             className={classNames('dz-CoverSection__dropzone', {
-              'is-active': isDragActive,
+              'is-active': canDrop,
             })}
             style={{ paddingTop: `${100 / ratio}%` }}
             {...getRootProps()}
@@ -262,10 +350,7 @@ function CoverBlockRender(props) {
               ref={viewBoxRef}
             >
               {versionArray.length ? (
-                <div
-                  className="dz-CoverSection__rewordingWrap"
-                  ref={wrapRef}
-                >
+                <div className="dz-CoverSection__rewordingWrap" ref={wrapRef}>
                   {versionArray.map((record) => (
                     <CoverPreview
                       key={record.id}
@@ -273,14 +358,18 @@ function CoverBlockRender(props) {
                       nodeId={props.nodeId}
                       structure={props.structure}
                       blockId={props.blockId}
-                      isSelected={
-                        record.id === targetedRewordingIdWithDefault
-                      }
+                      isSelected={record.id === targetedRewordingIdWithDefault}
                       data={record}
                       template={template}
-                      candidateCount={classifiedRewordings.candidateVersions.length}
-                      historyCount={classifiedRewordings.historicVersions.length}
-                      rejectedCount={classifiedRewordings.rejectedVersions.length}
+                      candidateCount={
+                        classifiedRewordings.candidateVersions.length
+                      }
+                      historyCount={
+                        classifiedRewordings.historicVersions.length
+                      }
+                      rejectedCount={
+                        classifiedRewordings.rejectedVersions.length
+                      }
                       canElect={canElect}
                       electingRewording={electingRewording}
                       isNavigatePanelOpened={isNavigatePanelOpened}
@@ -294,19 +383,10 @@ function CoverBlockRender(props) {
                 <CoverPlaceholder image={coverImage} ratio={ratio} />
               )}
             </div>
-            {shouldDisplayTips && (
-              <div
-                className="dz-CoverSection__dropTips"
-                dangerouslySetInnerHTML={{
-                  __html: `<div>${dropTips} <div class="dz-CoverSection__dropTips_tips">${formatMessage(
-                    intlMessages.dropImageTips,
-                  )}</div></div>`,
-                }}
-              />
-            )}
+            {shouldDisplayTips && <CoverDropTips />}
           </div>
         )}
-      </Dropzone>
+      </FileDropzone>
       <div
         className="dz-CoverSection__navigate"
         style={isNavigatePanelOpened ? undefined : { display: 'none' }}
@@ -333,10 +413,7 @@ function CoverBlockRender(props) {
       {blockState.isEditModeEnabled && (
         <CoverCropper
           previewBox={blockState.box}
-          data={getTemplateCropInfo(
-            blockState.activeRewording,
-            template,
-          )}
+          data={getTemplateCropInfo(blockState.activeRewording, template)}
           sourceImage={blockState.sourceImage}
           onCancel={props.exitBlockEdit}
           onConfirm={submitEditContent}
@@ -348,6 +425,27 @@ function CoverBlockRender(props) {
 
 CoverBlockRender.propTypes = {
   blockState: PropTypes.object,
-}
+  template: PropTypes.string,
+  coverImage: PropTypes.string,
+  bundleId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  nodeId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  blockId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  structure: PropTypes.string,
+  rewordings: PropTypes.array,
+  currentUser: PropTypes.object,
+  userCapabilities: PropTypes.object,
+  classifiedRewordings: PropTypes.shape({
+    currentVersion: PropTypes.object,
+    candidateVersions: PropTypes.array,
+    historicVersions: PropTypes.array,
+    rejectedVersions: PropTypes.array,
+  }),
+  exitBlockEdit: PropTypes.func,
+  initBlockEdit: PropTypes.func,
+  updateBlockState: PropTypes.func,
+  postCoverRewording: PropTypes.func,
 
-export default CoverBlockRender;
+  intl: PropTypes.object,
+};
+
+export default injectIntl(CoverBlockRender, { forwardRef: true });

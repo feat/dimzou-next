@@ -28,7 +28,7 @@ export const asyncFetchCountryCallingCodes = () => async (dispatch) => {
   dispatch(fetchCountryCallingCodes());
   try {
     const { data, meta } = await fetchCountryCallingCodesRequest();
-    const sorted = data.sort((a, b) => a.label > b.label ? 1 : -1);
+    const sorted = data.sort((a, b) => (a.label > b.label ? 1 : -1));
     dispatch(
       fetchCountryCallingCodes.success({
         data: sorted,
@@ -36,7 +36,7 @@ export const asyncFetchCountryCallingCodes = () => async (dispatch) => {
       }),
     );
   } catch (err) {
-    dispatch(fetchCountryCallingCodes.failure(err))
+    dispatch(fetchCountryCallingCodes.failure(err));
   } finally {
     dispatch(fetchCountryCallingCodes.fulfill());
   }
@@ -53,4 +53,4 @@ export const asyncFetchCurrencyOptions = () => async (dispatch) => {
   } finally {
     dispatch(fetchCurrencyOptions.fulfill());
   }
-}
+};

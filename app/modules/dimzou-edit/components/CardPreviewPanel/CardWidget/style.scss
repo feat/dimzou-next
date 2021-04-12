@@ -1,0 +1,77 @@
+@import 'base.scss';
+
+@include block(ns(CardWidget, dz)) {
+  background-color: white;
+  @include element(dropzone) {
+    position: relative;
+    &:hover {
+      @include element(resetBtn, true) {
+        opacity: 1;
+      }
+    }
+    @include element(resetBtn, true) {
+      position: absolute;
+      right: 5px;
+      top: 3px;
+      opacity: 0;
+    }
+  }
+  @include element(cover) {
+    padding-top: percentage(9 / 16);
+    background-color: $gray-1;
+    position: relative;
+
+    @include state(inverse) {
+        background-color: $gray-8;
+        color: $gray-1;
+        @include element(coverPlaceholder, true) {
+          padding-bottom: 8px;
+          align-items: flex-end;
+          justify-content: flex-end;
+        }
+    }
+  }
+  @include element(coverPlaceholder) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: $gray-6;
+  }
+  @include modifier(III) {
+    @include element(coverPlaceholder, true) {
+      font-size: 12px;
+    }
+  }
+  @include modifier(IV) {
+    @include element(coverPlaceholder, true) {
+      font-size: 12px;
+    }
+  }
+  @include modifier(VII) {
+    @include element(cover, true) {
+      padding-top: 0;
+      height: 100%;
+    }
+  }
+  @include modifier(XI) {
+    @include element(dropzone, true) {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+    @include element(cover, true) {
+      padding-top: 35%;
+    }
+  }
+}

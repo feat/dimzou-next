@@ -25,7 +25,8 @@ class RadioButtonField extends React.PureComponent {
       ...custom
     } = this.props;
     const error = form.errors[field.name];
-    const validateStatus = form.touched[field.name] && error ? 'error' : undefined;
+    const validateStatus =
+      form.touched[field.name] && error ? 'error' : undefined;
     return (
       <FormItem
         label={<FormLabel>{label}</FormLabel>}

@@ -1,0 +1,348 @@
+@import 'base.scss';
+
+@include block(DimzouFeedCard) {
+  position: relative;
+  transition: all .3s ease;
+  --card-vertical-gap: 8px;
+  --card-horizontal-gap: 6px;
+
+  --title-line-height: 1.5;
+  --title-line-clamp: 2;
+  --title-font-size: 16px;
+
+  --content-line-height: 1.5;
+  --content-line-clamp: 3;
+  --content-font-size: 14px;
+  --text-font-size: 14px;
+
+  // --cover-width: 100%;
+  
+  padding: var(--card-vertical-gap) var(--card-horizontal-gap);
+  font-size: var(--text-font-size);
+  
+  &:hover {
+    background-color: white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, .1);
+  }
+  @include state(clickable, js) {
+    cursor: pointer;
+  }
+  @include state(static, is) {
+    cursor: initial;
+  }
+  @include state(draft) {
+    color: $dimzou-draft-theme-color;
+    @include element(coverWrap, true) {
+      position: relative;
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        top: 0;
+        background-color: $dimzou-draft-theme-color;
+        mix-blend-mode: screen;
+      }
+    }
+    @include element(cover, true) {
+      filter: grayscale(80%);
+    }
+    .ft-AvatarStamp__username,
+    .ft-AvatarStamp__desc {
+      color: $dimzou-draft-theme-color;
+    }
+
+    @include state(translation) {
+      color: $dimzou-translation-theme-color;
+      @include element(coverWrap, true) {
+        &::after {
+          background-color: $dimzou-translation-theme-color;
+        }
+      }
+      .ft-AvatarStamp__username,
+      .ft-AvatarStamp__desc {
+        color: $dimzou-translation-theme-color;
+      }
+    }
+  }
+
+  @include element(title) {
+    display: -webkit-box;
+    font-weight: normal;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    -webkit-line-clamp: var(--title-line-clamp);
+    font-size: var(--title-font-size);
+    line-height: var(--title-line-height);
+
+    &:focus-within {
+      -webkit-line-clamp: unset;
+      max-height: calc(var(--title-line-clamp) * var(--title-line-height) * 1em); 
+    }
+  }
+  @include element(content) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    -webkit-line-clamp: var(--content-line-clamp);
+    font-size: var(--content-font-size);
+    line-height: var(--content-line-height);
+
+    &:focus-within {
+      -webkit-line-clamp: unset;
+      max-height: calc(var(--content-line-clamp) * var(--content-line-height) * 1em); 
+    }
+  }
+
+  // .ft-AvatarStamp__desc,
+  // .ft-AvatarStamp__username {
+  //   font-size: 12px;
+  // }
+  // .ft-AvatarStamp__usernameWrap {
+  //   margin-bottom: 2px;
+  // }
+  .ft-AvatarStamp_placeholder {
+    min-width: 0;
+  }
+
+  @include element(mark) {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    border: 2px dashed rgba(30, 117, 183, 0.45);
+    background: rgba(0, 0, 0, 0.25);
+  }
+}
+
+@include block(DimzouFeedCard, I) {
+  @include element(title, true) {
+    margin-top: .25em;
+    margin-bottom: .25em;
+  }
+  @include element(content, true) {
+    margin-top: .25em;
+  }
+}
+
+@include block(DimzouFeedCard, II) {
+  @include element(title, true) {
+    margin-top: .25em;
+    margin-bottom: .25em;
+  }
+  @include element(content, true) {
+    margin-top: .25em;
+  }
+}
+
+@include block(DimzouFeedCard, III) {
+    overflow: hidden;
+    @include element(coverWrap, true) {
+      width: var(--cover-width, 45%);
+      float: right;    
+      margin-top: .25em;
+      margin-left: 5px;
+    }
+    @include element(title, true) {
+        margin-top: .25em;
+        margin-bottom: .25em;
+    }
+    @include element(content, true) {
+      margin-top: .25em;
+    }
+}
+
+@include block(DimzouFeedCard, IV) {
+  overflow: hidden;
+  @include element(coverWrap, true) {
+    width: var(--cover-width, 45%);
+    float: left;    
+    margin-top: .25em;
+    margin-right: 5px;
+  }
+  @include element(title, true) {
+      margin-top: .25em;
+      margin-bottom: .25em;
+  }
+  @include element(content, true) {
+    margin-top: .25em;
+  }
+}
+
+@include block(DimzouFeedCard, V) {
+    overflow: hidden;
+    @include element(title, true) {
+        margin-top: 0;
+        margin-bottom: .25em;
+    }
+    @include element(content, true) {
+        margin-top: .5em;
+        padding-top: .2em;
+    }
+    @include element(coverWrap, true) {
+        width: 50%;
+        float: left;
+        margin-top: .5em;
+        margin-right: var(--card-horizontal-gap);
+    }
+}
+
+@include block(DimzouFeedCard, VI) {
+  @include element(title, true) {
+      margin-top: .5em;
+      margin-bottom: .5em;
+  }
+  @include element(content, true) {
+    margin-top: .5em;
+  }
+}
+
+@include block(DimzouFeedCard, VII) {
+  
+  position: relative;
+
+  @include element(coverWrap, true) {
+    padding-top: percentage(7 /12);
+    position: relative;
+  }
+  @include element(cover, true) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  @include element(inner, true) {
+    position: absolute;
+    top: 20px;
+    left: 24px;
+    right: 20px;
+    bottom: 48px;
+  }
+  @include element(title, true) {
+    margin-top: 0;
+    margin-bottom: .5em;
+    color: white;
+    text-shadow: 0 0 3px rgba(0, 0, 0, .3);
+  }
+  @include element(content, true) {
+    margin-top: .5em;
+    color: white;
+    text-shadow: 0 0 3px rgba(0, 0, 0, .2);
+  }
+  .ft-AvatarStamp__username,
+  .ft-AvatarStamp__meta,
+  .ft-AvatarStamp__desc {
+    color: white;
+    text-shadow: 0 0 3px rgba(0, 0, 0, .2);
+  }
+}
+
+@include block(DimzouFeedCard, VIII) {
+  @include element(header, true) {
+    overflow: hidden;
+  }
+  @include element(coverWrap, true) {
+    width: var(--cover-width, 52%);
+    float: left;
+    margin-right: var(--card-horizontal-gap);
+  }
+    @include element(title, true) {
+        margin-top: .25em;
+        margin-bottom: .4em;
+    }
+    @include element(content, true) {
+      margin-top: .5em;
+    }
+}
+
+@include block(DimzouFeedCard, IX) {
+  @include element(inner, true) {
+    padding: 8px;
+  }
+  @include element(title, true) {
+    margin-top: .25em;
+    margin-bottom: .5em;
+  }
+  @include element(content, true) {
+    margin-top: .75em;
+    -webkit-line-clamp: 4;
+  }
+}
+
+@include block(DimzouFeedCard, X) {
+    overflow: hidden;
+  @include element(coverWrap, true) {
+    width: var(--cover-width, 52%);
+    float: left;
+    margin-right: calc(var(--card-horizontal-gap) * 1.5);
+  }
+  @include element(title, true) {
+    margin-top: .25em;
+    margin-bottom: .5em;
+  }
+  @include element(content, true) {
+    margin-top: .5em;
+  }
+}
+
+@include block(DimzouFeedCard, XI) {
+    position: relative;
+    overflow: hidden;
+    @include element(coverWrap, true) {
+      padding-top: percentage(7 / 20);
+      position: relative;
+    }
+    @include element(cover, true) {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding-top: percentage(7 / 20) !important;
+    }
+    @include element(inner, true) {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        right: 30%;
+        bottom: 24px;
+    }
+    @include element(title, true) {
+      margin-top: 0;
+      margin-bottom: .75em;
+      color: white;
+      text-shadow: 0 0 4px rgba(0, 0, 0, .2);
+    }
+
+    @include element(content, true) {
+        margin-top: 1em;
+        color: white;
+        text-shadow: 0 0 4px rgba(0, 0, 0, .2);
+    }
+    .ft-AvatarStamp__username,
+    .ft-AvatarStamp__meta,
+    .ft-AvatarStamp__desc {
+      color: white;
+    }
+    
+}
+
+@include block(DimzouFeedCard, XII) {
+  overflow: hidden;
+  @include element(coverWrap, true) {
+    width: 60%;
+    float: left;
+    margin-right: calc(var(--card-horizontal-gap) * 1.5);
+  }
+  @include element(title, true) {
+    margin-top: .25em;
+    margin-bottom: .5em;
+  }
+  @include element(content, true) {
+    margin-top: .75em;
+  }
+}

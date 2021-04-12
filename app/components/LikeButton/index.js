@@ -2,19 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
+import ButtonBase from '@feat/feat-ui/lib/button/ButtonBase';
 import heartBeatUri from './assets/heartbeat.mp3';
-import heartIcon from './assets/icon-heart.svg';
+import { ReactComponent as HeartIcon } from './assets/icon-heart.svg';
+
 import './style.scss';
 
 class LikeButton extends React.PureComponent {
-  static propTypes = {
-    hasLiked: PropTypes.bool,
-    onClick: PropTypes.func.isRequired,
-    className: PropTypes.string,
-    disabled: PropTypes.bool,
-  };
-
   state = {
     isLiking: false,
     isDisLiking: false,
@@ -69,27 +63,33 @@ class LikeButton extends React.PureComponent {
   };
 
   render() {
-    const { hasLiked, className, disabled } = this.props;
+    const { hasLiked, className, disabled, iconClassName } = this.props;
     const { isLiking, isDisLiking } = this.state;
     const isActive = !isDisLiking && (isLiking || hasLiked);
     return (
-      <IconButton
-        className={classNames('LikeToggle', className, {
+      <ButtonBase
+        className={classNames('LikeToggle', 'size_xs', className, {
           'is-liking': !isDisLiking && isLiking,
+          'is-active': isActive,
         })}
-        isActive={isActive}
         disabled={disabled}
         onClick={this.handleClick}
+        padding={false}
       >
-        <span 
-          className={classNames("ft-SvgIcon", {
-            'is-active': isActive,
-          })} 
-          dangerouslySetInnerHTML={{ __html: heartIcon }} 
-        />
-      </IconButton>
+        <HeartIcon className={iconClassName} />
+      </ButtonBase>
     );
   }
 }
+
+LikeButton.propTypes = {
+  hasLiked: PropTypes.bool,
+  onClick: PropTypes.func.isRequired,
+  className: PropTypes.string,
+  disabled: PropTypes.bool,
+  iconClassName: PropTypes.string,
+};
+
+LikeButton.defaultProps = {};
 
 export default LikeButton;

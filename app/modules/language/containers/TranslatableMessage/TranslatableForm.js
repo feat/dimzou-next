@@ -3,14 +3,16 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { bindPromiseCreators } from 'redux-saga-routines';
+
+import notification from '@feat/feat-ui/lib/notification';
+import message from '@feat/feat-ui/lib/message';
 
 import {
   makeSelectTranslation,
   makeSelectTargetTranslation,
   isTargetTranslationReady,
 } from '../../selectors';
-import { submitTranslationPromiseCreator } from '../../actions';
+import { asyncSubmitTranslation, asyncDeleteTranslation } from '../../actions';
 
 import './style.scss';
 
@@ -54,6 +56,7 @@ class TranslatableForm extends React.Component {
 
   handleClick = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     if (this.props.isReady && this.input) {
       const isEditable = this.input.getAttribute('contenteditable');
       if (!isEditable) {
@@ -65,7 +68,13 @@ class TranslatableForm extends React.Component {
 
   renderSpan() {
     const { input, placeholder } = this;
-    const { translation, id, targetLocale, submitTranslation } = this.props;
+    const {
+      translation,
+      id,
+      targetLocale,
+      submitTranslation,
+      deleteTranslation,
+    } = this.props;
     input.innerText = translation || '';
     if (!translation) {
       placeholder.classList.add('is-visible');
@@ -83,13 +92,35 @@ class TranslatableForm extends React.Component {
           locale: targetLocale,
           translation: text,
         };
-        submitTranslation(data).then(() => {
-          input.classList.remove('is-submitting');
-        });
+        if (translation && !text) {
+          deleteTranslation(data)
+            .then(() => {
+              message.success('Translation deleted');
+            })
+            .catch((err) => {
+              notification.error({
+                message: 'Error',
+                description: err.message,
+              });
+            });
+          return;
+        }
+        submitTranslation(data)
+          .then(() => {
+            input.classList.remove('is-submitting');
+            message.success('Translation submitted');
+          })
+          .catch((err) => {
+            notification.error({
+              message: 'Failed To Submit Translation',
+              description: err.message,
+            });
+          });
       }
     });
 
-    input.addEventListener('keyup', () => {
+    input.addEventListener('keyup', (e) => {
+      e.preventDefault();
       const text = input.innerText;
       const placehodlerHasVisibleClass = placeholder.classList.contains(
         'is-visible',
@@ -124,6 +155,7 @@ class TranslatableForm extends React.Component {
 TranslatableForm.propTypes = {
   id: PropTypes.string,
   submitTranslation: PropTypes.func,
+  deleteTranslation: PropTypes.func,
   targetLocale: PropTypes.string,
   translation: PropTypes.string,
   origin: PropTypes.string,
@@ -137,15 +169,12 @@ const mapStateToProps = createStructuredSelector({
   isReady: isTargetTranslationReady,
 });
 
-const mapDispachToProps = (dispatch) =>
-  bindPromiseCreators(
-    {
-      submitTranslation: submitTranslationPromiseCreator,
-    },
-    dispatch,
-  );
+const mapDispatchToProps = {
+  submitTranslation: asyncSubmitTranslation,
+  deleteTranslation: asyncDeleteTranslation,
+};
 
 export default connect(
   mapStateToProps,
-  mapDispachToProps,
+  mapDispatchToProps,
 )(TranslatableForm);

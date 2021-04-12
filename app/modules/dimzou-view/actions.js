@@ -7,138 +7,101 @@
 import { createRoutine } from 'redux-saga-routines';
 import { normalize } from 'normalizr';
 
-import { 
-  dimzouBundle as dimzouBundleSchema,
-  dimzouPublication as publicationSchema,
-} from '@/schema';
+import { dimzouPublication as publicationSchema } from '@/schema';
 
-import configTemplates from '@/components/FeedTemplate/configTemplates';
-import { selectUserListState } from './selectors';
-import { 
-  fetchUserDimzous as fetchUserDimzousRequest,
-  fetchPublication as fetchPublicationRequest,
-} from './requests';
-
-import { DETAIL_VIEW_TYPE_WORK, DETAIL_VIEW_TYPE_BOOK, PUB_TYPE_WORK } from './constants';
+import { fetchPublication as fetchPublicationRequest } from './requests';
 
 const NS = 'DZ_VIEW';
 
-export const fetchUserDimzous = createRoutine(`${NS}/FETCH_USER_WORKS`);
+export const fetchBundlePublicationMeta = createRoutine(
+  `${NS}/FETCH_BUNDLE_PUB_META`,
+);
 
-export const asyncFetchUserDimzous = (payload) => async (dispatch, getState) => {
-  const { userId } = payload
-  dispatch(fetchUserDimzous.trigger(payload))
-  const pageState = selectUserListState(getState(), { userId })
-  if (pageState.loading) {
-    return
-  }
+/**
+ * 出版物阅读初始化
+ * @param {} payload
+ */
+export const asyncFetchBundlePublicationMeta = (payload) => async (
+  dispatch,
+) => {
+  dispatch(fetchBundlePublicationMeta.trigger(payload));
+
+  const { bundleId } = payload;
   try {
-    dispatch(fetchUserDimzous.request(payload))
-    const params = pageState.next || { page_size: 10 }
-    const { data, pagination } = await fetchUserDimzousRequest(
-      userId,
-      params,
-    );
-    const templates = configTemplates(
-      pageState.templates,
-      data.length,
-      pagination.total_count,
-    );
-    const normalized = normalize(data, [dimzouBundleSchema]);
+    dispatch(fetchBundlePublicationMeta.request(payload));
+    const { data } = await fetchPublicationRequest({
+      bundle: bundleId,
+      related: true,
+    });
+    const info = {
+      pub_type: data.pub_type,
+      title: data.title,
+      nodes: data.nodes,
+      author: data.author,
+      category: data.category,
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+      language: data.language,
+      bundle_is_multi_chapter: data.bundle_is_multi_chapter,
+      bundle_id: data.bundle_id,
+      template: data.template,
+      related: data.related,
+      node_id: data.node_id,
+    };
+
+    // if (data.pub_type === PUB_TYPE_WORK || !data.is_binding_publish) {
+    //   info.type = DETAIL_VIEW_TYPE_WORK;
+    //   info.nodes = data.nodes;
+    // } else {
+    //   info.type = DETAIL_VIEW_TYPE_BOOK;
+    //   info.nodes = data.nodes;
+    //   info.nodeId = data.node_id;
+    //   info.publicationId = data.id;
+    // }
 
     dispatch(
-      fetchUserDimzous.success({
-        userId,
-        list: normalized.result,
-        next: pagination.next
-          ? {
-            page: pagination.next,
-            page_size: pagination.page_size,
-          }
-          : null,
-        templates,
-        entities: normalized.entities,
+      fetchBundlePublicationMeta.success({
+        bundleId,
+        data: info,
       }),
     );
+    return info;
   } catch (err) {
     dispatch(
-      fetchUserDimzous.failure({
-        userId,
+      fetchBundlePublicationMeta.failure({
+        bundleId,
         data: err,
       }),
     );
-    throw err;
+    return undefined;
   } finally {
     dispatch(
-      fetchUserDimzous.fulfill({
-        userId,
-      }),
-    );
-  }
-}
-
-export const initDimzouView = createRoutine(`${NS}/INIT_DIMZOU_VIEW`);
-export const asyncInitDimzouView = (payload, meta = {}) => async (dispatch) => {
-  dispatch(initDimzouView.request(payload));
-  const { bundleId, nodeId } = payload;
-  try {
-    const { data: publication } = await fetchPublicationRequest(
-      {
-        bundle: bundleId,
-        node: nodeId,
-        related: true, // fetch related info
-      },
-      meta.headers,
-    );
-    const info = {};
-    if (publication.pub_type === PUB_TYPE_WORK || !publication.is_binding_publish) {
-      info.type = DETAIL_VIEW_TYPE_WORK;
-      info.nodes = publication.nodes;
-      info.publicationId = publication.id;
-      info.nodeId = publication.node_id;
-    } else {
-      info.type = DETAIL_VIEW_TYPE_BOOK;
-      info.nodes = publication.nodes;
-      info.nodeId = publication.node_id;
-      info.publicationId = publication.id;
-    }
-    const normalized = normalize(publication, publicationSchema);
-    dispatch(
-      initDimzouView.success({
+      fetchBundlePublicationMeta.fulfill({
         bundleId,
-        data: info,
-        entities: normalized.entities,
       }),
     );
-  } catch (err) {
-    dispatch(initDimzouView.failure({
-      bundleId,
-      data: err,
-    }))
-  } finally {
-    dispatch(initDimzouView.fulfill({
-      bundleId,
-    }))
   }
-}
+};
 
-
-export const fetchNodePublication = createRoutine(`${NS}/FETCH_NODE_PUBLICATION`);
+export const fetchNodePublication = createRoutine(
+  `${NS}/FETCH_NODE_PUBLICATION`,
+);
 
 export const asyncFetchNodePublication = (payload) => async (dispatch) => {
-  const { bundleId, data } = payload;
+  const { bundleId, nodeId } = payload;
+  dispatch(fetchNodePublication.trigger(payload));
   try {
+    dispatch(fetchNodePublication.request(payload));
     const { data: publication } = await fetchPublicationRequest({
       bundle: bundleId,
-      node: data.nodeId,
+      node: nodeId,
     });
     const normalized = normalize(publication, publicationSchema);
     dispatch(
       fetchNodePublication.success({
-        bundleId,
+        nodeId,
         data: {
-          publicationId: normalized.result,
-          nodeId: data.nodeId,
+          publication: normalized.result,
         },
         entities: normalized.entities,
       }),
@@ -146,7 +109,7 @@ export const asyncFetchNodePublication = (payload) => async (dispatch) => {
   } catch (err) {
     dispatch(
       fetchNodePublication.failure({
-        bundleId,
+        nodeId,
         data: err,
       }),
     );

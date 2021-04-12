@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
-
-import { formatMessage } from '@/services/intl';
+import { injectIntl } from 'react-intl';
 import commonMessages from '@/messages/common';
 
 import FeatModal from '@feat/feat-ui/lib/feat-modal';
@@ -100,7 +99,12 @@ class LanguageSelectPanel extends React.PureComponent {
   };
 
   renderSelect() {
-    const { locales, selectedLang, canCreateLocale } = this.props;
+    const {
+      locales,
+      selectedLang,
+      canCreateLocale,
+      intl: { formatMessage },
+    } = this.props;
     const { selectedGroup } = this.state;
     // const languageGroup = groupBy(locales, (item) => item.continent_code);
     const languageSort = sortBy(locales, (item) => item.label_region);
@@ -128,7 +132,7 @@ class LanguageSelectPanel extends React.PureComponent {
     //     ? locales
     //     : languageGroup[selectedGroup] || [];
     return (
-      <FeatModal className="LanguageSelect">
+      <FeatModal fixedHeight className="LanguageSelect">
         <FeatModal.Wrap>
           <FeatModal.Header>
             <FeatModal.Title className="LanguageSelectFlex__option">
@@ -152,6 +156,7 @@ class LanguageSelectPanel extends React.PureComponent {
                 {groupOptions.map((option, index) => (
                   <Button
                     type="merge"
+                    key={option.value}
                     className={classNames({
                       'is-selected': selectedGroup === option.value,
                     })}
@@ -191,7 +196,11 @@ class LanguageSelectPanel extends React.PureComponent {
                         block
                         type="merge"
                         value={lang.label}
-                        disabled={this.props.shouldDisable ? this.props.shouldDisable(lang) : false}
+                        disabled={
+                          this.props.shouldDisable
+                            ? this.props.shouldDisable(lang)
+                            : false
+                        }
                         onClick={() => this.selectLang(lang.locale)}
                       >
                         {this.props.isRegion ? lang.label_region : lang.label}
@@ -234,7 +243,7 @@ class LanguageSelectPanel extends React.PureComponent {
         {locales ? (
           this.renderSelect()
         ) : (
-          <FeatModal className="LanguageSelect">
+          <FeatModal fixedHeight className="LanguageSelect">
             <FeatModal.Wrap>
               <FeatModal.Header>
                 <FeatModal.Title>
@@ -269,6 +278,10 @@ LanguageSelectPanel.propTypes = {
   isDesktop: PropTypes.bool,
   isRegion: PropTypes.bool,
   shouldDisable: PropTypes.func,
+
+  intl: PropTypes.object,
 };
 
-export default withDeviceInfo(LanguageSelectPanel);
+export default withDeviceInfo(
+  injectIntl(LanguageSelectPanel, { forwardRef: true }),
+);

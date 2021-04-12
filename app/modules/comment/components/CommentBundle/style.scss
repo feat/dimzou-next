@@ -1,5 +1,14 @@
 @import 'base.scss';
 
+@mixin comment-page-couter {
+  content: counter(commentpage);
+  counter-increment: commentpage;
+  text-align: right;
+  color: $gray-8;
+  font-size: px-to-rem(12);
+  font-style: italic;
+}
+
 @include block(ns(CommentBundle, cm)) {
   margin-bottom: px-to-rem(24);
   @include state(content, no) {
@@ -13,17 +22,16 @@
   }
   @include element(sectionHeader) {
     position: relative;
-    top: px-to-rem(8);
     font-size: px-to-rem(20);
     font-family: $sans-serif-title-font;
     font-weight: bold;
     padding-left: px-to-rem(5);
-    line-height: 1;
+    margin-bottom: .5em;
   }
 }
 
 @include block(ns(RootCommentForm, cm)) {
-  margin-top: px-to-rem(12);
+  margin-bottom: 12px;
   @include element(note) {
     font-size: px-to-rem($font-size-h5);
     font-family: $sans-serif-title-font;
@@ -37,7 +45,7 @@
     .ft-Username {
       margin-right: .5em;
     }
-    .t-Meta {
+    .t-meta {
       margin-right: .5em;
     }
   }
@@ -54,22 +62,30 @@
     min-width: 0;
     flex: 1;
   }
-  .SimpleForm {
+  .cm-CommentForm {
     margin-bottom: 0;
   }
-  .SimpleForm__input {
+  .cm-CommentForm__input {
     padding-top: 0;
     padding-bottom: 0;
   }
-  .SimpleForm__footer {
+  .cm-CommentForm__footer {
     margin-bottom: 0;
   }
 }
 
 @include block(ns(CommentSection, cm)) {
-  .SimpleForm__input {
+  .cm-CommentForm__input {
     padding-top: 0;
     padding-bottom: 0;
+  }
+  .ft-Comment__content {
+    ol {
+      list-style: decimal;
+    }
+    ul {
+      list-style: initial;
+    }
   }
 }
 
@@ -78,84 +94,63 @@
 }
 
 @include block(ns(CommentSections, cm)) {
-  counter-reset: commentpage;
-  $page-anchor-size: 24px;
-  @include element(cell) {
+  @include modifier(page) {
+    counter-reset: commentpage; 
+  }
+}
+
+@include block(ns(CommentSectionStack, cm)) {
+  position: relative;
+  // min-height: 23em * 2;   // 
+  $page-gap: 50px;
+  @include element(header) {
+    column-span: all; 
+    height: 8px;
+  }
+  @include element(content) {
+    padding-left: 5px;
+    padding-right: 5px;
+    min-height: 20em;
+    width: calc(50% - #{$page-gap / 2} + 5px);
+  } 
+  @include element(footer) {
+    column-span: all; 
+    height: 3em;
     position: relative;
-    padding: px-to-rem(12) px-to-rem(36) px-to-rem(18) px-to-rem(5);
-    margin-bottom: px-to-rem(48);
-    
-    // min-height: 30em;
-
-    // background:
-    //   linear-gradient(-90deg, transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size),
-    //   linear-gradient(transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size),
-    //   linear-gradient(-90deg, transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size),
-    //   linear-gradient(transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size),
-    //   linear-gradient(-90deg, transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size),
-    //   linear-gradient(transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size),
-    //   linear-gradient(-90deg, transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size),
-    //   linear-gradient(transparent 0px, transparent $page-anchor-size / 2 - 1, $gray-10 $page-anchor-size / 2 - 1, transparent $page-anchor-size / 2, transparent $page-anchor-size);
-
-    // background:
-    //   linear-gradient(90deg, transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px),
-    //   linear-gradient(transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px),
-    //   linear-gradient(-90deg, transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px),
-    //   linear-gradient(transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px),
-    //   linear-gradient(90deg, transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px),
-    //   linear-gradient(0deg, transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px),
-    //   linear-gradient(-90deg, transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px),
-    //   linear-gradient(0deg, transparent 0px, $gray-10 1px, transparent 1px,  transparent 2px)
-    //   ;
-
-    // background-size:
-    //   $page-anchor-size $page-anchor-size,
-    //   $page-anchor-size $page-anchor-size,
-    //   $page-anchor-size $page-anchor-size,
-    //   $page-anchor-size $page-anchor-size,
-    //   $page-anchor-size $page-anchor-size,
-    //   $page-anchor-size $page-anchor-size,
-    //   $page-anchor-size $page-anchor-size,
-    //   $page-anchor-size $page-anchor-size;
-    // background-repeat: no-repeat;
-    // background-position:
-    //   top left,
-    //   top left,
-    //   top right,
-    //   top right,
-    //   bottom left,
-    //   bottom left,
-    //   bottom right,
-    //   bottom right;
-
-    // &:nth-child(even) {
-    //   &::after {
-    //     content: "";
-    //     position: absolute;
-    //     left: px-to-rem(-14);
-    //     bottom: px-to-rem(-32);
-    //     width: 36px;
-    //     height: 36px;
-    //     background:
-    //       linear-gradient(-90deg, transparent 0px, transparent 17px, $gray-10 17px, transparent 18px, transparent 36px),
-    //       linear-gradient(transparent 0px, transparent 17px, $gray-10 17px, transparent 18px, transparent 36px);
-    //     background-size:
-    //         36px 36px,
-    //         36px 36px;
-    //     background-position: center;
-    //   }
-    // }
-
     &::before {
-      counter-increment: commentpage;
-      content: counter(commentpage);
+      @include comment-page-couter;
       position: absolute;
-      right: px-to-rem(18);
-      bottom: px-to-rem(15);
-      text-align: right;
-      color: $gray-8;
-      font-size: px-to-rem(12);
-      font-style: italic;
+      right: calc(50% + 10px + 32px);
+      top: 1em;
+    }
+  }
+  .ft-Comment_subComment .ft-Comment__avatar {
+    display: block;
+  }
+  .ft-Avatar {
+    break-inside: avoid;
+  }
+
+  @include state(multi) {
+    @include element(content, true) {
+      column-gap: 50px;
+      column-count: 2;
+      width: 100%;
+      min-height: auto;
+    }
+    @include element(footer, true) {
+      &::after {
+        @include comment-page-couter;
+        position: absolute;
+        right: calc(18px);
+        top: 1em;
+      }
+    }
+  }
+
+  @include state(avatar, has) {
+    @include element(true) {
+      column-gap: 32px;
     }
   }
 }

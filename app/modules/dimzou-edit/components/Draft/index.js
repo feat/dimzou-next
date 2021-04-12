@@ -1,104 +1,51 @@
-import React, { useContext, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux'
-import Router from 'next/router'
-import get from 'lodash/get'
-
-import SplashView from '@/components/SplashView';
+import React, { useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import BackButton from '@/components/BackButton';
 
 import NodeEdit from '../NodeEdit';
 // import BundleEdit from '../BundleEdit';
-import ReleaseModal from '../ReleaseModal';
+import BundleReleasePanel from '../BundleReleasePanel';
 import InvitationModal from '../InvitationModal';
 import SectionReleasePanel from '../SectionReleasePanel';
-import { getChapterRender } from '../AppRenders';
 
-import AppSidebarFirst from '../AppSidebarFirst';
 import NodeContextProvider from '../../providers/NodeContextProvider';
 import UserCapabilitiesProvider from '../../providers/UserCapabilitiesProvider';
 
-import { initBundle } from '../../actions'
-import { WorkspaceContext, BundleContext, OwnerContext } from '../../context'
-import { selectBundleState } from '../../selectors'
-import { getOwner, getTemplate }  from '../../utils/workspace';
+import { WorkspaceContext } from '../../context';
+import BundleContextProvider from '../../providers/BundleContextProvider';
+import ScrollContextProvider from '../../providers/ScrollContextProvider';
+import { selectWorkspaceState } from '../../selectors';
 
-function Draft() {
-  const workspace = useContext(WorkspaceContext);
-  const bundleState = useSelector((state) => selectBundleState(state, workspace));
-  const dispatch = useDispatch();
-  const template = getTemplate();
-  const Render = getChapterRender(template);
-
-  useEffect(() => {
-    if (!workspace.bundleId) {
-      return;
-    }
-    if (workspace.bundleId && !bundleState) {
-      dispatch(initBundle({
-        bundleId: workspace.bundleId,
-        nodeId: workspace.nodeId,
-        invitationCode: workspace.invitationCode,
-      }))
-    }
-  }, [workspace.bundleId]);
-
-  useEffect(() => {
-    if (!workspace.bundleId) {
-      return;
-    }
-    if (!workspace.nodeId && bundleState && bundleState.data) {
-      const nodeId = get(bundleState, 'data.nodes[0].id');
-      if (nodeId) {
-        Router.replace({
-          pathname: Router.pathname,
-          query: {
-            ...Router.query,
-            nodeId,
-          },
-        }, `/draft/${workspace.bundleId}/${nodeId}`)
-      } else {
-        logging.warn('FAILED_TO_GET_NODE_ID_FROM_BUNDLE_DATA', bundleState.data);
-      }
-    }
-  }, [bundleState, workspace.bundleId, workspace.nodeId])
-
-  if (bundleState && bundleState.fetchError) {
-    return (
-      <Render
-        main={
-          <div style={{ paddingTop: 56, paddingBottom: 56 }}>{bundleState.fetchError.message}</div>
-        }
-        sidebarFirst={(
-          <AppSidebarFirst />
-        )}
-      />
-    )
-  }
-
-  if (!bundleState || !bundleState.data) {
-    return (
-      <Render 
-        sidebarFirst={<AppSidebarFirst />}
-        main={<SplashView />}
-      />
-    )
-  }
-  // const isMultiChapter = bundleState.data.is_multi_chapter;
+function Draft(props) {
+  const workspaceState = useSelector(selectWorkspaceState);
+  const combined = useMemo(
+    () => ({
+      ...workspaceState,
+      ...props,
+    }),
+    [workspaceState, props],
+  );
 
   return (
-    <BundleContext.Provider value={bundleState}>
-      <OwnerContext.Provider value={getOwner(bundleState.data)}>
-        <NodeContextProvider bundleId={workspace.bundleId} nodeId={workspace.nodeId}>
-          <UserCapabilitiesProvider>
-            <NodeEdit />
-            {/* {isMultiChapter ? <BundleEdit /> : <NodeEdit />} */}
-            <ReleaseModal />
-            <InvitationModal />
-            <SectionReleasePanel />
-          </UserCapabilitiesProvider>
+    <WorkspaceContext.Provider value={combined}>
+      <BundleContextProvider>
+        <NodeContextProvider bundleId={props.bundleId} nodeId={props.nodeId}>
+          <ScrollContextProvider>
+            <UserCapabilitiesProvider>
+              <NodeEdit nodeId={props.nodeId} key={props.nodeId} />
+              {/* {isMultiChapter ? <BundleEdit /> : <NodeEdit />} */}
+              {workspaceState.isReleasePanelOpened && <BundleReleasePanel />}
+              {workspaceState.isSectionReleasePanelOpened && (
+                <SectionReleasePanel />
+              )}
+              <InvitationModal />
+              <BackButton />
+            </UserCapabilitiesProvider>
+          </ScrollContextProvider>
         </NodeContextProvider>
-      </OwnerContext.Provider>
-    </BundleContext.Provider>
-  )
+      </BundleContextProvider>
+    </WorkspaceContext.Provider>
+  );
 }
 
 export default Draft;

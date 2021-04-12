@@ -7,23 +7,12 @@ class FeedTemplateXII extends Base {
   static displayName = 'FeedTemplateXII';
 
   renderI() {
-    return (
-      <DimzouCardV
-        titleLines={2}
-        bodyLines={6}
-        imageRatio={100 / 70}
-      />
-    );
+    return <DimzouCardV titleLines={2} bodyLines={6} imageRatio={100 / 70} />;
   }
 
   renderII(item, index) {
     return (
-      <DimzouCardI
-        layoutType="L"
-        titleLines={2}
-        bodyLines={5}
-        key={index}
-      />
+      <DimzouCardI layoutType="L" titleLines={2} bodyLines={5} key={index} />
     );
   }
 }
@@ -32,6 +21,5 @@ FeedTemplateXII.defaultProps = {
   ...Base.defaultProps,
   items: Object.keys([...new Array(Base.maxItemCount)]).map((id) => ({ id })),
 };
-
 
 export default FeedTemplateXII;

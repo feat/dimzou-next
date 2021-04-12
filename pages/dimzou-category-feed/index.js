@@ -1,24 +1,24 @@
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
 
-
-import SiteLayout, { Content } from '@feat/feat-ui/lib/layout';
-import Layout from '@/components/Layout';
+import Layout, { Site, SiteContent } from '@/components/Layout';
 import Header from '@/containers/Header';
 import Footer from '@/containers/Footer';
 import SplashView from '@/components/SplashView';
 
-const Dynamic = dynamic(() => import('@/routes/CategoryPage/DimzouCategoryPage'), {
-  loading: () => <SplashView />,
-});
-
+const Dynamic = dynamic(
+  () => import('@/routes/CategoryPage/DimzouCategoryPage'),
+  {
+    loading: () => <SplashView />,
+  },
+);
 
 function CategoryFeed() {
   const router = useRouter();
   return (
-    <SiteLayout mode="fixed-header">
+    <Site mode="fixed-header">
       <Header />
-      <Content>
+      <SiteContent>
         <Layout>
           <Layout.Main>
             <Layout.Main modifier="base" id="main">
@@ -27,9 +27,9 @@ function CategoryFeed() {
           </Layout.Main>
           <Footer />
         </Layout>
-      </Content>
-    </SiteLayout>
-  )
+      </SiteContent>
+    </Site>
+  );
 }
-  
-export default CategoryFeed
+
+export default CategoryFeed;

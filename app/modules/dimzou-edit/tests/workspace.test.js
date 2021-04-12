@@ -1,50 +1,7 @@
 import workspaceReducer from '../reducers/workspace';
-import {
-  initCreateChapter,
-  exitCreateChapter,
-  initCreateCover,
-  exitCreateCover,
-  createCopyBundle,
-} from '../actions';
+import { createCopyBundle, initBlockEdit, exitBlockEdit } from '../actions';
 
 describe('Dimzou workspace', () => {
-  describe('create chapter', () => {
-    let state;
-    it('init create chapter', () => {
-      const action = initCreateChapter({
-        bundleId: 1,
-      });
-      state = workspaceReducer(undefined, action);
-      expect(state.isChapterCreationPanelOpened).toBe(true);
-      expect(state.chapterCreationContext).toEqual({
-        bundleId: 1,
-      });
-    });
-
-    it('cancel create chapter', () => {
-      const action = exitCreateChapter();
-      state = workspaceReducer(state, action);
-      expect(state.isChapterCreationPanelOpened).toBe(false);
-      expect(state.chapterCreationContext).toBe(null);
-    });
-
-    // TODO create request
-  });
-
-  describe('create cover', () => {
-    let state;
-    it('init create cover', () => {
-      const action = initCreateCover();
-      state = workspaceReducer(undefined, action);
-      expect(state.isCoverCreationPanelOpened).toBe(true);
-    });
-    it('exit create cover', () => {
-      const action = exitCreateCover();
-      state = workspaceReducer(state, action);
-      expect(state.isCoverCreationPanelOpened).toBe(false);
-    });
-  });
-
   describe('createCopyBundle', () => {
     let state;
     it('request', () => {
@@ -57,13 +14,23 @@ describe('Dimzou workspace', () => {
       state = workspaceReducer(undefined, action);
       expect(state.requests['copy_bundle.DEMO']).toBe(false);
     });
-  })
-
-  describe('share(invitation)', () => {
-
   });
 
-  describe('release', () => {
-
+  describe('isEditingCover update', () => {
+    let state;
+    it('initBlockEdit', () => {
+      const action = initBlockEdit({ structure: 'cover' });
+      state = workspaceReducer(undefined, action);
+      expect(state.isEditingCover).toBe(true);
+    });
+    it('exitBlockEdit', () => {
+      const action = exitBlockEdit({ structure: 'cover' });
+      state = workspaceReducer(undefined, action);
+      expect(state.isEditingCover).toBe(false);
+    });
   });
-})
+
+  describe('share(invitation)', () => {});
+
+  describe('release', () => {});
+});

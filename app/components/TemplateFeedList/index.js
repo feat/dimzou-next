@@ -1,29 +1,11 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-
-import LazyLoad from '@feat/feat-ui/lib/lazy-load';
+import FeedRenderContextProvider from '@/components/FeedRender/Provider';
 import LoadMoreAnchor from '@/components/LoadMoreAnchor';
-
-import * as Templates from '../FeedTemplate';
+import { provider } from '@/components/FeedRender/helpers';
+import './style.scss';
 
 class TemplateFeedList extends PureComponent {
-  static propTypes = {
-    templates: PropTypes.arrayOf(
-      PropTypes.shape({
-        name: PropTypes.string,
-        count: PropTypes.number,
-      }),
-    ).isRequired,
-    items: PropTypes.array,
-    itemProps: PropTypes.object,
-    loadMore: PropTypes.func,
-    loading: PropTypes.bool,
-    hasMore: PropTypes.bool,
-    watchScroll: PropTypes.bool,
-    noContentLabel: PropTypes.node,
-    overflow: PropTypes.bool,
-  };
-
   render() {
     const {
       templates,
@@ -31,39 +13,60 @@ class TemplateFeedList extends PureComponent {
       hasMore,
       loading,
       loadMore,
-      itemProps,
+      onItemClick,
+      showAvatar,
       watchScroll,
       noContentLabel,
       overflow,
     } = this.props;
-    let renderCount = 0;
+
+    const content = [];
+    const toSlice = items || [];
+    if (items.length) {
+      for (let i = 0, j = 0; i < templates.length; i += 1) {
+        const T = provider.getTemplate(templates[i]);
+        content.push(
+          <T
+            data={toSlice.slice(j, j + T.count)}
+            key={i}
+            startIndex={j}
+            showAvatar={showAvatar}
+            onItemClick={onItemClick}
+          />,
+        );
+        j += T.count;
+      }
+    }
+
     return (
-      <div className="usr-Works">
-        {!!items.length &&
-          templates.map((item, index) => {
-            const Template = Templates[item.name];
-            renderCount += item.count;
-            return (
-              <LazyLoad key={index} height={500}>
-                <Template
-                  items={items.slice(renderCount - item.count, renderCount)}
-                  itemProps={itemProps}
-                />
-              </LazyLoad>
-            );
-          })}
+      <FeedRenderContextProvider className="TemplateFeed">
+        {!!items.length && content}
         {!hasMore && !items.length && <div>{noContentLabel}</div>}
         {hasMore && (
           <LoadMoreAnchor
+            className="TemplateFeed__anchor"
             watchScroll={watchScroll}
             loadMore={loadMore}
             loading={loading}
             overflow={overflow}
           />
         )}
-      </div>
+      </FeedRenderContextProvider>
     );
   }
 }
+
+TemplateFeedList.propTypes = {
+  templates: PropTypes.array.isRequired,
+  items: PropTypes.array,
+  showAvatar: PropTypes.bool,
+  onItemClick: PropTypes.func,
+  loadMore: PropTypes.func,
+  loading: PropTypes.bool,
+  hasMore: PropTypes.bool,
+  watchScroll: PropTypes.bool,
+  noContentLabel: PropTypes.node,
+  overflow: PropTypes.bool,
+};
 
 export default TemplateFeedList;

@@ -8,23 +8,12 @@ class FeedTemplateIS extends Base {
   static displayName = 'FeedTemplateIS';
 
   renderI(item, index) {
-    return (
-      <DimzouCardIII
-        key={index}
-        titleLines={4}
-        bodyLines={3}
-      />
-    );
+    return <DimzouCardIII key={index} titleLines={4} bodyLines={3} />;
   }
 
   renderII(item, index) {
     return (
-      <DimzouCardI
-        key={index}
-        titleLines={2}
-        bodyLines={3}
-        layoutType="J"
-      />
+      <DimzouCardI key={index} titleLines={2} bodyLines={3} layoutType="J" />
     );
   }
 }

@@ -1,0 +1,29 @@
+@import 'base.scss';
+
+.block {
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(150px, 1fr) );
+    grid-column-gap: 20px;
+}
+
+
+@include block(card) {
+    background-color: $gray-1;
+    padding: 6px 10px;
+    @include element(title) {
+        font-weight: 600;
+    }
+    @include element(desc) {
+      display: flex;
+    }
+    @include element(num) {
+      color: $color-secondary;
+      margin-left: auto;
+      font-size: 18px;
+    }
+}

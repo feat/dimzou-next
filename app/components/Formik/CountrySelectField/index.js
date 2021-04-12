@@ -178,10 +178,10 @@ class CountrySelectField extends React.Component {
         </div>
         {touched &&
           error && (
-          <div className="st-FormItem__error">
-            <FormHelp data={error} validateStatus="error" />
-          </div>
-        )}
+            <div className="st-FormItem__error">
+              <FormHelp data={error} validateStatus="error" />
+            </div>
+          )}
       </div>
     );
   }

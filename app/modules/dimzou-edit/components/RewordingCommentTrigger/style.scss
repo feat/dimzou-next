@@ -2,8 +2,8 @@
 
 @include block(ns(RewordingCommentTrigger, dz)) {
   display: inline-block;
-
-  .ft-IconButton {
-    margin-right: 8px;
+  .CommentButton {
+    font-size: 0;
+    padding: px-to-rem(1);
   }
 }

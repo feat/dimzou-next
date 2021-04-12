@@ -10,21 +10,19 @@ import {
   all,
 } from 'redux-saga/effects';
 import get from 'lodash/get';
-import { addLocaleData } from 'react-intl';
 
 import ApiError from '@/errors/ApiError';
 import { selectCurrentUser, hasAuthedUser } from '@/modules/auth/selectors';
-import { instance } from '@/utils/request';
+import request from '@/utils/request';
 
+import notification from '@feat/feat-ui/lib/notification';
 import {
   fetchLanguages as fetchLanguagesRequest,
   fetchPublicTranslations as fetchPublicTranslationsRequest,
   // fetchCustomTranslations as fetchCustomTranslationsRequest,
   submitTranslation as submitTranslationRequest,
   setUserLocale as setUserLocaleRequest,
-} from '@/client/language';
-
-import notification from '@feat/feat-ui/lib/notification';
+} from './requests';
 
 import { selectCurrentLocale } from './selectors';
 
@@ -37,7 +35,7 @@ import {
   submitTranslation,
   SET_LOCALE,
 } from './actions';
-import { REDUCER_KEY } from './reducer';
+import { REDUCER_KEY } from './config';
 import {
   getLanguageCode,
   setCachedLocaleData,
@@ -123,18 +121,6 @@ function importIntl(locale) {
     });
 }
 
-function loadLocaleData(locale) {
-  const language = getLanguageCode(locale);
-
-  return import(`react-intl/locale-data/${language}`)
-    .then((data) => {
-      addLocaleData(data.default);
-    })
-    .catch((err) => {
-      logging.error(err);
-    });
-}
-
 function* setLocaleSaga(action) {
   const { locale } = action.payload;
   if (typeof window !== 'object') {
@@ -144,7 +130,6 @@ function* setLocaleSaga(action) {
   if (!window.Intl) {
     yield call(importIntl, locale);
   }
-  yield call(loadLocaleData, locale);
   const currentUser = yield select(selectCurrentUser);
   const userIdentity = currentUser.uid;
 
@@ -154,7 +139,7 @@ function* setLocaleSaga(action) {
     const promises = [];
 
     promises.push(
-      instance({
+      request({
         url: `/api/ui-translation/public/`,
         method: 'GET',
         headers: {
@@ -164,13 +149,14 @@ function* setLocaleSaga(action) {
             undefined,
           ),
         },
+        locale: false,
         params: { locale },
       }).catch((err) => err.response),
     );
 
     if (currentUser) {
       promises.push(
-        instance({
+        request({
           url: `/api/ui-translation/custom/`,
           method: 'GET',
           headers: {
@@ -180,6 +166,7 @@ function* setLocaleSaga(action) {
               undefined,
             ),
           },
+          locale: false,
           params: { locale },
         }).catch((err) => err.response),
       );
@@ -334,6 +321,7 @@ export function* fetchCurrentLocaleTranslations() {
 }
 
 export default function* languageService() {
+  logging.debug('language service');
   yield takeLatest(SET_LOCALE, setLocaleSaga);
   yield takeLatest(CHANGE_LOCALE, changeLocaleSaga);
   yield takeEvery(fetchLanguages.TRIGGER, fetchLanguagesAsync);

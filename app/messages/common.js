@@ -146,6 +146,10 @@ export default defineMessages({
     id: 'app.common.no-content-hint',
     defaultMessage: 'No Content',
   },
+  errorHint: {
+    id: 'app.common.error-hint',
+    defaultMessage: 'Something went wrong.',
+  },
 });
 
 export const filexMessages = defineMessages({
@@ -168,6 +172,10 @@ export const filexMessages = defineMessages({
   newEvent: {
     id: 'file-x.common.new-event',
     defaultMessage: 'New Event',
+  },
+  events: {
+    id: 'file-x.common.events',
+    defaultMessage: 'Events',
   },
 });
 
@@ -198,33 +206,36 @@ export const dateCompos = defineMessages({
   },
 });
 
-export const entityTypeLabels = defineMessages({
-  node: {
-    id: 'app.entity-type.draft',
-    defaultMessage: 'Draft',
+export const entityTypeLabels = defineMessages(
+  {
+    node: {
+      id: 'app.entity-type.draft',
+      defaultMessage: 'Draft',
+    },
+    awesome: {
+      id: 'app.entity-type.awesome',
+      defaultMessage: 'Awesome',
+    },
+    demand: {
+      id: 'app.entity-type.demand',
+      defaultMessage: 'Demand',
+    },
+    publication: {
+      id: 'app.entity-type.publication',
+      defaultMessage: 'Publication',
+    },
+    expertise: {
+      id: 'app.entity-type.expertise',
+      defaultMessage: 'Expertise',
+    },
   },
-  awesome: {
-    id: 'app.entity-type.awesome',
-    defaultMessage: 'Awesome',
+  {
+    fallback: (key) => ({
+      id: `app.entity-type.${key}`,
+      defaultMessage: key,
+    }),
   },
-  demand: {
-    id: 'app.entity-type.demand',
-    defaultMessage: 'Demand',
-  },
-  publication: {
-    id: 'app.entity-type.publication',
-    defaultMessage: 'Publication',
-  },
-  expertise: {
-    id: 'app.entity-type.expertise',
-    defaultMessage: 'Expertise',
-  },
-}, {
-  fallback: {
-    id: 'app.entity-type.message',
-    defaultMessage: 'PROP',
-  },
-})
+);
 
 export const adminAction = defineMessages({
   edit: {
@@ -239,7 +250,7 @@ export const adminAction = defineMessages({
     id: 'app.admin-action.delete',
     defaultMessage: 'Delete',
   },
-})
+});
 
 export const visibility = defineMessages({
   visible: {
@@ -250,4 +261,87 @@ export const visibility = defineMessages({
     id: 'option.visibility.hidden',
     defaultMessage: 'Hidden',
   },
-})
+});
+
+export const pageTitle = defineMessages({
+  // index: {
+  //   id: 'app.page-title.index',
+  //   defaultMessage: '',
+  // },
+  oppIndex: {
+    id: 'app.page-title.opp-index',
+    defaultMessage: 'Opportunity',
+  },
+  dimzouIndex: {
+    id: 'app.page-title.dimzou-index',
+    defaultMessage: 'Dimzou',
+  },
+  awesomeIndex: {
+    id: 'app.page-title.awesome-index',
+    defaultMessage: 'Awesome',
+  },
+  signin: {
+    id: 'app.page-title.signin',
+    defaultMessage: 'Sign in',
+  },
+  signup: {
+    id: 'app.page-title.signup',
+    defaultMessage: 'Sign up',
+  },
+  accountRecovery: {
+    id: 'app.page-title.account-recovery',
+    defaultMessage: 'Account Recovery',
+  },
+  policy: {
+    id: 'app.page-title.policy',
+    defaultMessage: 'Policy',
+  },
+  settings: {
+    id: 'app.page-title.settings',
+    defaultMessage: 'Settings',
+  },
+  userPage: {
+    id: 'app.page-title.user-page',
+    defaultMessage: 'Page of {username}',
+  },
+  userDimzou: {
+    id: 'app.page-title.user-dimzou',
+    defaultMessage: `{username}'s dimzou`,
+  },
+  userFilex: {
+    id: 'app.page-title.user-filex',
+    defaultMessage: `{username}'s filex`,
+  },
+  application: {
+    id: 'app.page-title.application',
+    defaultMessage: 'Application',
+  },
+  awesomeCategory: {
+    id: 'app.page-title.awesome-category',
+    defaultMessage: 'Awesome in {category}',
+  },
+  dimzouCategory: {
+    id: 'app.page-title.dimzou-category',
+    defaultMessage: 'Dimzou in {category}',
+  },
+  oppCategory: {
+    id: 'app.page-title.opp-category',
+    defaultMessage: 'Opportunities in {category}',
+  },
+  about: {
+    id: 'app.page-title.about',
+    defaultMessage: 'About',
+  },
+  invitation: {
+    id: 'app.page-title.invitation',
+    defaultMessage: 'Invitation',
+  },
+  oppDetail: {
+    id: 'app.page-title.opp-detail',
+    defaultMessage: 'Demand: {title}',
+  },
+  authorize: {
+    id: 'app.page-title.authorize',
+    defaultMessage: 'Authorize',
+  },
+});

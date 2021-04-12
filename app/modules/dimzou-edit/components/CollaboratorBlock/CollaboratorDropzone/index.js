@@ -2,20 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { DropTarget } from 'react-dnd';
-
+import { injectIntl } from 'react-intl';
 import Tooltip from '@feat/feat-ui/lib/tooltip';
 
 import {
-  DRAGGABLE_TYPE_COLLABORATOR,
   DRAGGABLE_TYPE_USER,
   DRAGGABLE_TYPE_USER_CONTACT,
 } from '@/services/dnd';
 
-import { formatMessage } from '@/services/intl';
-
 import {
   ACTION_ADD_COLLABORATOR,
   ACTION_UPDATE_COLLABORATOR,
+  DRAGGABLE_TYPE_COLLABORATOR,
 } from '../../../constants';
 
 import { collaboratorRole } from '../../../messages';
@@ -24,15 +22,20 @@ import './style.scss';
 
 class CollaboratorZone extends React.PureComponent {
   render() {
-    const { children, connectDropTarget, canDrop, isOver, level } = this.props;
+    const {
+      children,
+      connectDropTarget,
+      canDrop,
+      isOver,
+      level,
+      intl: { formatMessage },
+    } = this.props;
 
-    const label = formatMessage(collaboratorRole[level])
+    const label = formatMessage(collaboratorRole[level]);
     return (
       <div className="dz-CollaboratorDropzone">
         <Tooltip placement="left" title={label}>
-          <div
-            className="dz-CollaboratorDropzone__symbol"    
-          >
+          <div className="dz-CollaboratorDropzone__symbol">
             {this.props.icon}
           </div>
         </Tooltip>
@@ -61,6 +64,7 @@ CollaboratorZone.propTypes = {
   level: PropTypes.number.isRequired,
   handleDrop: PropTypes.func, // eslint-disable-line
   icon: PropTypes.node,
+  intl: PropTypes.object,
 };
 
 const collaboratorTarget = {
@@ -80,7 +84,7 @@ const collaboratorTarget = {
       (item.type === DRAGGABLE_TYPE_COLLABORATOR &&
         item.payload.collaborator.role !== props.level) ||
       item.type === DRAGGABLE_TYPE_USER ||
-      item.type === DRAGGABLE_TYPE_USER_CONTACT // TODO: better validation
+      item.type === DRAGGABLE_TYPE_USER_CONTACT
     );
   },
   drop(props, monitor) {
@@ -97,16 +101,14 @@ const collaboratorTarget = {
         props.handleDrop({
           type: ACTION_ADD_COLLABORATOR,
           level: props.level,
-          user: item.payload.user,
+          userId: item.payload.user_id,
         });
         break;
       case DRAGGABLE_TYPE_USER_CONTACT:
         props.handleDrop({
           type: ACTION_ADD_COLLABORATOR,
           level: props.level,
-          user: {
-            uid: item.payload.contact.friend,
-          },
+          userId: item.payload.contact.friend,
         });
         break;
       default:
@@ -131,6 +133,6 @@ const DroppableCollaboratorZone = DropTarget(
   ],
   collaboratorTarget,
   dropCollect,
-)(CollaboratorZone);
+)(injectIntl(CollaboratorZone, { forwardRef: true }));
 
 export default DroppableCollaboratorZone;

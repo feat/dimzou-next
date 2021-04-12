@@ -3,4 +3,4 @@ export const LIKABLE_TYPE_DIMZOU_PUBLICATION = 200;
 
 export const CHANNEL_OBJECT_TYPE_MAP = {
   event: LIKABLE_TYPE_XFILE_EVENT,
-}
+};

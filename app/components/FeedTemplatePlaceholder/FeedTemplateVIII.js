@@ -6,12 +6,7 @@ class FeedTemplateVIII extends Base {
   static displayName = 'FeedTemplateVIII';
 
   renderI() {
-    return (
-      <DimzouCardIII
-        titleLines={3}
-        bodyLines={5}
-      />
-    );
+    return <DimzouCardIII titleLines={3} bodyLines={5} />;
   }
 }
 

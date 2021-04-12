@@ -1,7 +1,7 @@
 @import 'base.scss';
 
 @include block(ns(PopMenu, dz)) {
-  width: px-to-rem(200);
+  width: px-to-rem(160);
   padding-top: px-to-rem(6);
   padding-bottom: px-to-rem(6);
   border-radius: px-to-rem(8);

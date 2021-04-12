@@ -6,9 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const modules = fs.readdirSync(
-  path.join(__dirname, '../../../app/modules'),
-);
+const modules = fs.readdirSync(path.join(__dirname, '../../../app/modules'));
 
 function componentExists(comp) {
   return modules.indexOf(comp) >= 0;

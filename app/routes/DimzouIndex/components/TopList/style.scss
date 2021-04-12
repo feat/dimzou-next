@@ -1,0 +1,172 @@
+// @import "func/bem";
+// @import "func/base";
+// @import "variables";
+// @import "mixins/base";
+@import 'base.scss';
+
+$dimzou-large-padding: 10px;
+
+@include block(mostItemList) {
+  margin-bottom: px-to-em($dimzou-large-padding);
+  margin-top: px-to-em(5);
+  padding: 0;
+}
+
+@include block(mostItem) {
+  display: flex;
+  position: relative;
+  height: 90px;
+  background-size: cover;
+  background-position: center center;
+  font-size: 0;
+  &.withoutTitle {
+    height: 64px;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-image: linear-gradient(to right, $gray-2 50%, white 50%);
+    background-position: bottom left;
+    background-size: 8px 1px;
+    background-repeat: repeat-x;
+  }
+
+  $most-item-number-width: 48px;
+
+  @include element(maskRect) {
+    fill: var(--main-bg-color);
+  }
+  @include element(number) {
+    max-width: 0;
+    height: 100%;
+    flex-shrink: 0;
+    transition: all .3s ease;
+  }
+  @include element(info) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: px-to-rem(5);
+    padding-right: px-to-rem(5);
+    height: 100%;
+    background-color: var(--main-bg-color);
+    min-width: 0;
+    flex: 1;
+    transition: all .3s ease;
+    padding-bottom: 2px;
+  }
+  @include element(title) {
+    font-family: $sans-serif-title-font;
+    font-size: 14px;
+    margin-top: 0;
+    // line-height: 1.2;
+    // height: 2.4em;
+    // font-weight: bold;
+    font-weight: 500;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    margin-bottom: 3px;
+  }
+
+  @include element(author) {
+    // color: $light-red;
+    // font-family: $dimzou-link-font;
+    font-size: px-to-rem(12);
+  }
+
+  @include element(numberText) {
+    font-family: $sans-serif-heading-font;
+  }
+  @include element(maskRect) {
+    fill: var(--main-bg-color);
+  }
+
+  .ft-AvatarStamp__username,
+  .ft-AvatarStamp__meta,
+  .ft-AvatarStamp__expertise {
+    font-size: 12px;
+  }
+
+  .ft-AvatarStamp__avatar {
+    padding-top: 2px;
+    margin-right: 6px;
+  }
+  .ft-Avatar_xs {
+    width: 30px;
+    height: 30px;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* so that you can resize the element */
+  }
+
+  text {
+    text-anchor: middle;
+    pointer-events: auto; /* Cancel the svg’s pointer-events */
+    font-family: $sans-serif-heading-font;
+  }
+
+  &:not(:hover) {
+    #{'.mostItem' + $element-separator + 'title'} {
+      color: $text-color !important;
+    }
+    #{'.mostItem' + $element-separator + 'numberText'} {
+      fill: transparent !important;
+      stroke: rgba(0, 0, 0, 0.1);
+    }
+  }
+  &:hover {
+    #{'.mostItem' + $element-separator + 'maskRect'} {
+      display: none;
+    }
+    #{'.mostItem' + $element-separator + 'number'} {
+      max-width: 36px;
+    }
+    #{'.mostItem' + $element-separator + 'numberText'} {
+      display: block;
+    }
+    #{'.mostItem' + $element-separator + 'info'} {
+      background-color: transparent;
+    }
+  }
+
+  // @media (min-width: $screen-xxl-min) {
+  //   height: px-to-rem(100);
+  //   &.withoutTitle {
+  //     height: px-to-rem(72);
+  //   }
+  //   @include element(title) {
+  //     font-size: px-to-rem(16);
+  //     margin-bottom: px-to-rem(8);
+  //   }
+  //   @include element(number) {
+  //     width: px-to-rem($most-item-number-width);      
+  //   }
+  //   @include element(info) {
+  //     width: calc(100% - #{px-to-rem($most-item-number-width)});
+  //   }
+  // }
+}
+
+@include block(dzSvgNumber) {
+  @include element(bg) {
+  }
+  & text {
+    font-family: $sans-serif-text-font;
+    font-weight: 700;
+  }
+  @include element(number) {
+    stroke: rgba(127, 148, 153, 0.13);
+  }
+}

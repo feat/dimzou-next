@@ -1,0 +1,67 @@
+@import 'base.scss';
+
+@include block(DimzouFeedRow) {
+  display: grid;
+
+  @include modifier(IV) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @include modifier(V) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @include modifier(VI) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @include modifier(VII) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @include modifier(VIII) {
+    grid-template-columns: repeat(2, 1fr);
+    .DimzouFeedItem_I {
+      grid-row-end: span 2;
+      .DimzouFeedCard {
+        height: 100%;
+      }
+      .DimzouFeedCard__coverWrap {
+        height: 100%;
+      }  
+    }
+  }
+  @include modifier(IX) {
+    grid-template-columns: repeat(3, 1fr);
+    .DimzouFeedItem_I {
+      grid-row-end: span 2;
+      grid-column-end: span 2;
+    }
+  }
+  @include modifier(X) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @include modifier(XI) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include modifier(XII) {
+    grid-template-columns: repeat(3, 1fr);
+    .DimzouFeedItem_I,
+    .DimzouFeedItem_II {
+      grid-row-end: span 2;
+    }
+  }  
+
+  @include modifier(XIII) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.DimzouFeedItem {
+  min-width: 0;
+  position: relative;
+  margin-bottom: 4px;
+  & > .DimzouFeedCard {
+    height: 100%;
+  }
+  // & > [class^="DimzouFeedCard"] {
+  //   height: 100%;
+  // }
+}

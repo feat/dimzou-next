@@ -1,0 +1,85 @@
+@import 'base.scss';
+
+@include block(ns(ReleasePanelWrap, dz)) {
+  overscroll-behavior: contain !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // background-color: #f3f3f3;
+  background-color: white;
+  // background-color: rgba(255, 255, 255, .9);
+  z-index: map-get($zindex, 'modal');
+}
+
+@include block(ns(ReleasePanel, dz)) {
+  width: 1280px;
+  background-color: white;
+  position: relative;
+  height: 800px;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  @include element(header) {
+    height: 58px;
+    padding-top: 12px;
+    padding-left: 24px;
+    padding-right: 24px;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+  @include element(subHeader) {
+    margin-left: auto;
+    margin-right: 72px;
+  }
+  @include element(title) {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0;
+    position: relative;
+    font-family: $sans-serif-heading-font;
+    display: inline-block;
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 100%;
+      width: calc(100% + 1em);
+      height: 4px;
+      background-color: $color-secondary;
+    }
+    @include modifier(status) {
+      padding-left: 1em;
+      margin-right: 1em;
+    }
+  }
+  @include element(content) {
+    flex: 1;
+  }
+  @include element(footer) {
+    display: flex;
+    flex-shrink: 0;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-bottom: 4px;
+    min-height: 74px;
+    align-items: center;
+  }
+  @include element(actions) {
+    margin-left: auto;
+  }
+  @include element(exitBtn, true) {
+    position: absolute;
+    right: 24px;
+  }
+  @include element(desc) {
+    font-size: 14px;
+    color: $gray-7;
+  }
+}

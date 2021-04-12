@@ -20,21 +20,20 @@ const TemplateIII = React.forwardRef((props, ref) => {
       ref={ref}
     >
       <div className="dz-TemplateIII__header">
-        <div className="dz-TemplateIII__titleSection">{titleSection}</div>
-        <div className="dz-TemplateIII__cover">{cover}</div>
+        <div className="dz-App__titleSection">{titleSection}</div>
+        <div className="dz-App__cover">{cover}</div>
       </div>
-      <div className="dz-TemplateIII__mainContainer">
-        <div className="dz-TemplateIII__mainWrap">
-          <div className="dz-TemplateIII__sidebarFirst">{sidebarFirst}</div>
-          <div className="dz-TemplateIII__main">{content}</div>
-          <div className="dz-TemplateIII__sidebarSecond">{sidebarSecond}</div>
+      <div className="dz-App__mainContainer">
+        <div className="dz-App__mainWrap">
+          <div className="dz-App__sidebarFirst">{sidebarFirst}</div>
+          <div className="dz-App__main">{content}</div>
+          <div className="dz-App__sidebarSecond">{sidebarSecond}</div>
         </div>
-        <div className="dz-TemplateIII__sidebarThird">{sidebarThird}</div>
+        <div className="dz-App__sidebarThird">{sidebarThird}</div>
       </div>
     </div>
   );
 });
-
 
 TemplateIII.propTypes = {
   id: PropTypes.string,

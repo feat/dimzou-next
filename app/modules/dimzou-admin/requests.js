@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/utils/request';
 
 const getSubPath = (type) => {
   switch (type) {
@@ -14,10 +14,10 @@ const getSubPath = (type) => {
       return 'liked-bundles';
     case 'read':
       return 'read-bundles';
-    default :
+    default:
       return 'created-bundles';
   }
-}
+};
 
 export const fetchDimzouList = (payload) => {
   const { type, ...params } = payload;
@@ -27,4 +27,4 @@ export const fetchDimzouList = (payload) => {
     method: 'GET',
     params,
   });
-}
+};

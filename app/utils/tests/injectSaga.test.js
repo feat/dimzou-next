@@ -80,6 +80,7 @@ describe('injectSaga decorator', () => {
 
   it('should propagate props', () => {
     const props = { testProp: 'test' };
+
     const renderedComponent = renderer.create(
       <Provider store={store}>
         <ComponentWithSaga {...props} />
@@ -87,7 +88,7 @@ describe('injectSaga decorator', () => {
     );
     const {
       props: { children },
-    } = renderedComponent.getInstance();
+    } = renderedComponent.toTree();
     expect(children.props).toEqual(props);
   });
 });

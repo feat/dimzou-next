@@ -7,7 +7,7 @@
   }
   .ft-Block__header {
     // padding-top: px-to-rem(16);
-    background: $main-container-bg-color;
+    background-color: var(--main-bg-color);
     z-index: 8;
   }
 }

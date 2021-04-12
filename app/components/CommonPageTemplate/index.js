@@ -11,9 +11,6 @@ import { withDeviceInfo } from '@/modules/device-info';
 
 import cmMessages from '@/messages/common';
 
-import { withAdDropBox } from '@/routes/advertiser/AdProvider';
-import PriceCard from '@/routes/advertiser/components/createPortal/PriceCard';
-
 import './style.scss';
 
 const DELTA = 24;
@@ -374,42 +371,6 @@ class CommonPageTemplate extends React.Component {
     mask.style.display = 'none';
   };
 
-  priceCard = () => {
-    if (this.props.isShowDrop) {
-      const sections =
-        document.querySelectorAll('.FeedGrid').length !== 0
-          ? document.querySelectorAll('.FeedGrid')
-          : document.querySelectorAll('.usr-Works');
-      return (
-        <div>
-          {[...new Array(sections.length)].map((_, index) => {
-            const dzCards = sections[index].querySelectorAll(
-              '[data-ad-dropbox]',
-            );
-            return (
-              <div>
-                {[...new Array(dzCards.length)].map((item, i) => {
-                  if (dzCards[i].dataset.adDropbox === 'DropBox') {
-                    return (
-                      <PriceCard
-                        dom={dzCards[i]}
-                        adPathname={this.props.pathname}
-                        sections={index}
-                        option={i}
-                      />
-                    );
-                  }
-                  return null;
-                })}
-              </div>
-            );
-          })}
-        </div>
-      );
-    }
-    return null;
-  };
-
   render() {
     const { helmet, pageTitle, sidebar, main, isMobile } = this.props;
     return (
@@ -456,7 +417,6 @@ class CommonPageTemplate extends React.Component {
         )}
         <div id="mainWrap" className="CommonPageTemplate__mainWrap has-sidebar">
           <div
-            role="button"
             tabIndex="-1"
             className="CommonPageTemplate__sidebarMask"
             onClick={this.hideNav}
@@ -487,7 +447,6 @@ class CommonPageTemplate extends React.Component {
             }}
           >
             {main}
-            {this.props.isShowDrop && this.priceCard()}
           </div>
         </div>
       </div>
@@ -503,8 +462,6 @@ CommonPageTemplate.propTypes = {
   sidebar: PropTypes.node,
   main: PropTypes.node,
   isMobile: PropTypes.bool,
-  isShowDrop: PropTypes.bool,
-  pathname: PropTypes.string,
 };
 
 CommonPageTemplate.defaultProps = {
@@ -512,7 +469,4 @@ CommonPageTemplate.defaultProps = {
   // sidebarBottomBoundary: '#mainWrap',
 };
 
-export default compose(
-  withAdDropBox,
-  withDeviceInfo,
-)(CommonPageTemplate);
+export default compose(withDeviceInfo)(CommonPageTemplate);

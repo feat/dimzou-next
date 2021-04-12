@@ -18,9 +18,8 @@ const CoverPlaceholder = (props) => {
       // className="dz-CoverPreview__image"
       style={style}
     />
-  )
+  );
 };
-
 
 CoverPlaceholder.propTypes = {
   ratio: PropTypes.number,

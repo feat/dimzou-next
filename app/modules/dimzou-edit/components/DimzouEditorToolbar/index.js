@@ -6,8 +6,6 @@ import createModeToggleBlock from '@feat/feat-editor/lib/handlers/handleToggleBl
 import updateModeToggleBlock from '@feat/feat-editor/lib/plugins/Annotation/handlers/handleToggleBlockType';
 import createModeToggleInlineStyle from '@feat/feat-editor/lib/handlers/handleToggleInlineStyle';
 import updateModeToggleInlineStyle from '@feat/feat-editor/lib/plugins/Annotation/handlers/handleToggleInlineStyle';
-// import Button from '@feat/feat-ui/lib/button';
-// import SvgIcon from '@feat/feat-ui/lib/svg-icon';
 
 import BlockToolbar from './BlockToolbar';
 import InlineToolbar from './InlineToolbar';
@@ -24,16 +22,16 @@ import {
   LIGHT,
 } from './buttonConfig';
 
-import './style.scss';
-
 class DimzouEditorToolbar extends Component {
   getBlockButtons() {
     const { structure } = this.props;
-    const base = [H2, UL, 
-      // OL, 
-      CODE_BLOCK, 
+    const base = [
+      H2,
+      UL,
+      // OL,
+      CODE_BLOCK,
       // BLOCKQUOTE
-    ]
+    ];
     if (structure === 'content') {
       return base;
     }
@@ -45,12 +43,12 @@ class DimzouEditorToolbar extends Component {
 
   getInlineButtons() {
     const base = [
-      BOLD, 
-      ITALIC, 
-      LIGHT, 
+      BOLD,
+      ITALIC,
+      LIGHT,
       // CODE
     ];
-    
+
     const { structure } = this.props;
     if (structure === 'title') {
       return base.map((item) => ({
@@ -58,7 +56,7 @@ class DimzouEditorToolbar extends Component {
         disabled: true,
       }));
     }
-    return base
+    return base;
   }
 
   handleToggleBlockType = (blockType) => {
@@ -102,21 +100,21 @@ class DimzouEditorToolbar extends Component {
       <div className={className}>
         {blockButtons &&
           !!blockButtons.length && (
-          <BlockToolbar
-            editorState={editorState}
-            buttons={blockButtons}
-            onToggle={this.handleToggleBlockType}
-          />
-        )}
-        <span className="dz-EditorButtonDivider" />
+            <BlockToolbar
+              editorState={editorState}
+              buttons={blockButtons}
+              onToggle={this.handleToggleBlockType}
+            />
+          )}
+        {/* <span className="dz-DockerSeparator" /> */}
         {inlineButtons &&
           !!inlineButtons.length && (
-          <InlineToolbar
-            buttons={inlineButtons}
-            onToggle={this.handleToggleInlineType}
-            editorState={editorState}
-          />
-        )}
+            <InlineToolbar
+              buttons={inlineButtons}
+              onToggle={this.handleToggleInlineType}
+              editorState={editorState}
+            />
+          )}
         {/* {(blockButtons || inlineButtons) && (
           <span className="dz-EditorButtonDivider" />
         )}
@@ -126,7 +124,7 @@ class DimzouEditorToolbar extends Component {
           disabled={!editorState || editorState.getUndoStack().size === 0}
           onMouseDown={this.handleUndo}
         >
-          <SvgIcon icon="undo" />
+          <Icon name="undo" />
         </Button>
         <Button
           type="merge"
@@ -134,7 +132,7 @@ class DimzouEditorToolbar extends Component {
           disabled={!editorState || editorState.getRedoStack().size === 0}
           onMouseDown={this.handleRedo}
         >
-          <SvgIcon icon="redo" />
+          <Icon name="redo" />
         </Button> */}
       </div>
     );

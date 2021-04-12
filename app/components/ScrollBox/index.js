@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import debounce from 'lodash/debounce';
@@ -12,7 +12,7 @@ const scrollCache = {
   get(key) {
     return this.data[key];
   },
-}
+};
 
 const ScrollBox = React.forwardRef((props, ref) => {
   const wrapRef = useRef(null);
@@ -29,42 +29,46 @@ const ScrollBox = React.forwardRef((props, ref) => {
     ...restProps
   } = props;
 
-  useEffect(() => {
-    if (scrollToLoad && hasMore) {
-      const dom = wrapRef.current;
-      const tryToLoadMore = debounce(() => {
-        const { scrollTop, clientHeight, scrollHeight } = dom;
-        const shouldLoadMore = scrollHeight - scrollTop - clientHeight < scrollToLoadDelta;
-        if (shouldLoadMore) {
-          if (!loadMore) {
-            logging.warn('Should set loadMore props');
-            return;
+  useEffect(
+    () => {
+      if (scrollToLoad && hasMore) {
+        const dom = wrapRef.current;
+        const tryToLoadMore = debounce(() => {
+          const { scrollTop, clientHeight, scrollHeight } = dom;
+          const shouldLoadMore =
+            scrollHeight - scrollTop - clientHeight < scrollToLoadDelta;
+          if (shouldLoadMore) {
+            if (!loadMore) {
+              logging.warn('Should set loadMore props');
+              return;
+            }
+            if (loading) {
+              return;
+            }
+            props.loadMore();
           }
-          if (loading) {
-            return;
-          }
-          props.loadMore();
-        }
-      }, 100);
-      dom.addEventListener('scroll', tryToLoadMore);
-      return () => {
-        dom.removeEventListener('scroll', tryToLoadMore);
+        }, 100);
+        dom.addEventListener('scroll', tryToLoadMore);
+        return () => {
+          dom.removeEventListener('scroll', tryToLoadMore);
+        };
       }
-    }
-    return undefined;
-  }, [scrollToLoad, hasMore, loadMore])
-  
+      return undefined;
+    },
+    [scrollToLoad, hasMore, loadMore],
+  );
+
   useEffect(() => {
     const updateInnerWidth = () => {
       if (wrapRef.current && innerRef.current) {
-        innerRef.current.style.width =  `${wrapRef.current.offsetWidth}px`;
+        innerRef.current.style.width = `${wrapRef.current.offsetWidth}px`;
       }
-    }
+    };
     updateInnerWidth();
     window.addEventListener('resize', updateInnerWidth);
     return () => {
       window.removeEventListener('resize', updateInnerWidth);
-    }
+    };
   });
 
   useEffect(() => {
@@ -77,11 +81,11 @@ const ScrollBox = React.forwardRef((props, ref) => {
             wrapRef.current.scrollLeft = position.x;
             wrapRef.current.scrollTop = position.y;
           }
-        })
+        });
       }
     }
   }, []);
-  
+
   return (
     <div
       ref={(n) => {
@@ -94,7 +98,7 @@ const ScrollBox = React.forwardRef((props, ref) => {
             ref.current = n;
           }
         }
-      }} 
+      }}
       className={classNames('ft-ScrollBox', className, {
         'h-ssp': props.stopScrollPropagation,
       })}
@@ -104,20 +108,17 @@ const ScrollBox = React.forwardRef((props, ref) => {
           scrollCache.set(props.scrollCacheKey, {
             x: e.target.scrollLeft,
             y: e.target.scrollTop,
-          })
+          });
         }
       }}
     >
-      <div 
-        className='ft-ScrollBox__inner' 
-        ref={innerRef}
-      >
+      <div className="ft-ScrollBox__inner" ref={innerRef}>
         {children}
         {scrollToLoad && hasMore && loadingHint}
       </div>
     </div>
-  )
-})
+  );
+});
 
 ScrollBox.propTypes = {
   className: PropTypes.string,
@@ -128,11 +129,11 @@ ScrollBox.propTypes = {
   hasMore: PropTypes.bool,
   loading: PropTypes.bool,
   loadMore: PropTypes.func,
-}
+};
 
 ScrollBox.defaultProps = {
   scrollToLoadDelta: 50,
   loadingHint: 'loading...',
-}
+};
 
 export default ScrollBox;

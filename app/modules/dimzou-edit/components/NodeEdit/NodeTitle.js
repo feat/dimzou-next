@@ -18,7 +18,7 @@ function NodeTitle() {
   const bundleState = useContext(BundleContext);
   const nodeState = useContext(NodeContext);
   const userCapabilities = useContext(UserCapabilitiesContext);
-  const node = nodeState && nodeState.data;
+  const nodeBasic = nodeState && nodeState.basic;
   const currentUser = useSelector(selectCurrentUser);
 
   const versionLabel = getVersionLabel(bundleState.data);
@@ -34,24 +34,28 @@ function NodeTitle() {
     [versionLabel],
   );
 
+  const block = nodeState.blocks[nodeState.title] || {};
+
   return (
     <RewordableSection
       mode={bundleState.mode}
-      bundleId={node.bundle_id}
-      nodeId={node.id}
-      blockId={node.title ? node.title.id : {}}
-      rewordings={node.title ? node.title.rewordings : {}}
-      info={node.title ? node.title.info : {}}
+      bundleId={nodeBasic.bundle_id}
+      nodeId={nodeBasic.id}
+      blockId={block.id}
+      rewordings={block.rewordings}
+      info={block.info}
       structure="title"
       currentUser={currentUser}
       userCapabilities={userCapabilities}
       editorPlaceholder={
-        <div className="typo-Article__titlePlaceholder">
+        <div className="dz-Typo__titlePlaceholder">
           <TranslatableMessage message={intlMessages.titlePlaceholder} />
         </div>
       }
       contentSuffix={versionEl}
+      versionLabel={versionLabel}
       render={ContentBlockRender}
+      shouldHighlighted={window.location.hash === `#title-${block.id}`}
     />
   );
 }

@@ -1,22 +1,18 @@
 import React, { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux'
-import PropTypes from 'prop-types'
-import classNames from 'classnames'
+import { useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import get from 'lodash/get';
 import Link from 'next/link';
 import { Textfit } from 'react-textfit';
-import { formatMessage } from '@/services/intl';
+import { useIntl } from 'react-intl';
 import { maxTextContent } from '@/utils/content';
 import Modal from '@feat/feat-ui/lib/modal';
 import notification from '@feat/feat-ui/lib/notification';
-import SquareButton from '@feat/feat-ui/lib/button/SquareButton'
+import SquareButton from '@feat/feat-ui/lib/button/SquareButton';
 import TranslatableMessage from '@/modules/language/containers/TranslatableMessage';
 
-import {
-  ReportTable,
-  ReportTableCell,
-  ReportTableRow,
-} from '../ReportTable';
+import { ReportTable, ReportTableCell, ReportTableRow } from '../ReportTable';
 
 import intlMessages from '../messages';
 import { asyncDeleteBundle } from '../../../actions';
@@ -33,60 +29,61 @@ const valueSort = (a, b) => {
 };
 
 function DimzouReport(props) {
-  const {
-    bundleId,
-    userId,
-    isPublished,
-  } = props;
+  const { bundleId, userId, isPublished } = props;
   const data = get(props.statistical, props.statisticalKey, []);
   const dispatch = useDispatch();
   const [deleting, setDeleting] = useState(false);
+  const { formatMessage } = useIntl();
 
-  const handleDelete = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    Modal.confirm({
-      title: formatMessage(intlMessages.deleteConfirmTitle),
-      content: formatMessage(intlMessages.deleteConfirmContent),
-      onConfirm: () => {
-        setDeleting(true);
-        dispatch(asyncDeleteBundle({
-          bundleId,
-          userId,
-        })).catch((err) => {
-          notification.error({
-            message: 'Error',
-            description: err.message,
+  const handleDelete = useCallback(
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      Modal.confirm({
+        title: formatMessage(intlMessages.deleteConfirmTitle),
+        content: formatMessage(intlMessages.deleteConfirmContent),
+        onConfirm: () => {
+          setDeleting(true);
+          dispatch(
+            asyncDeleteBundle({
+              bundleId,
+              userId,
+            }),
+          ).catch((err) => {
+            notification.error({
+              message: 'Error',
+              description: err.message,
+            });
+            setDeleting(false);
           });
-          setDeleting(false);
-        })
-      },
-      onCancel: () => {},
-    });
-  }, []);
+        },
+        onCancel: () => {},
+      });
+    },
+    [formatMessage],
+  );
 
   const href = {
     pathname: '/dimzou-edit',
     query: {
+      pageName: isPublished ? 'view' : 'draft',
       bundleId,
-      isPublicationView: isPublished,
     },
-  }
+  };
   const asPath = getAsPath(href);
-
 
   return (
     <div className="dz-DimzouReport">
       <div className="dz-DimzouReport__header">
-        <Link
-          href={href}
-          as={asPath}
-        >
+        <Link href={href} as={asPath}>
           <a
-            className={classNames("dz-DimzouReport__title", {
+            className={classNames('dz-DimzouReport__title', {
               'is-draft': !props.isPublished,
-            })}>
-            <Textfit style={{ height: 48 }}>{maxTextContent(props.title)}</Textfit>
+            })}
+          >
+            <Textfit style={{ height: 48 }}>
+              {maxTextContent(props.title)}
+            </Textfit>
           </a>
         </Link>
         <SquareButton
@@ -123,21 +120,18 @@ function DimzouReport(props) {
                       defaultMessage: record.title,
                     }}
                   />
-                ) : record.title}
+                ) : (
+                  record.title
+                )}
               </ReportTableCell>
-              <ReportTableCell modifier="val">
-                {record.female}
-              </ReportTableCell>
-              <ReportTableCell modifier="val">
-                {record.male}
-              </ReportTableCell>
+              <ReportTableCell modifier="val">{record.female}</ReportTableCell>
+              <ReportTableCell modifier="val">{record.male}</ReportTableCell>
             </ReportTableRow>
           ))}
         </ReportTable>
       </div>
     </div>
-    
-  )
+  );
 }
 
 DimzouReport.propTypes = {
@@ -148,6 +142,6 @@ DimzouReport.propTypes = {
   isPublished: PropTypes.bool,
   bundleId: PropTypes.number,
   userId: PropTypes.number,
-}
+};
 
 export default DimzouReport;

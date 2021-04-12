@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import Router from 'next/router';
 import TemplateFeedList from '@/components/TemplateFeedList';
@@ -9,7 +9,7 @@ import StickyHeaderBlock from '../../StickyHeaderBlock';
 import intlMessages from '../messages';
 import { BUNDLE_TYPE_TRANSLATE } from '../../../constants';
 import { selectReaderTaste } from '../../../selectors';
-import { asyncFetchReaderTasteList } from '../../../actions'
+import { asyncFetchReaderTasteList } from '../../../actions';
 import { getAsPath } from '../../../utils/router';
 
 const mapEntities = (item) => ({
@@ -28,30 +28,32 @@ function ReaderTaste(props) {
   const dispatch = useDispatch();
   const { list, templates, loading, hasMore } = state;
   const handleLoadMore = useCallback(() => {
-    dispatch(asyncFetchReaderTasteList({
-      userId: props.userId,
-    }))
+    dispatch(
+      asyncFetchReaderTasteList({
+        userId: props.userId,
+      }),
+    );
   }, []);
 
   useEffect(() => {
     if (!state.onceFetched) {
       handleLoadMore();
     }
-  }, [])
+  }, []);
 
   const handleItemClick = useCallback((item) => {
     const href = {
       pathname: '/dimzou-edit',
       query: {
+        pageName: item.isDraft ? 'draft' : 'view',
         bundleId: item.id,
-        isPublicationView: !item.isDraft,
       },
-    }
+    };
     const asPath = getAsPath(href);
     Router.push(href, asPath).then(() => {
       window.scrollTo(0, 0);
     });
-  })
+  });
 
   return (
     <StickyHeaderBlock
@@ -67,20 +69,15 @@ function ReaderTaste(props) {
         hasMore={hasMore}
         watchScroll={false}
         loadMore={handleLoadMore}
-        itemProps={{
-          showAvatar: false,
-          onClick: handleItemClick,
-        }}
+        showAvatar={false}
+        onItemClick={handleItemClick}
       />
     </StickyHeaderBlock>
-  )
+  );
 }
 
 ReaderTaste.propTypes = {
-  userId: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]),
-}
+  userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
 
 export default ReaderTaste;

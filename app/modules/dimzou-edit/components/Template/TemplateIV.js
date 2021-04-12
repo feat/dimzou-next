@@ -18,15 +18,15 @@ const TemplateIV = React.forwardRef((props, ref) => {
       {...htmlProps}
       ref={ref}
     >
-      <div className="dz-TemplateIV__mainContainer">
-        <div className="dz-TemplateIV__sidebarFirst">{sidebarFirst}</div>
-        <div className="dz-TemplateIV__main">
+      <div className="dz-App__mainContainer">
+        <div className="dz-App__sidebarFirst">{sidebarFirst}</div>
+        <div className="dz-App__mainWrap">
           {cover}
-          {main}
+          <div className="dz-App__main">{main}</div>
         </div>
-        <div className="dz-TemplateIV__sidebarSecond">{sidebarSecond}</div>
+        <div className="dz-App__sidebarSecond">{sidebarSecond}</div>
       </div>
-      <div className="dz-TemplateIV__sidebarThird">{sidebarThird}</div>
+      <div className="dz-App__sidebarThird">{sidebarThird}</div>
     </div>
   );
 });

@@ -1,15 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames'
+import classNames from 'classnames';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
+import { injectIntl } from 'react-intl';
 
-import { withRouter } from 'next/router'
-import Link from 'next/link'
+import { withRouter } from 'next/router';
+import Head from 'next/head';
+import Link from 'next/link';
 
+import injectReducer from '@/utils/injectReducer';
 import { mapFeedData } from '@/utils/feed';
-import { formatMessage } from '@/services/intl';
+import { concatHeaders } from '@/utils/router';
 
 import notification from '@feat/feat-ui/lib/notification';
 
@@ -18,13 +21,15 @@ import TemplateFeedList from '@/components/TemplateFeedList';
 
 import TranslatableMessage from '@/modules/language/containers/TranslatableMessage';
 
-
 import { asyncFetchCategoryFeeds } from './actions';
 
 import { makeSelectPageCategory } from '../selectors';
 import { selectPageContent } from './selectors';
+import { REDUCER_KEY } from './config';
+import reducer from './reducer';
 
 import intlMessages from '../messages';
+import { pageTitle } from '../../../messages/common';
 
 class CommonCategoryPage extends React.PureComponent {
   componentDidMount() {
@@ -42,21 +47,23 @@ class CommonCategoryPage extends React.PureComponent {
   }
 
   fetchItems = () => {
-    this.props.fetchCategoryFeeds({
-      categoryId: this.props.categoryId,
-      data: this.props.content.next || undefined,
-    }).catch((err) => {
-      notification.error({
-        message: 'Error',
-        description: err.message,
+    this.props
+      .fetchCategoryFeeds({
+        categoryId: this.props.categoryId,
+        data: this.props.content.next || undefined,
+      })
+      .catch((err) => {
+        notification.error({
+          message: 'Error',
+          description: err.message,
+        });
       });
-    });
   };
 
   handleItemClick = (item) => {
     this.props.router.push(item.meta.link.href, item.meta.link.as).then(() => {
       window.scrollTo(0, 0);
-    })
+    });
   };
 
   renderSidebar() {
@@ -67,16 +74,21 @@ class CommonCategoryPage extends React.PureComponent {
         <div key={category.id}>
           <Link
             href={{
-              pathname: '/dimzou-category-feed', query: {
+              pathname: '/dimzou-category-feed',
+              query: {
                 id: category.id,
               },
             }}
             as={`/category/${category.id}/dimzou`}
           >
             <a
-              className={classNames("ft-Button ft-Button_anchor", {
-                'is-selected': String(router.query.id) === String(category.id),
-              })}
+              className={classNames(
+                'ft-Button ft-Button_sm ft-Button_block ft-Button_anchor',
+                {
+                  'is-selected':
+                    String(router.query.id) === String(category.id),
+                },
+              )}
             >
               <TranslatableMessage
                 message={{
@@ -105,32 +117,47 @@ class CommonCategoryPage extends React.PureComponent {
         noContentLabel={
           <TranslatableMessage message={intlMessages.noContentLabel} />
         }
-        itemProps={{
-          onClick: this.handleItemClick,
-        }}
+        onItemClick={this.handleItemClick}
       />
     );
   }
 
   render() {
-    const { pageCategory } = this.props;
+    const {
+      pageCategory,
+      intl: { formatMessage },
+    } = this.props;
     if (pageCategory === false) {
       return <h1>404</h1>;
     }
 
     if (!pageCategory) {
-      return <div>{formatMessage(intlMessages.fetchingCategoryInfo)}</div>
+      return <div>{formatMessage(intlMessages.fetchingCategoryInfo)}</div>;
     }
 
     return (
       <Template
         pageTitle={
-          <TranslatableMessage
-            message={{
-              id: `category.${pageCategory.slug}`,
-              defaultMessage: pageCategory.name,
-            }}
-          />
+          <>
+            <TranslatableMessage
+              message={{
+                id: `category.${pageCategory.slug}`,
+                defaultMessage: pageCategory.name,
+              }}
+            />
+            <Head>
+              <title>
+                {concatHeaders(
+                  formatMessage(pageTitle.dimzouCategory, {
+                    category: formatMessage({
+                      id: `category.${pageCategory.slug}`,
+                      defaultMessage: pageCategory.name,
+                    }),
+                  }),
+                )}
+              </title>
+            </Head>
+          </>
         }
         sidebar={this.renderSidebar()}
         main={this.renderMainContent()}
@@ -144,9 +171,8 @@ CommonCategoryPage.propTypes = {
   content: PropTypes.object,
   pageCategory: PropTypes.object,
   router: PropTypes.object,
-  categoryId: PropTypes.oneOfType([
-    PropTypes.string, PropTypes.number,
-  ]),
+  categoryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  intl: PropTypes.object,
 };
 
 const mapStateToProps = () =>
@@ -164,7 +190,14 @@ const withConnect = connect(
   mapDispatchToProps,
 );
 
+const withReducer = injectReducer({
+  key: REDUCER_KEY,
+  reducer,
+});
+
 export default compose(
   withRouter,
+  withReducer,
   withConnect,
+  injectIntl,
 )(CommonCategoryPage);

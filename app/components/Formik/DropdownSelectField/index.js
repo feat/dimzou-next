@@ -22,7 +22,10 @@ const optionFilter = (option, filter) => {
 
 class DropdownSelectField extends React.PureComponent {
   handleChange = (value) => {
-    const { field: { name }, form: { setFieldValue }} = this.props;
+    const {
+      field: { name },
+      form: { setFieldValue },
+    } = this.props;
     setFieldValue(name, value);
     if (this.props.afterChange) {
       this.props.afterChange();
@@ -47,21 +50,22 @@ class DropdownSelectField extends React.PureComponent {
   );
 
   render() {
-    const {
-      field,
-      form,
-      label,
-      options,
-      ...custom
-    } = this.props;
+    const { field, form, label, options, ...custom } = this.props;
     const error = form.errors[field.name];
-    const validateStatus = form.touched[field.name] && error ? 'error' : undefined;
+    const validateStatus =
+      form.touched[field.name] && error ? 'error' : undefined;
     return (
       <FormItem
         label={label}
         labelCol={custom.labelCol}
         wrapperCol={custom.wrapperCol}
-        help={validateStatus ? <FormHelp validateStatus={validateStatus} data={error} /> : custom.help}
+        help={
+          validateStatus ? (
+            <FormHelp validateStatus={validateStatus} data={error} />
+          ) : (
+            custom.help
+          )
+        }
         validateStatus={validateStatus}
         modifier={custom.modifier}
       >

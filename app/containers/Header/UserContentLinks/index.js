@@ -24,7 +24,9 @@ function UserContentLinks(props) {
   const { userId, activeLink } = props;
   const currentUser = useSelector(selectCurrentUser);
   const user = useSelector((state) => selectUserInfo(state, props));
-  const availableInfo = useSelector((state) => selectAvailableInfo(state, props));
+  const availableInfo = useSelector((state) =>
+    selectAvailableInfo(state, props),
+  );
   const dispatch = useDispatch();
   useEffect(() => {
     if (!user) {
@@ -36,7 +38,9 @@ function UserContentLinks(props) {
 
   return (
     <div>
-      {(isCurrentUser || availableInfo.has_file_x_event || availableInfo.has_dimzou_data) && (
+      {(isCurrentUser ||
+        availableInfo.has_file_x_event ||
+        availableInfo.has_dimzou_data) && (
         <Link
           href={{
             pathname: '/user-profile',
@@ -74,7 +78,7 @@ function UserContentLinks(props) {
           </a>
         </Link>
       )}
-      
+
       {(isCurrentUser || availableInfo.has_dimzou_data) && (
         <Link
           href={{
@@ -92,7 +96,7 @@ function UserContentLinks(props) {
           </a>
         </Link>
       )}
-      
+
       {isCurrentUser && (
         <Link
           href={{

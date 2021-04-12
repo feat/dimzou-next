@@ -1,6 +1,5 @@
 import request from '@/utils/request';
 
-
 export const fetchUserCategories = () =>
   request({
     url: `/api/category/expertise-category/my_category_list/`,

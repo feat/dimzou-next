@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react'
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux'
+import { useSelector } from 'react-redux';
 
 import { selectCurrentUser } from '@/modules/auth/selectors';
 import { LIKABLE_TYPE_DIMZOU_PUBLICATION } from '@/modules/like/constants';
@@ -9,12 +9,16 @@ import LikeWidget from '@/modules/like/containers/LikeWidget';
 function LikeButton(props) {
   const { publication } = props;
   const currentUser = useSelector(selectCurrentUser);
-  
-  const capabilities =useMemo(() => ({
-    canLike: currentUser &&
-          publication.author &&
-          currentUser.uid !== publication.author.uid,
-  }), [publication, currentUser])
+
+  const capabilities = useMemo(
+    () => ({
+      canLike:
+        currentUser &&
+        publication.author &&
+        currentUser.uid !== publication.author.uid,
+    }),
+    [publication, currentUser],
+  );
 
   return (
     <LikeWidget
@@ -31,10 +35,9 @@ function LikeButton(props) {
       // type="withDetail"
       type="textBtn"
     />
-
-  )
+  );
 }
 LikeButton.propTypes = {
   publication: PropTypes.object,
-}
+};
 export default LikeButton;

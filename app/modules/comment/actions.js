@@ -10,9 +10,7 @@ import { normalize } from 'normalizr';
 
 import Router from 'next/router';
 
-import {
-  comment as commentSchema,
-} from '@/schema';
+import { comment as commentSchema } from './schema';
 
 import {
   // getComment as getCommentRequest,
@@ -22,7 +20,7 @@ import {
   updateComment as updateCommentRequest,
   deleteComment as deleteCommentRequest,
   // getCommentReplies as getCommentRepliesRequest,
-} from '@/client/comment';
+} from './requests';
 
 import { hasAuthedUser } from '../auth/selectors';
 import { selectCommentBundle } from './selectors';
@@ -61,16 +59,10 @@ export const asyncCreateComment = (payload) => async (dispatch, getState) => {
         redirect: window.location.pathname,
         action: true,
       },
-    })
+    });
     return undefined;
   }
-  const {
-    entityType,
-    entityId,
-    content,
-    parentId,
-    conversationId,
-  } = payload;
+  const { entityType, entityId, content, parentId, conversationId } = payload;
   try {
     const request = parentId ? replyCommentRequest : createCommentRequest;
     const { data: comment } = await request({
@@ -102,7 +94,7 @@ export const asyncCreateComment = (payload) => async (dispatch, getState) => {
     );
     throw err;
   }
-}
+};
 
 export const asyncDeleteComment = (payload) => async (dispatch) => {
   const { commentId, entityType, entityId, parentId, conversationId } = payload;
@@ -120,7 +112,7 @@ export const asyncDeleteComment = (payload) => async (dispatch) => {
     dispatch(deleteComment.failure(err));
     throw err;
   }
-}
+};
 
 export const asyncUpdateComment = (payload) => async (dispatch) => {
   const { commentId, content } = payload;
@@ -145,11 +137,11 @@ export const asyncUpdateComment = (payload) => async (dispatch) => {
     );
     throw err;
   }
-}
+};
 
 export const asyncGetCommentTree = (payload) => async (dispatch, getState) => {
   const { entityType, entityId, next, excepts = [] } = payload;
-  const bundleState = selectCommentBundle(getState(), payload)
+  const bundleState = selectCommentBundle(getState(), payload);
   if (bundleState.isFetchingComments) {
     return;
   }
@@ -170,15 +162,17 @@ export const asyncGetCommentTree = (payload) => async (dispatch, getState) => {
     if (pagination) {
       formatedPagniation = {
         total_count: pagination.total_count,
-        next: pagination.next ? {
-          page: pagination.next,
-          page_size: pagination.page_size,
-        } : null,
+        next: pagination.next
+          ? {
+              page: pagination.next,
+              page_size: pagination.page_size,
+            }
+          : null,
       };
     } else {
       formatedPagniation = {
         total_count: meta.total,
-      }
+      };
     }
     dispatch(
       getCommentTree.success({
@@ -190,11 +184,13 @@ export const asyncGetCommentTree = (payload) => async (dispatch, getState) => {
       }),
     );
   } catch (err) {
-    dispatch(getCommentTree.failure({
-      entityType,
-      entityId,
-      data: err,
-    }));
+    dispatch(
+      getCommentTree.failure({
+        entityType,
+        entityId,
+        data: err,
+      }),
+    );
     throw err;
   } finally {
     dispatch(
@@ -204,4 +200,4 @@ export const asyncGetCommentTree = (payload) => async (dispatch, getState) => {
       }),
     );
   }
-}
+};

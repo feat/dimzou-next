@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
 import PublicationContextProvider from '../../providers/PublicationContextProvider';
 import BookNodeRender from './BookNodeRender';
@@ -8,19 +8,19 @@ function BookNode(props) {
   const { brief } = props;
   return (
     <PublicationContextProvider
-      bundleId={props.bundleId} 
+      bundleId={props.bundleId}
       nodeId={brief.id}
       shouldFetchData={String(props.nodeId) === String(props.activeNodeId)}
     >
-      <BookNodeRender 
-        bundleId={props.bundleId} 
-        nodeId={brief.id} 
-        brief={brief}  
+      <BookNodeRender
+        bundleId={props.bundleId}
+        nodeId={brief.id}
+        brief={brief}
         index={props.index}
         nodes={props.nodes}
       />
     </PublicationContextProvider>
-  )
+  );
 }
 
 BookNode.propTypes = {
@@ -30,6 +30,6 @@ BookNode.propTypes = {
   brief: PropTypes.object,
   nodes: PropTypes.array,
   index: PropTypes.number,
-}
+};
 
 export default BookNode;

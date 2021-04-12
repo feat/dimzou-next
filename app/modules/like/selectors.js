@@ -1,21 +1,28 @@
 import { createSelector } from 'reselect';
 import { denormalize } from 'normalizr';
+import get from 'lodash/get';
 
-import { like as likeSchema } from '@/schema';
 import { selectEntities } from '@/modules/entity/selectors';
 
-import { getWidgetKey, REDUCER_KEY } from './reducer';
+import { like as likeSchema } from './schema';
+import { getWidgetKey } from './reducer';
+import { REDUCER_KEY } from './config';
 
 /**
  * Direct selector to the commentBundle state domain
  */
-const selectLikeWidget = (state, props) => {
+export const selectLikeWidget = (state, props) => {
   const key = getWidgetKey(props);
   const bundleState = state[REDUCER_KEY];
   if (!bundleState) {
     return undefined;
   }
   return bundleState[key];
+};
+
+export const selectLikeCount = (state, props) => {
+  const key = getWidgetKey(props);
+  return get(state, [REDUCER_KEY, key, 'likesCount']);
 };
 
 /**
@@ -39,4 +46,3 @@ const makeSelectLikeWidget = () =>
   });
 
 export default makeSelectLikeWidget;
-export { selectLikeWidget };

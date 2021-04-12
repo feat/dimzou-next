@@ -1,38 +1,36 @@
 import { createRoutine } from 'redux-saga-routines';
-
-import { fetchCategoryFeedItems as fetchCategoryFeedsRequest } from '@/client/feed';
-
-import configTemplates from '@/components/FeedTemplate/configTemplates';
+import { provider } from '@/components/FeedRender/helpers';
 
 import { selectPageContent } from './selectors';
+import { fetchFeedItems } from './requests';
 
 const NS = 'CAT/DIMZOU';
 const TYPE = 'publication,node';
 
-export const fetchCategoryFeeds = createRoutine(
-  `${NS}/FETCH_CATEGORY_FEEDS`
-);
+export const fetchCategoryFeeds = createRoutine(`${NS}/FETCH_CATEGORY_FEEDS`);
 
-export const asyncFetchCategoryFeeds = (payload) => async (dispatch, getState) => {
-  const {
-    data = { page: 1, page_size: 16, type: TYPE },
-    categoryId,
-  } = payload
-  dispatch(fetchCategoryFeeds.trigger(payload))
+export const asyncFetchCategoryFeeds = (payload) => async (
+  dispatch,
+  getState,
+  { request },
+) => {
+  const { data = { page: 1, page_size: 16, type: TYPE }, categoryId } = payload;
+  dispatch(fetchCategoryFeeds.trigger(payload));
   try {
     dispatch(fetchCategoryFeeds.request({ categoryId }));
-    const { data: resData, pagination } = await fetchCategoryFeedsRequest(
-      categoryId,
-      {
-        ...data,
-        type: TYPE,
-      },
+    const { data: resData, pagination } = await request(
+      fetchFeedItems({
+        id: categoryId,
+        params: {
+          ...data,
+          type: TYPE,
+        },
+      }),
     );
-    const contentState = selectPageContent(getState(), { categoryId })
-    const templates = configTemplates(
-      contentState.templates,
+    const contentState = selectPageContent(getState(), { categoryId });
+    const templates = provider.getTemplates(
       resData.length,
-      pagination.total_count,
+      contentState.templates,
     );
     dispatch(
       fetchCategoryFeeds.success({
@@ -42,9 +40,9 @@ export const asyncFetchCategoryFeeds = (payload) => async (dispatch, getState) =
           templates,
           next: pagination.next
             ? {
-              page: pagination.next,
-              page_size: pagination.page_size,
-            }
+                page: pagination.next,
+                page_size: pagination.page_size,
+              }
             : null,
           hasMore: pagination.total_pages > data.page,
         },
@@ -65,4 +63,4 @@ export const asyncFetchCategoryFeeds = (payload) => async (dispatch, getState) =
       }),
     );
   }
-}
+};

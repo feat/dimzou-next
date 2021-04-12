@@ -15,7 +15,7 @@ const KEY_ARROW_DOWN = 'ArrowDown';
 const KEY_DELETE = 'Backspace';
 const KEY_ESC = 'Escape';
 const spiltKeys = [
-  'Enter', 
+  'Enter',
   // ...(',;./[]\\'.split('')),
   // ...('，；。／【】、'.split('')),
 ];
@@ -104,8 +104,7 @@ class TagGroupInput extends React.PureComponent {
         label: trimed,
       });
     }
-  }
-
+  };
 
   submitTag(data) {
     if (!data) {
@@ -206,8 +205,7 @@ class TagGroupInput extends React.PureComponent {
     } else if (spiltKeys.indexOf(key) > -1 && !this.state.isSelectActive) {
       e.preventDefault();
       this.tryToCommitInput();
-    } 
-    else if (key === KEY_DELETE && this.state.text === '' && valueCount) {
+    } else if (key === KEY_DELETE && this.state.text === '' && valueCount) {
       this.props.onChange(this.props.removeItem(value, valueCount - 1));
     } else if (key === KEY_ARROW_UP && isOpen && optionCount) {
       e.preventDefault();
@@ -252,44 +250,31 @@ class TagGroupInput extends React.PureComponent {
     const { text, options, isOpen, currentSelect } = this.state;
 
     const filteredOptions = options.filter((option) => option.key === text);
-    
+
     let leftHint = null;
     if (itemMaxLength) {
       const left = itemMaxLength - text.length;
       if (left < 5) {
-        leftHint = (
-          <span className="TagGroupWidget__countHint">
-            {left}
-          </span>
-        )
+        leftHint = <span className="TagGroupWidget__countHint">{left}</span>;
       }
     }
-    
+
     return (
       <div className="TagGroupWidget">
         {value &&
           value.map((tag, index) => (
-            <span
-              className="TagGroupItem"
-              key={index}
-            >
+            <span className="TagGroupItem" key={index}>
               <Popover
-                content={
-                  <div style={{ width: 240 }}>
-                    {getTagLabel(tag)}
-                  </div>
-                }
+                content={<div style={{ width: 240 }}>{getTagLabel(tag)}</div>}
               >
-                <span className="TagGroupItem__label">
-                  {getTagLabel(tag)}
-                </span>
+                <span className="TagGroupItem__label">{getTagLabel(tag)}</span>
               </Popover>
               <SquareButton
                 className="TagGroupItem__btn"
                 onClick={() => this.removeIndex(index)}
                 type="merge"
               >
-                  &times;
+                &times;
               </SquareButton>
             </span>
           ))}

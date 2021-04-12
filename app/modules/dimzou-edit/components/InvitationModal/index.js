@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import getConfig from 'next/config';
+import { useIntl } from 'react-intl';
 
-import { formatMessage } from '@/services/intl';
 import Modal from '@feat/feat-ui/lib/modal';
 import ShareModal from '@/modules/share/components/ShareModal';
 import { selectCurrentUser } from '@/modules/auth/selectors';
@@ -12,48 +12,68 @@ import {
   selectInvitationContext,
   selectUserInvitationCode,
   selectWorkspaceState,
-} from '../../selectors'
+} from '../../selectors';
 import {
-  asyncMarkRewordShared, 
+  asyncMarkRewordShared,
   asyncCreateInvitation,
   closeInvitation,
 } from '../../actions';
 import { SOCIAL_INVITATION_TYPE_PUBLIC } from '../../constants';
 
 export default function InvitationPanel() {
-  const isInvitationPanelOpened = useSelector((state) => selectWorkspaceState(state).isInvitationPanelOpened);
+  const { formatMessage } = useIntl();
+  const isInvitationPanelOpened = useSelector(
+    (state) => selectWorkspaceState(state).isInvitationPanelOpened,
+  );
   const invitationContext = useSelector(selectInvitationContext) || {};
   const currentUser = useSelector(selectCurrentUser);
-  const invitation = useSelector((state) => selectUserInvitationCode(state, invitationContext));
+  const invitation = useSelector((state) =>
+    selectUserInvitationCode(state, invitationContext),
+  );
   const dispatch = useDispatch();
-  
-  useEffect(() => {
-    if (!invitation && currentUser.uid && invitationContext.bundleId) {
-      dispatch(asyncCreateInvitation({
-        bundleId: invitationContext.bundleId,
-        nodeId: invitationContext.nodeId,
-        data: {
-          type: SOCIAL_INVITATION_TYPE_PUBLIC,
-        },
-      }))
-    }
-  }, [invitationContext.bundleId, currentUser.uid ])
 
-  
+  useEffect(
+    () => {
+      if (!invitation && currentUser.uid && invitationContext.bundleId) {
+        dispatch(
+          asyncCreateInvitation({
+            bundleId: invitationContext.bundleId,
+            nodeId: invitationContext.nodeId,
+            data: {
+              type: SOCIAL_INVITATION_TYPE_PUBLIC,
+            },
+          }),
+        );
+      }
+    },
+    [invitationContext.bundleId, currentUser.uid],
+  );
+
   const { publicRuntimeConfig } = getConfig();
+
   if (!isInvitationPanelOpened) {
     return null;
   }
-
-  const publicLink = invitation ? `${window.location.origin}/draft/${invitationContext.bundleId}/${invitationContext.nodeId}?invitation=${
-    window.encodeURIComponent(invitation.code)
-  }` : '';
+  let publicLink = '';
+  if (invitation) {
+    publicLink = `${window.location.origin}/draft/${
+      invitationContext.bundleId
+    }/${invitationContext.nodeId}?invitation=${window.encodeURIComponent(
+      invitation.code,
+    )}${
+      invitationContext.meta
+        ? `#${invitationContext.meta.structure}-${
+            invitationContext.meta.blockId
+          }`
+        : ''
+    }`;
+  }
 
   return (
     <Modal
       isOpen={isInvitationPanelOpened}
       onClose={() => {
-        dispatch(closeInvitation(invitationContext))
+        dispatch(closeInvitation(invitationContext));
       }}
       maskClosable
     >
@@ -61,12 +81,15 @@ export default function InvitationPanel() {
         canShareWithSMS={false}
         onShareBtnClick={(data) => {
           if (invitationContext.meta.rewordingId) {
-            dispatch(asyncMarkRewordShared({
-              bundleId: invitationContext.bundleId,
-              nodeId: invitationContext.nodeId,
-              rewordingId: invitationContext.meta.rewordingId,
-              ...data,
-            }))
+            dispatch(
+              asyncMarkRewordShared({
+                bundleId: invitationContext.bundleId,
+                nodeId: invitationContext.nodeId,
+                rewordingId: invitationContext.meta.rewordingId,
+                blockId: invitationContext.meta.blockId,
+                ...data,
+              }),
+            );
           }
         }}
         shareInfo={{
@@ -77,36 +100,36 @@ export default function InvitationPanel() {
           emailSubject: formatMessage(shareMessages.emailSubject),
           emailBody: invitationContext.meta
             ? formatMessage(shareMessages.paraShareEmailBody, {
-              link: publicLink,
-              title: invitationContext.title,
-              username: invitationContext.meta.username,
-              userExpertise: invitationContext.meta.userExpertise,
-              paraText: `${invitationContext.meta.content.slice(0, 20)}...`,
-            })
+                link: publicLink,
+                title: invitationContext.title,
+                username: invitationContext.meta.username,
+                userExpertise: invitationContext.meta.userExpertise,
+                paraText: `${invitationContext.meta.content.slice(0, 20)}...`,
+              })
             : formatMessage(shareMessages.emailBody, {
-              site: window.location.host,
-              link: publicLink,
-              source: publicRuntimeConfig.share.host,
-              author: invitationContext.author.username,
-              username: currentUser.username,
-              title: invitationContext.title,
-            }),
+                site: window.location.host,
+                link: publicLink,
+                source: publicRuntimeConfig.share.host,
+                author: invitationContext.author.username,
+                username: currentUser.username,
+                title: invitationContext.title,
+              }),
           shareText: invitationContext.meta
             ? formatMessage(shareMessages.paraShareText, {
-              link: publicLink,
-              title: invitationContext.title,
-              username: invitationContext.meta.username,
-              userExpertise: invitationContext.meta.userExpertise,
-              paraText: `${invitationContext.meta.content.slice(0, 20)}...`,
-              source: publicRuntimeConfig.share.host,
-            })
+                link: publicLink,
+                title: invitationContext.title,
+                username: invitationContext.meta.username,
+                userExpertise: invitationContext.meta.userExpertise,
+                paraText: `${invitationContext.meta.content.slice(0, 20)}...`,
+                source: publicRuntimeConfig.share.host,
+              })
             : formatMessage(shareMessages.shareText, {
-              link: publicLink,
-              title: invitationContext.title,
-              source: publicRuntimeConfig.share.host,
-              author: invitationContext.author.username,
-              authorExpertise: invitationContext.author.expertise,
-            }),
+                link: publicLink,
+                title: invitationContext.title,
+                source: publicRuntimeConfig.share.host,
+                author: invitationContext.author.username,
+                authorExpertise: invitationContext.author.expertise,
+              }),
         }}
       />
     </Modal>

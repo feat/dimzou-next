@@ -1,74 +1,33 @@
-import { useMemo } from 'react'
-import PropTypes from 'prop-types'
-import { useSelector } from 'react-redux'
 import { compose } from 'redux';
 
+import injectReducer from '@/utils/injectReducer';
 import injectSaga from '@/utils/injectSaga';
+
 import { DAEMON } from '@/utils/constants';
-import BackButton from '@/components/BackButton';
-import {
-  selectWorkspaceState,
-} from './selectors';
-import { REDUCER_KEY } from './reducers';
+import reducer, { REDUCER_KEY } from './reducers';
 import saga from './sagas';
-import { WorkspaceContext } from './context'
+import { AppContext } from './context';
 
 import DimzouApp from './components/App';
-import ScrollContextProvider from './providers/ScrollContextProvider';
-
-const isTrue = (value) => value === true || value === 'true'
 
 function DimzouEdit(props) {
-  const { bundleId, nodeId, userId, isCreate, invitationCode, isPublicationView, hash } = props;
-  const workspace = useSelector(selectWorkspaceState);
-  const combined = useMemo(() => ({
-    ...workspace,
-    bundleId,
-    nodeId,
-    userId,
-    hash,
-    isCreate: isTrue(isCreate),
-    invitationCode,
-    isPublicationView: isTrue(isPublicationView),
-  }), [workspace, bundleId, nodeId, userId, hash, isCreate, invitationCode, isPublicationView]);
+  // TO_ENHANCE: 封装路由更新方法
+
   return (
-    <WorkspaceContext.Provider value={combined}>
-      <ScrollContextProvider>
-        <DimzouApp />
-        {!combined.userId && <BackButton />}
-      </ScrollContextProvider>
-    </WorkspaceContext.Provider>
-  )
+    <AppContext.Provider value={props}>
+      <DimzouApp />
+    </AppContext.Provider>
+  );
 }
 
 DimzouEdit.propTypes = {
-  bundleId: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]),
-  nodeId: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]),
-  userId: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]),
-  isCreate: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.bool,
-  ]),
-  isPublicationView: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.bool,
-  ]),
-  invitationCode: PropTypes.string,
-  hash: PropTypes.string,
-}
-
+  // pageName: PropTypes.oneOf(['create', 'draft', 'user', 'dashboard', 'view']),
+};
 
 const withSaga = injectSaga({ key: REDUCER_KEY, saga, mode: DAEMON });
+const withReducer = injectReducer({ key: REDUCER_KEY, reducer });
 
 export default compose(
+  withReducer,
   withSaga,
 )(DimzouEdit);

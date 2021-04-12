@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import Button from '@feat/feat-ui/lib/button';
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
 import FeatModal from '@feat/feat-ui/lib/feat-modal';
 import TranslatableMessage from '@/modules/language/containers/TranslatableMessage';
 import InlineCarouselSelect from '@/components/InlineCarouselSelect';
+import ActionButton from '@/components/ActionButton';
 import FlatSelect from '@feat/feat-ui/lib/flat-select';
 
 // import { Row, Col } from '@feat/feat-ui/lib/grid';
@@ -63,7 +63,8 @@ class CategorySelectModal extends React.Component {
       state.secondaryCategoryIndex = state.rootCategory.children.findIndex(
         (item) => item.id === category.id,
       );
-      state.secondaryCategory = state.rootCategory.children[state.secondaryCategoryIndex];
+      state.secondaryCategory =
+        state.rootCategory.children[state.secondaryCategoryIndex];
     } else {
       logging.warn('should handle error');
     }
@@ -212,6 +213,9 @@ class CategorySelectModal extends React.Component {
     const { rootCategoryIndex, secondaryCategoryIndex } = this.state;
     const rootCategory = tree[rootCategoryIndex];
     const secondaryCategory = rootCategory.children[secondaryCategoryIndex];
+    if (!secondaryCategory) {
+      return null;
+    }
     const cats = secondaryCategory.children;
     return (
       <div className="CategorySelect__tertiarySelect">
@@ -298,7 +302,7 @@ class CategorySelectModal extends React.Component {
     const { onCancel } = this.props;
 
     return (
-      <FeatModal className="CategorySelect">
+      <FeatModal fixedHeight className="CategorySelect">
         <FeatModal.Wrap>
           <FeatModal.Header>
             <FeatModal.Title>
@@ -306,7 +310,7 @@ class CategorySelectModal extends React.Component {
             </FeatModal.Title>
             <FeatModal.SubHeader>{this.renderRootSelect()}</FeatModal.SubHeader>
           </FeatModal.Header>
-          <FeatModal.Content className="CategorySelect__main">
+          <FeatModal.Content noPadding className="CategorySelect__main">
             <div className="CategorySelect__secondaryPanel">
               {this.renderSecondarySelect()}
             </div>
@@ -318,17 +322,20 @@ class CategorySelectModal extends React.Component {
           </FeatModal.Content>
           <FeatModal.Footer>
             {onCancel && (
-              <IconButton
-                className="margin_r_24"
-                svgIcon="no-btn"
+              <ActionButton
+                type="no"
                 size="md"
+                data-type="action"
+                data-button-style="icon"
                 onClick={onCancel}
               />
             )}
             {this.props.isAdvertiser ? null : (
-              <IconButton
-                svgIcon="ok-btn"
+              <ActionButton
+                type="ok"
                 size="md"
+                data-type="action"
+                data-button-style="icon"
                 onClick={this.handleConfirm}
               />
             )}

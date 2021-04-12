@@ -20,12 +20,7 @@ class LoadableTemplateSection extends React.PureComponent {
     const TemplatePlaceholder = TemplatePlaceholders[template];
     const Template = Templates[template];
     if (!this.props.initialized || this.props.loading) {
-      return (
-        <TemplatePlaceholder
-
-          className={this.props.className}
-        />
-      );
+      return <TemplatePlaceholder className={this.props.className} />;
     }
 
     return (

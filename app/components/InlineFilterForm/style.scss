@@ -1,0 +1,16 @@
+@import 'base.scss';
+
+@include block(InlineFilterForm) {
+  @include element(input) {
+    height: px-to-rem(30);
+    width: 100%;
+    border: 1px solid $gray-10;
+    font-size: 14px;
+    border-radius: px-to-rem(14);
+    padding-left: px-to-rem(12);
+    padding-right: px-to-rem(12);
+    @media (min-width: $screen-xxl-min) {
+      font-size: px-to-rem(16);
+    }
+  }
+}

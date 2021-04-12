@@ -4,6 +4,7 @@
   display: flex;
   height: 100%;
   flex-direction: column;
+  background-color: var(--main-bg-color);
 
   @include state(sidebar, has) {
     flex-direction: row;
@@ -13,15 +14,13 @@
     width: px-to-rem($site-sidebar-width);
     flex-shrink: 0;
     @include modifier(ads) {
-      flex-basis: px-to-rem($site-adPanel-width);
       min-width: 0;
-      width: px-to-rem($site-adPanel-width);
-      @media (max-width: $screen-xxl-min) {
-        flex-basis: px-to-rem($site-adPanel-width - 40);
-      }
-      @media (max-width: $screen-xl-min) {
-        flex-basis: px-to-rem($site-adPanel-width - 80);
-      }
+      width: percentage(200 / 1200);
+      max-width: px-to-rem($site-adPanel-width);
+      // @media(min-width: $screen-xxl-min) {
+      //   flex-basis: px-to-rem($site-adPanel-width);
+      //   width: px-to-rem($site-adPanel-width);
+      // }
     }
     @include modifier(page) {
       width: auto;
@@ -37,7 +36,6 @@
     @include modifier(base) {
       position: relative;
       min-height: calc(100vh - #{px-to-rem(50)});
-      // background: $main-container-bg-color;
       // border: 1px solid darken($main-container-bg-color, 5%);
       display: flex;
       flex-direction: column;
@@ -58,10 +56,70 @@
     // margin-bottom: px-to-rem(24);
     padding-left: px-to-rem(24);
     padding-right: px-to-rem(24);
-    background-color: $main-container-bg-color;
+    background-color: var(--main-bg-color);
   }
 
   @include element(title) {
     border-bottom: px-to-rem(6) solid $gray-10;
+  }
+}
+
+@include block(Site) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100vh;
+  min-width: $page-min-width;
+
+  @include modifier(fixedHeader) {
+    padding-top: px-to-rem($header-height);
+    // hhsmn: header-has-sub-menu
+    &.hhsmn {
+      padding-top: px-to-rem($header-height + 36);
+    }
+
+    @include element(header, true) {
+        position: fixed;
+        align-items: center;
+        width: 100%;
+        top: 0;
+        left: 0;
+        height: px-to-rem($header-height);
+        background: white;
+        z-index: $fixed-header-index;
+        box-shadow: 0 0 2px rgba(0, 0, 0, .2);
+    };
+  }
+  @include element(content) {
+    flex: 1;
+  }
+
+  &.fixedWidth {
+    // background-color: $gray-1;
+    background-color: var(--main-bg-color);
+    min-width: 0;
+    @include element(header, true) {
+      .ft-Navbar {
+        max-width: $site-fixed-content-width;
+        min-width: $site-fixed-content-width - 20px; // scrollbar
+        margin: 0 auto;
+      }
+    }
+    @include element(content, true) {
+      max-width: $site-fixed-content-width;
+      min-width: $site-fixed-content-width - 20px; // scrollbar
+      margin: 0 auto;
+      background-color: white;
+    }
+  }
+}
+
+.fixedWidth {
+  @include block(MainLayout) {
+    @include element(sidebar) {
+      @include modifier(ads) {
+        width: $site-fixed-adPanel-width;
+      }
+    }
   }
 }

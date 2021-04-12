@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
+import ButtonBase from '@feat/feat-ui/lib/button/ButtonBase';
+import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg';
 
 import './style.scss';
 
@@ -11,15 +12,15 @@ export default function BackButton({ style, className }) {
     return null;
   }
   return (
-    <IconButton
-      className={classNames('BackBtn', className)}
+    <ButtonBase
+      className={classNames('BackBtn', 'size_sm', className)}
       style={style}
-      size="sm"
-      svgIcon="close"
       onClick={() => {
         global.history.back();
       }}
-    />
+    >
+      <CloseIcon />
+    </ButtonBase>
   );
 }
 

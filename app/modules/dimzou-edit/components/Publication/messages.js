@@ -21,7 +21,7 @@ export default defineMessages({
     id: 'dz.publication.share',
     defaultMessage: 'Share',
   },
-})
+});
 
 export const share = defineMessages({
   shareText: {
@@ -38,4 +38,4 @@ export const share = defineMessages({
     defaultMessage:
       '[{title}] {summary} -- from { source }，Click to read: {link}',
   },
-})
+});

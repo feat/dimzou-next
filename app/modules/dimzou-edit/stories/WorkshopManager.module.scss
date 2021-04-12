@@ -1,0 +1,28 @@
+@import 'base.scss';
+
+@include block(node) {
+  @include element(line) {
+    display: flex;
+    height: 32px;
+    align-items: center;
+    cursor: pointer;
+    &:hover {
+        background-color: $gray-1;
+    }
+    &.isActive {
+        background-color: $gray-10;
+        color: white;
+    }
+  }
+}
+
+.coverWrap {
+    width: 300px;
+    height: 400px;
+    padding: 28px;
+    border: 1px solid $gray-2;
+}
+
+.dragOver {
+    background-color: $gray-2;
+}

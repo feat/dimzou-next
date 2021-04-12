@@ -58,7 +58,6 @@ describe('Dimzou Bundle', () => {
     expect(bundleState.fetchError).toEqual(fetchError);
   });
 
-
   // describe('add collaborators', () => {
   //   let prevState
   //   let demoUser = {uid: 1, username: 'demo'};

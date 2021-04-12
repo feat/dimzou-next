@@ -154,10 +154,10 @@ export const user = defineMessages({
   },
   updateToDate: {
     id: 'menu.user.update-to-date',
-    defaultMessage: "Update to date",
+    defaultMessage: 'Update to date',
   },
   chase: {
     id: 'menu.user.chase',
     defaultMessage: 'Chase',
   },
-})
+});

@@ -13,4 +13,4 @@ export const uploadBlock = defineMessages({
     id: 'dz.upload-block.cancel',
     defaultMessage: 'Cancel',
   },
-})
+});

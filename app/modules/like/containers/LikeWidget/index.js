@@ -41,15 +41,15 @@ class LikeWidget extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
-    if (
-      prevProps.widgetState &&
-      this.props.returnLikesCount &&
-      prevProps.widgetState.likesCount !== this.props.widgetState.likesCount
-    ) {
-      this.props.returnLikesCount(this.props.widgetState.likesCount);
-    }
-  }
+  // componentDidUpdate(prevProps) {
+  //   if (
+  //     prevProps.widgetState &&
+  //     this.props.returnLikesCount &&
+  //     prevProps.widgetState.likesCount !== this.props.widgetState.likesCount
+  //   ) {
+  //     this.props.returnLikesCount(this.props.widgetState.likesCount);
+  //   }
+  // }
 
   handleClick = () => {
     const {
@@ -90,6 +90,9 @@ class LikeWidget extends React.Component {
       onClick: this.handleClick,
       likesCount: widgetState.likesCount,
     };
+    if (this.props.children) {
+      return this.props.children(props);
+    }
     const Compo = this.compoMap[type];
     return <Compo {...props} />;
   }
@@ -115,6 +118,7 @@ LikeWidget.propTypes = {
   unlike: PropTypes.func,
   initialData: PropTypes.object,
   notAllowedMessage: PropTypes.node,
+  children: PropTypes.func,
 };
 
 LikeWidget.defaultProps = {

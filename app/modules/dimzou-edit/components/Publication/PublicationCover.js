@@ -9,11 +9,13 @@ function PublicationCover() {
   const publicationState = useContext(PublicationContext);
   const cover = get(publicationState, 'data.cover');
   const template = getTemplate();
-  
 
   return (
-    <LazyImage ratio={getTemplateCoverRatio(template)} src={cover || undefined} />
-  )
+    <LazyImage
+      ratio={getTemplateCoverRatio(template)}
+      src={cover || undefined}
+    />
+  );
 }
 
 export default PublicationCover;

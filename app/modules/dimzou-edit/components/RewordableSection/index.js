@@ -2,10 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createSelector, createStructuredSelector } from 'reselect';
-
+import { injectIntl } from 'react-intl';
 import get from 'lodash/get';
 
-import { formatMessage } from '@/services/intl';
 import message from '@feat/feat-ui/lib/message';
 
 import {
@@ -55,13 +54,13 @@ import intlMessages from '../../messages';
 import { getNodeCache, blockKey } from '../../utils/cache';
 
 class RewordableSection extends React.Component {
-  componentDidUpdate(prevProps) {
-    Object.entries(this.props).forEach(
-      ([key, val]) =>
-        prevProps[key] !== val &&
-        logging.debug(`BlockId: ${this.props.blockId}, Prop '${key}' changed`),
-    );
-  }
+  // componentDidUpdate(prevProps) {
+  //   Object.entries(this.props).forEach(
+  //     ([key, val]) =>
+  //       prevProps[key] !== val &&
+  //       logging.debug(`BlockId: ${this.props.blockId}, Prop '${key}' changed`),
+  //   );
+  // }
 
   shouldComponentUpdate(prevProps) {
     const diffProps = [];
@@ -138,7 +137,11 @@ class RewordableSection extends React.Component {
   postRewording = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const { blockState, structure } = this.props;
+    const {
+      blockState,
+      structure,
+      intl: { formatMessage },
+    } = this.props;
     const {
       editorState,
       editorBaseId,
@@ -146,10 +149,8 @@ class RewordableSection extends React.Component {
       rewordBaseHTML,
       editorInitWithTranslation,
     } = blockState;
-
     const contentState = editorState.getCurrentContent();
     const htmlContent = getHTML(contentState);
-
     // should have update
     if (htmlContent === updateBaseHTML && !editorInitWithTranslation) {
       message.info({
@@ -338,7 +339,11 @@ class RewordableSection extends React.Component {
   };
 
   removeFreeBlock() {
-    const { structure, dispatch } = this.props;
+    const {
+      structure,
+      dispatch,
+      intl: { formatMessage },
+    } = this.props;
     if (structure === 'title' || structure === 'summary') {
       message.error(formatMessage(intlMessages.shouldNotBeEmpty));
       return;
@@ -368,6 +373,7 @@ class RewordableSection extends React.Component {
       // rewordings,
       userCapabilities: { canEdit },
       classifiedRewordings: { currentVersion },
+      intl: { formatMessage },
     } = this.props;
     if (!canEdit) {
       return;
@@ -529,6 +535,7 @@ RewordableSection.propTypes = {
   classifiedRewordings: PropTypes.object,
 
   dispatch: PropTypes.func,
+  intl: PropTypes.object,
 };
 
 RewordableSection.defaultProps = {
@@ -570,4 +577,6 @@ const mapStateToProps = () => {
   });
 };
 
-export default connect(mapStateToProps)(RewordableSection);
+export default injectIntl(connect(mapStateToProps)(RewordableSection), {
+  forwardRef: true,
+});

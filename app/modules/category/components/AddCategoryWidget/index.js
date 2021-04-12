@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
 import Button from '@feat/feat-ui/lib/button';
 import notification from '@feat/feat-ui/lib/notification';
+import ActionButton from '@/components/ActionButton';
 
 import './style.scss';
 
@@ -12,6 +12,7 @@ class AddCategoryWidget extends React.PureComponent {
   state = {
     isActive: false,
     name: '',
+    isSubmittting: false,
   };
 
   componentDidMount() {
@@ -32,6 +33,7 @@ class AddCategoryWidget extends React.PureComponent {
     this.setState({
       isActive: false,
       name: '',
+      isSubmittting: false,
     });
   }
 
@@ -47,19 +49,18 @@ class AddCategoryWidget extends React.PureComponent {
     this.setState({
       isSubmittting: true,
     });
-    this.props.onSubmit(data)
-      .catch((err) => {
-        logging.debug(err);
-        notification.error({
-          message: 'Error',
-          description: err.message,
-        })
-        if (this.customIsMounted) {
-          this.setState({
-            isSubmittting: false,
-          });
-        }
+    this.props.onSubmit(data).catch((err) => {
+      logging.debug(err);
+      notification.error({
+        message: 'Error',
+        description: err.message,
       });
+      if (this.customIsMounted) {
+        this.setState({
+          isSubmittting: false,
+        });
+      }
+    });
   };
 
   handleInputBlur = () => {
@@ -100,9 +101,9 @@ class AddCategoryWidget extends React.PureComponent {
                 });
               }}
             />
-            <IconButton
+            <ActionButton
               className="AddCategoryWidget__btn"
-              svgIcon="ok-btn"
+              type="ok"
               size="sm"
               htmlType="submit"
               disabled={!this.state.name.trim() || this.state.isSubmittting}

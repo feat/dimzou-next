@@ -1,42 +1,24 @@
 import { eventChannel } from 'redux-saga';
 import {
-  call, put, select, takeEvery,
+  call,
+  put,
+  select,
+  takeEvery,
   all,
   take,
   fork,
 } from 'redux-saga/effects';
 import { normalize } from 'normalizr';
-// import Notify from 'notifyjs';
 
 import ApiError from '@/errors/ApiError';
 import notification from '@feat/feat-ui/lib/notification';
 
-// import { getText } from '@/utils/content';
-// import { formatMessage } from '@/services/intl';
+import { comment as commentSchema } from './schema';
 
-import {
-  comment as commentSchema,
-  // career as careerSchema,
-  // education as educationSchema,
-  // xfileEvent as xfileEventSchema,
-  // dimzouPublication as publicationSchema,
-} from '@/schema';
-
-import {
-  getComment as getCommentRequest,
-} from '@/client/comment';
+import { getComment as getCommentRequest } from './requests';
 
 import commentSocket from './socket';
-import {
-  CHANNEL_OBJECT_TYPE_MAP,
-  // COMMENTABLE_TYPE_ORDER,
-  // COMMENTABLE_TYPE_CAREER,
-  // COMMENTABLE_TYPE_EDUCATION,
-  // COMMENTABLE_TYPE_EVENT,
-  // COMMENTABLE_TYPE_PUBLICATION,
-} from './constants';
-
-// import { ENTITY_MAP } from 'schema';
+import { CHANNEL_OBJECT_TYPE_MAP } from './constants';
 
 import {
   registerBundle,
@@ -51,7 +33,7 @@ import {
 import { selectBundleComment, selectCommentBundle } from './selectors';
 
 // import intlMessages from './messages';
-import { REDUCER_KEY } from './reducers';
+import { REDUCER_KEY } from './config';
 
 function* handleCommentSignal(action) {
   const { payload } = action;
@@ -82,10 +64,12 @@ function* tryToInitCommentBundle(action) {
     !bundleState.isFetchingComments
   ) {
     try {
-      yield put(asyncGetCommentTree({
-        entityType: payload.entityType,
-        entityId: payload.entityId,
-      }));
+      yield put(
+        asyncGetCommentTree({
+          entityType: payload.entityType,
+          entityId: payload.entityId,
+        }),
+      );
     } catch (err) {
       if (!(err instanceof ApiError)) {
         logging.error(err);
@@ -145,7 +129,7 @@ export function* tryToFetchNewComment(action) {
     notification.error({
       message: 'Error',
       description: err.message,
-    })
+    });
     if (!(err instanceof ApiError)) {
       logging.error(err);
     }
@@ -184,7 +168,7 @@ export function* tryToFetchUpdatedComment(action) {
     notification.error({
       message: 'Error',
       description: err.message,
-    })
+    });
     if (!(err instanceof ApiError)) {
       logging.error(err);
     }
@@ -215,12 +199,17 @@ export function* handleCommentDeleted(action) {
   yield put(removeComment(data));
 }
 
-
 function* listenCommentSocket() {
   const channel = eventChannel((emitter) => {
     commentSocket.open();
     commentSocket.on('activity.comment-signal', (_, message) => {
-      const { status, object_id: objectId, comment_object_type: objectType, task_id, ...comment } = message;
+      const {
+        status,
+        object_id: objectId,
+        comment_object_type: objectType,
+        task_id,
+        ...comment
+      } = message;
       const payload = {
         status,
         entity_type: CHANNEL_OBJECT_TYPE_MAP[objectType],
@@ -229,14 +218,14 @@ function* listenCommentSocket() {
         updated_at: message.updated_at,
         parent_id: message.parent_id,
         comment: comment.content ? comment : undefined,
-      }
-      emitter(commentSignal(payload))
-    })
+      };
+      emitter(commentSignal(payload));
+    });
 
     return () => {
       commentSocket.close();
-    }
-  })
+    };
+  });
   try {
     while (true) {
       const action = yield take(channel);
@@ -247,28 +236,29 @@ function* listenCommentSocket() {
   }
 }
 
-
 export default function* commentService() {
-  logging.debug('comment service')
+  logging.debug('comment service');
   // public
   yield takeEvery(registerBundle, tryToInitCommentBundle);
   yield takeEvery(commentSignal, handleCommentSignal);
   yield fork(listenCommentSocket);
 
   // initialize registered bundle
-  const registeredBundles = yield select((state) => state[REDUCER_KEY].bundles)
-  yield all(Object.entries(registeredBundles).map(([key, bundleState]) => {
-    if (!bundleState.isInitialized) {
-      const [entityType, entityId] = key.split('_')
-      const action = registerBundle({
-        entityType,
-        entityId,
-        rootCount: bundleState.rootCount,
-        channel: bundleState.channel,
-        instanceKey: Object.keys(bundleState.instances)[0], // TODO: may have multi instance
-      });
-      return call(tryToInitCommentBundle, action)
-    }
-    return Promise.resolve()
-  }))
+  const registeredBundles = yield select((state) => state[REDUCER_KEY].bundles);
+  yield all(
+    Object.entries(registeredBundles).map(([key, bundleState]) => {
+      if (!bundleState.isInitialized) {
+        const [entityType, entityId] = key.split('_');
+        const action = registerBundle({
+          entityType,
+          entityId,
+          rootCount: bundleState.rootCount,
+          channel: bundleState.channel,
+          instanceKey: Object.keys(bundleState.instances)[0], // TODO: may have multi instance
+        });
+        return call(tryToInitCommentBundle, action);
+      }
+      return Promise.resolve();
+    }),
+  );
 }

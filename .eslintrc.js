@@ -1,10 +1,3 @@
-const fs = require('fs');
-const path = require('path');
-
-const prettierOptions = JSON.parse(
-  fs.readFileSync(path.resolve(__dirname, '.prettierrc'), 'utf8'),
-);
-
 module.exports = {
   parser: 'babel-eslint',
   extends: ['airbnb', 'prettier', 'prettier/react'],
@@ -23,28 +16,21 @@ module.exports = {
     },
   },
   rules: {
+    'prettier/prettier': ['error'],
     'no-shadow': 1,
-    'prettier/prettier': [0, prettierOptions],
     'arrow-parens': ['error', 'always'],
     'arrow-body-style': [2, 'as-needed'],
     'class-methods-use-this': 0,
-    'comma-dangle': [2, 'always-multiline'],
+    // 'comma-dangle': [2, 'always-multiline'],
     camelcase: 1,
     'import/imports-first': 0,
     'import/newline-after-import': 0,
     'import/no-dynamic-require': 0,
     'import/no-extraneous-dependencies': 0,
     'import/no-named-as-default': 0,
-    'import/no-unresolved': 1,
+    'import/no-unresolved': 2,
     'import/no-webpack-loader-syntax': 0,
     'import/prefer-default-export': 0,
-    indent: [
-      2,
-      2,
-      {
-        SwitchCase: 1,
-      },
-    ],
     'jsx-a11y/aria-props': 2,
     'jsx-a11y/heading-has-content': 0,
     'jsx-a11y/label-has-associated-control': [
@@ -74,6 +60,7 @@ module.exports = {
     'no-use-before-define': 0,
     'prefer-template': 2,
     'react/destructuring-assignment': 0,
+    'react/jsx-curly-newline': 0,
     'react/jsx-closing-tag-location': 0,
     'react/forbid-prop-types': 0,
     'react/jsx-first-prop-new-line': [2, 'multiline'],
@@ -93,17 +80,19 @@ module.exports = {
     'require-yield': 0,
     'prefer-destructuring': 1,
     'jsx-a11y/anchor-is-valid': 1,
-    'react/react-in-jsx-scope': 0
+    'react/react-in-jsx-scope': 0,
+    'react/state-in-constructor': 0,
+    'react/jsx-props-no-spreading': 0,
+    'react/prop-types': 1,
   },
   settings: {
     'import/resolver': {
       webpack: {
-        config: './webpack.config.js',
+        config: './next/webpack.custom.config.js',
       },
     },
   },
   globals: {
-    Project: true,
     SENTRY_DSN: true,
     logging: true,
     ga: true,
@@ -111,4 +100,5 @@ module.exports = {
     store: true,
     ReactIntl: true,
   },
+  ignorePatterns: ['internals'],
 };

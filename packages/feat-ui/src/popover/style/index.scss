@@ -1,5 +1,0 @@
-@include block(ns(Popover)) {
-    display: inline-block;
-    z-index: $popover-z-index;
-    @include poplayer-style();
-}

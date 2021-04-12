@@ -1,4 +1,4 @@
-import { rewordingComment as rewordingCommentSchema } from '@/schema'
+import { rewordingComment as rewordingCommentSchema } from '../schema';
 import {
   registerRewordingCommentBundle,
   initRewordingCommentBundle,
@@ -7,6 +7,12 @@ import {
   increaseRootCount,
   decreaseRootCount,
   deleteRewordingComment,
+  initNodeEdit,
+  loadBlockRange,
+  commitBlock,
+  submitBlock,
+  commitMediaBlock,
+  submitMediaBlock,
 } from '../actions';
 
 import commentsReducer from '../reducers/comment';
@@ -143,7 +149,7 @@ describe('Dimzou Edit -- Rewording Comment', () => {
           },
         },
       },
-    }
+    };
     const action = createRewordingComment.success({
       rewordingId: REWORDING_ID,
       commentId: COMMENT_ID,
@@ -161,13 +167,15 @@ describe('Dimzou Edit -- Rewording Comment', () => {
     const bundleState = state[REWORDING_ID];
     expect(bundleState).toBeTruthy();
     expect(bundleState.comments).toBeTruthy();
-    expect(bundleState.rootCount).toBe(1)
-    expect(bundleState.entities[rewordingCommentSchema.key][10].children).toContain(COMMENT_ID)
+    expect(bundleState.rootCount).toBe(1);
+    expect(
+      bundleState.entities[rewordingCommentSchema.key][10].children,
+    ).toContain(COMMENT_ID);
   });
 
-  describe('update comment', () => { });
+  describe('update comment', () => {});
 
-  describe('delete comment', () => { 
+  describe('delete comment', () => {
     it('delete root comment', () => {
       const initialized = {
         [REWORDING_ID]: {
@@ -183,11 +191,11 @@ describe('Dimzou Edit -- Rewording Comment', () => {
             },
           },
         },
-      }
+      };
       const action = deleteRewordingComment.success({
         rewordingId: REWORDING_ID,
         commentId: 10,
-        parentId :null,
+        parentId: null,
       });
       const state = commentsReducer(initialized, action);
       const bundleState = state[REWORDING_ID];
@@ -214,20 +222,21 @@ describe('Dimzou Edit -- Rewording Comment', () => {
             },
           },
         },
-      }
+      };
       const action = deleteRewordingComment.success({
         rewordingId: REWORDING_ID,
         commentId: 11,
-        parentId :10,
+        parentId: 10,
       });
       const state = commentsReducer(initialized, action);
       const bundleState = state[REWORDING_ID];
       expect(bundleState).toBeTruthy();
       expect(bundleState.rootCount).toBe(1);
-      expect(bundleState.entities[rewordingCommentSchema.key][10].children.length).toBe(0);
+      expect(
+        bundleState.entities[rewordingCommentSchema.key][10].children.length,
+      ).toBe(0);
       expect(bundleState.entities[rewordingCommentSchema.key][11]).toBeFalsy();
-    })
-    
+    });
   });
 
   describe('broadcasting', () => {
@@ -249,6 +258,129 @@ describe('Dimzou Edit -- Rewording Comment', () => {
       const state = commentsReducer(initState, action);
       const bundleState = state[REWORDING_ID];
       expect(bundleState.rootCount).toEqual(9);
+    });
+  });
+
+  describe('bulk init', () => {
+    it('init with node init', () => {
+      const action = initNodeEdit.success({
+        bundleId: 1,
+        nodeId: 1,
+        basic: { id: 1, bundle_id: 1 },
+        title: 2,
+        blocks: {
+          2: {
+            id: 2,
+            rewordings: [
+              {
+                id: 'rewording-1',
+                comments_count: 0,
+              },
+            ],
+          },
+        },
+      });
+      const state = commentsReducer({}, action);
+      expect(state['rewording-1']).toBeTruthy();
+    });
+
+    it('init for block thunk', () => {
+      const action = loadBlockRange({
+        nodeId: 1,
+        blocks: {
+          2: {
+            id: 2,
+            rewordings: [
+              {
+                id: 'rewording-1',
+                comments_count: 0,
+              },
+            ],
+          },
+        },
+      });
+      const state = commentsReducer({}, action);
+      expect(state['rewording-1']).toBeTruthy();
+    });
+
+    it('init for commitBlock.success', () => {
+      const action = commitBlock.success({
+        nodeId: 1,
+        blockList: [2],
+        blocks: {
+          2: {
+            id: 2,
+            rewordings: [
+              {
+                id: 'rewording-1',
+                comments_count: 0,
+              },
+            ],
+          },
+        },
+      });
+      const state = commentsReducer({}, action);
+      expect(state['rewording-1']).toBeTruthy();
+    });
+
+    it('init for submitBlock.success', () => {
+      const action = submitBlock.success({
+        nodeId: 1,
+        blockList: [2],
+        blocks: {
+          2: {
+            id: 2,
+            rewordings: [
+              {
+                id: 'rewording-1',
+                comments_count: 0,
+              },
+            ],
+          },
+        },
+      });
+      const state = commentsReducer({}, action);
+      expect(state['rewording-1']).toBeTruthy();
+    });
+
+    it('init for commitMediaBlock.success', () => {
+      const action = commitMediaBlock.success({
+        nodeId: 1,
+        blockList: [2],
+        blocks: {
+          2: {
+            id: 2,
+            rewordings: [
+              {
+                id: 'rewording-1',
+                comments_count: 0,
+              },
+            ],
+          },
+        },
+      });
+      const state = commentsReducer({}, action);
+      expect(state['rewording-1']).toBeTruthy();
+    });
+
+    it('init for submitMediaBlock.success', () => {
+      const action = submitMediaBlock.success({
+        nodeId: 1,
+        blockList: [2],
+        blocks: {
+          2: {
+            id: 2,
+            rewordings: [
+              {
+                id: 'rewording-1',
+                comments_count: 0,
+              },
+            ],
+          },
+        },
+      });
+      const state = commentsReducer({}, action);
+      expect(state['rewording-1']).toBeTruthy();
     });
   });
 });

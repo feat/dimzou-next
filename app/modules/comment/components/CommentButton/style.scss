@@ -1,0 +1,9 @@
+@import 'base.scss';
+
+@include block(CommentButton) {
+  @include state(active) {
+    .icon-comment__circle {
+        fill: $gray-7;
+    }
+  }
+}

@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 
 import { DragSource } from 'react-dnd';
-import Link from 'next/link'
+import Link from 'next/link';
 
 import { getAvatar, getAppLink } from '@/utils/user';
 import { DRAGGABLE_TYPE_USER } from '@/services/dnd';
@@ -47,7 +47,7 @@ export class AvatarStamp extends React.PureComponent {
         uiExtraMeta={uiExtraMeta}
         username={
           uid ? (
-            <Link 
+            <Link
               href={{
                 pathname: '/user-profile',
                 query: {
@@ -57,9 +57,7 @@ export class AvatarStamp extends React.PureComponent {
               as={getAppLink(uid)}
               prefetch={false}
             >
-              <a onClick={stopPropagation}>
-                {username || `${uid}`}
-              </a>
+              <a onClick={stopPropagation}>{username || `${uid}`}</a>
             </Link>
           ) : (
             username || formatMessage(commonMessages.anonymous)

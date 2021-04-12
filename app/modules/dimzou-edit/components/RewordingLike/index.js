@@ -4,11 +4,7 @@ import { connect } from 'react-redux';
 
 import LikeButton from '@/components/LikeButton';
 
-import {
-  initLikeWidget,
-  likeRewording,
-  unlikeRewording,
-} from '../../actions';
+import { initLikeWidget, likeRewording, unlikeRewording } from '../../actions';
 import {
   selectNodeUserRewordingLikes,
   selectLikeWidgetState,
@@ -17,7 +13,7 @@ import {
 import './style.scss';
 
 class RewordingLikeWidget extends React.PureComponent {
-  componentWillMount() {
+  componentDidMount() {
     if (!this.props.isInitialized) {
       this.props.dispatch(
         initLikeWidget({
@@ -47,7 +43,11 @@ class RewordingLikeWidget extends React.PureComponent {
   render() {
     return (
       <div className="dz-RewordingLikeWidget">
-        <LikeButton onClick={this.handleClick} hasLiked={this.props.hasLiked} />
+        <LikeButton
+          className="margin_r_5"
+          onClick={this.handleClick}
+          hasLiked={this.props.hasLiked}
+        />
         <span className="dz-RewordingLikeWidget__num">
           {this.props.rewordingLikesCount}
         </span>

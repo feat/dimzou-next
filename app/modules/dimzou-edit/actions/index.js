@@ -6,20 +6,18 @@ import Router from 'next/router';
 import ApiError from '@/errors/ApiError';
 import notification from '@feat/feat-ui/lib/notification';
 import { hasAuthedUser } from '@/modules/auth/selectors';
+import { provider } from '@/components/FeedRender/helpers';
 import {
   rewordingComment as rewordingCommentSchema,
   dimzouBundleDesc as dimzouBundleDescSchema,
   dimzouPublication as publicationSchema,
-} from '@/schema';
-import { delay } from '@/utils/control';
-import configTemplates from '@/components/FeedTemplate/configTemplates';
+} from '../schema';
 
 import {
   createOriginBundle as createOriginBundleRequest,
   createCopyBundle as createCopyBundleRequest,
-  getBundleEditInfo as getBundleEditInfoRequest,
   getParagraphRange as getParagraphRangeRequest,
-  getParagraphType as getParagraphTypeRequest,
+  batchParagraph as batchParagraphRequest,
   insertContent as insertContentRequest,
   submitCover as submitCoverRequest,
   createNode as createNodeRequest,
@@ -42,7 +40,6 @@ import {
   updateRewordingComment as updateCommentRequest,
   deleteRewordingComment as deleteCommentRequest,
   // workspace
-  fetchUserDrafts as fetchUserDraftsRequest,
   fetchUserRelated as fetchUserRelatedRequest,
   mergeBundle as mergeBundleRequest,
   getBundleDesc as getBundleDescRequest,
@@ -61,11 +58,15 @@ import {
 // import { selectBundleState } from '../selectors';
 import { BUNDLE_STATUS_PUBLISHED } from '../constants';
 import {
-  selectNodeState,
   selectNodePublication,
   selectPlainDimzouReports,
   selectPlainReaderTaste,
 } from '../selectors';
+
+import { getAsPath } from '../utils/router';
+
+export * from './workshop';
+export * from './dashboard';
 
 export const setSidebarHasFocus = createAction('DZ/UI/SIDEBAR_HAS_FOCUS');
 
@@ -95,9 +96,13 @@ export const asyncCreateCopyBundle = (payload) => async (dispatch) => {
   dispatch(createCopyBundle.request(payload));
   try {
     const { data } = await createCopyBundleRequest(payload.bundleId);
-    dispatch(createCopyBundle.success(payload));
-    // TODO: fetch bundle desc;
-    dispatch(asyncFetchUserDrafts());
+    dispatch(
+      createCopyBundle.success({
+        ...payload,
+        data,
+      }),
+    );
+    // TODO: trigger user workshop update.
     return data;
   } catch (err) {
     dispatch(createCopyBundle.failure(payload));
@@ -122,7 +127,7 @@ export const asyncSetBundleCategory = (payload) => async (dispatch) => {
             [dimzouBundleDescSchema.key]: {
               [bundleId]: {
                 category: {
-                  $set: category,
+                  $set: category.id,
                 },
               },
             },
@@ -186,137 +191,53 @@ export const restoreNode = createRoutine('DZ/BUNDLE/RESTORE_NODE');
 export const updateNodeVisibility = createRoutine(
   'DZ/BUNDLE/UPDATE_NODE_VISIBILITY',
 );
-export const receiveNodeUpdateSignal = createAction(
-  'DZ/NODE/RECEIVE_NODE_UPDATE_SIGNAL',
-);
 export const setLoadingProgress = createRoutine('DZ/NODE/SET_LOADING_PROGRESS');
 
-export const asyncFetchNodeData = (nodeId, blockId) => async (dispatch) => {
-  try {
-    const { data: content } = await getParagraphRangeRequest({
-      node_id: nodeId,
-      paragraph_id: blockId,
-    });
-    const { data: title } = await getParagraphTypeRequest({
-      node: nodeId,
-      type: 0,
-    });
-    const { data: summary } = await getParagraphTypeRequest({
-      node: nodeId,
-      type: 100,
-    });
-    const { data: cover } = await getParagraphTypeRequest({
-      node: nodeId,
-      type: 300,
-    });
-    await dispatch(
-      fetchNodeData({
-        nodeId,
-        nodeData: {
-          content,
-          title: title[0],
-          summary: summary[0],
-          cover: cover[0] || {},
-        },
-      }),
-    );
-  } catch (err) {
-    logging.error(err);
-  }
-};
-
-export const asyncFetchNodeEditInfo = (payload) => async (
-  dispatch,
-  getState,
-) => {
-  const { bundleId, nodeId, limit } = payload;
-  const nodeState = selectNodeState(getState(), payload);
-  if (nodeState && nodeState.isFetchingEditInfo) {
+// 分页加载段落数据；
+export const fetchBlockRange = createRoutine('DZ/NODE/FETCH_BLOCK_RANGE');
+export const asyncFetchBlockRange = (payload) => async (dispatch) => {
+  const { bundleId, nodeId, blockId, forward, blockIndex, limit } = payload;
+  const { data } = await getParagraphRangeRequest({
+    node_id: nodeId,
+    paragraph_id: blockId,
+    limit,
+    forward,
+    sort: blockIndex, // contentBlockIndex start with 1 as a "insert block" exists.
+  });
+  if (!data.length) {
     return;
   }
-  dispatch(fetchNodeEditInfo(payload));
-  try {
-    dispatch(fetchNodeEditInfo.request(payload));
-    const {
-      data: { node },
-    } = await getBundleEditInfoRequest(bundleId, { node: nodeId }, (e) => {
-      // shouldDisplayProgressBar = e.total && e.loaded && e.total > 1024 * 500;
-      const total =
-        e.total || e.srcElement.getResponseHeader('x-actual-content-length');
-      const progress = e.loaded / total;
-      dispatch(
-        setLoadingProgress({
-          nodeId,
-          progress,
-        }),
-      );
-    });
-    const { data: content } = await getParagraphRangeRequest({
-      node_id: nodeId,
-      limit: limit || 20,
-    });
-    const { data: title } = await getParagraphTypeRequest({
-      node: nodeId,
-      type: 0,
-    });
-    const { data: summary } = await getParagraphTypeRequest({
-      node: nodeId,
-      type: 100,
-    });
-    const { data: cover } = await getParagraphTypeRequest({
-      node: nodeId,
-      type: 300,
-    });
-
-    await dispatch(
-      loadNodeEditInfo({
-        bundleId,
-        nodeId,
-        data: {
-          ...node,
-          content,
-          title: title[0],
-          summary: summary[0],
-          cover: cover[0] || {},
-        },
-      }),
-    );
-    await delay(100); // force progress bar to render
-  } catch (err) {
-    dispatch(
-      fetchNodeEditInfo.failure({
-        bundleId,
-        nodeId,
-        data: err,
-      }),
-    );
-  } finally {
-    dispatch(fetchNodeEditInfo.fulfill(payload));
-  }
+  const blockList = [];
+  const blocks = {};
+  data.forEach((b) => {
+    blockList.push(b.id);
+    blocks[b.id] = b;
+  });
+  const chunkStartIndex = data[0].sort - 1;
+  dispatch(
+    loadBlockRange({
+      bundleId,
+      nodeId,
+      structure: 'content',
+      chunkStartIndex,
+      blockList,
+      blocks,
+    }),
+  );
 };
 
-// 分页加载段落数据；
-export const asyncUpdateNodeInfo = (payload) => async (dispatch) => {
-  const { nodeId, paragraphId, forward } = payload;
-  try {
-    const { data: content } = await getParagraphRangeRequest({
-      node_id: nodeId,
-      paragraph_id: paragraphId,
-      limit: 20,
-      forward,
-    });
-    await dispatch(
-      updateNodeInfo({
-        nodeId,
-        data: {
-          content,
-        },
-      }),
-    );
-    await delay(100);
-  } catch (err) {
-    logging.error(err);
-  }
+export const asyncBatchParagraph = ({ ids }) => async (dispatch) => {
+  const { data } = await batchParagraphRequest(ids);
+  if (!data.length) return;
+
+  Object.entries(
+    data.reduce((acc, block) => {
+      const acc_node = acc[block.node_id] || { blockList: [], blocks: {} };
+      acc_node.blockList.push(block.id);
+      acc_node.blocks[block.id] = block;
+      return { [block.node_id]: acc_node, ...acc };
+    }, {}),
+  ).forEach(([nodeId, rest]) => dispatch(loadBlockRange({ nodeId, ...rest })));
 };
 
 export const asyncDeleteNode = (payload) => async (dispatch) => {
@@ -367,23 +288,18 @@ export const asyncUpdateNodeVisibility = (payload) => async (dispatch) => {
 };
 
 // --- Node
-export const fetchNodeEditInfo = createRoutine('DZ/NODE/FETCH_EDIT_INFO');
-export const loadNodeEditInfo = createAction('DZ/NODE/LOAD_EDIT_INFO');
-export const updateNodeInfo = createAction('DZ/NODE/UPDATE_INFO');
-export const fetchNodeData = createAction('DZ/NODE/FETCH_DATA');
+export const initNodeEdit = createRoutine('DZ/NODE/INIT_EDIT');
+export const loadBlockRange = createAction('DZ/NODE/LOAD_BLOCK_RANGE');
 // cover
 export const updateAppendImagePivot = createAction(
   'DZ/NODE/CONTENT/APPEN_IMAGE_PIVOT',
-);
-export const receiveContentPatch = createAction(
-  'DZ/NODE/RECEIVE_CONTENT_PATCH',
 );
 export const addMediaBlock = createRoutine('DZ/NODE/ADD_MEDIA_BLOCK');
 // like
 export const likeSignal = createAction(`DZ/NODE/LIKE_SIGNAL`);
 export const commentSignal = createAction(`DZ/NODE/COMMENT_SIGNAL`);
 
-export const patchContent = createAction('DZ/NODE/PATCH_CONTNET');
+export const patchNodeData = createAction('DZ/NODE/PATCH_DATA');
 export const updateRewordingCommentsCount = createAction(
   'DZ/NODE/UPDATE_REWORDING_COMMENTS_COUNT',
 );
@@ -706,18 +622,6 @@ export const fetchUserRelated = createRoutine(
   'DZ/WORKSPACE/FETCH_USER_RELATED',
 );
 
-export const initCreateChapter = createAction(
-  `DZ/WORKSPACE/INIT_CREATE_CHAPTER`,
-);
-export const exitCreateChapter = createAction(
-  `DZ/WORKSPACE/EXIT_CREATE_CHAPTER`,
-);
-export const initCreateCover = createAction(`DZ/WORKSPACE/INIT_CREATE_COVER`);
-export const exitCreateCover = createAction(`DZ/WORKSPACE/EXIT_CREATE_COVER`);
-export const resetWorkspaceCreation = createAction(
-  `DZ/WORKSPACE/RESET_CREATION`,
-);
-
 export const initRelease = createAction(`DZ/WORKSPACE/INIT_RELEASE`);
 export const exitRelease = createAction(`DZ/WORKSPACE/EXIT_RELEASE`);
 export const setReleaseStep = createAction(`DZ/WORKSPACE/SET_RELEASE_STEP`);
@@ -726,40 +630,6 @@ export const setReleaseData = createAction(`DZ/WORKSPACE/SET_RELEASE_DATA`);
 export const showCurrentUserDrafts = createAction(
   `DZ/WORKSPACE/SHOW_CURRENT_USER_DRAFTS`,
 );
-
-export const asyncFetchUserDrafts = (payload) => async (dispatch) => {
-  dispatch(fetchUserDrafts.trigger());
-  try {
-    dispatch(fetchUserDrafts.request());
-    const { data, pagination } = await fetchUserDraftsRequest({
-      page_size: payload.pageSize,
-      ...(payload.next || {}),
-    });
-    const normalized = normalize(data, [dimzouBundleDescSchema]);
-    dispatch(
-      fetchUserDrafts.success({
-        refresh: !payload,
-        raw: data,
-        data: normalized.result,
-        entities: normalized.entities,
-        next: pagination.next
-          ? {
-            page: pagination.next,
-            page_size: pagination.page_size,
-          }
-          : null,
-      }),
-    );
-  } catch (err) {
-    dispatch(
-      fetchUserDrafts.failure({
-        data: err,
-      }),
-    );
-  } finally {
-    dispatch(fetchUserDrafts.fulfill());
-  }
-};
 
 export const asyncFetchUserRelated = (payload) => async (dispatch) => {
   dispatch(fetchUserRelated.trigger(payload));
@@ -779,9 +649,9 @@ export const asyncFetchUserRelated = (payload) => async (dispatch) => {
         entities: normalized.entities,
         next: pagination.next
           ? {
-            page: pagination.next,
-            page_size: pagination.page_size,
-          }
+              page: pagination.next,
+              page_size: pagination.page_size,
+            }
           : null,
       }),
     );
@@ -877,16 +747,15 @@ export const asyncSeparateNode = (payload) => async (dispatch) => {
           nodeId: Router.query.nodeId,
         }),
       );
-      Router.replace(
-        {
-          pathname: '/dimzou-edit',
-          query: {
-            bundleId: data.id,
-            nodeId: Router.query.nodeId,
-          },
+      const href = {
+        pathname: '/dimzou-edit',
+        query: {
+          pageName: 'draft',
+          bundleId: data.id,
+          nodeId: Router.query.nodeId,
         },
-        `/draft/${data.id}/${Router.query.nodeId}`,
-      );
+      };
+      Router.replace(href, getAsPath(href));
     }
     // dispatch(asyncFetchUserDrafts());
   } catch (err) {
@@ -928,22 +797,16 @@ export const asyncCreateBundle = (payload) => async (dispatch) => {
         },
       });
     }
-    dispatch(asyncFetchUserDrafts());
-    Router.replace(
-      {
-        pathname: '/dimzou-edit',
-        query: {
-          bundleId: data.id,
-          nodeId: data.node_id,
-        },
+    // TODO: trigger user workshop update.
+    const href = {
+      pathname: '/dimzou-edit',
+      query: {
+        pageName: 'draft',
+        bundleId: data.id,
+        nodeId: data.node_id,
       },
-      `/draft/${data.id}/${data.node_id}`,
-    );
-    if (payload.isMultiChapter) {
-      dispatch(exitCreateCover());
-    } else {
-      dispatch(exitCreateChapter());
-    }
+    };
+    Router.replace(href, getAsPath(href));
   } catch (err) {
     logging.debug(err);
   }
@@ -989,7 +852,7 @@ export const asyncCreateNode = (payload) => async (dispatch) => {
 
     const nodes = [node];
 
-    dispatch(asyncFetchUserDrafts());
+    // TODO: trigger user workshop update.
 
     dispatch(
       createNode.success({
@@ -1000,17 +863,15 @@ export const asyncCreateNode = (payload) => async (dispatch) => {
         data: nodes,
       }),
     );
-    Router.push(
-      {
-        pathname: '/dimzou-edit',
-        query: {
-          bundleId,
-          nodeId: node.id,
-        },
+    const href = {
+      pathname: '/dimzou-edit',
+      query: {
+        pageName: 'draft',
+        bundleId,
+        nodeId: node.id,
       },
-      `/draft/${bundleId}/${node.id}`,
-    );
-    dispatch(exitCreateChapter());
+    };
+    Router.push(href, getAsPath(href));
   } catch (err) {
     dispatch(createNode.failure({ bundleId, data: err }));
     throw err;
@@ -1023,29 +884,22 @@ export const setApplyScenes = createRoutine('DZ/BUNDLE/SET_APPLY_SCENES');
 export const release = createRoutine('DZ/BUNDLE/RELEASE');
 export const preRelease = createRoutine('DZ/BUNDLE/PRE_PUBLISH');
 export const asyncSetApplyScenes = (payload) => async (dispatch) => {
-  try {
-    const { data } = await setApplyScenesRequest(
-      payload.bundleId,
-      payload.data,
-    );
-    dispatch(
-      setApplyScenes.success({
-        bundleId: payload.bundleId,
-        data: data.apply_scenes,
-        entityMutators: [
-          {
-            [dimzouBundleDescSchema.key]: {
-              [payload.bundleId]: {
-                apply_scenes: { $set: data.apply_scenes },
-              },
+  const { data } = await setApplyScenesRequest(payload.bundleId, payload.data);
+  dispatch(
+    setApplyScenes.success({
+      bundleId: payload.bundleId,
+      data: data.apply_scenes,
+      entityMutators: [
+        {
+          [dimzouBundleDescSchema.key]: {
+            [payload.bundleId]: {
+              apply_scenes: { $set: data.apply_scenes },
             },
           },
-        ],
-      }),
-    );
-  } catch (err) {
-    throw err;
-  }
+        },
+      ],
+    }),
+  );
 };
 
 export const asyncRelease = (payload) => async (dispatch) => {
@@ -1056,9 +910,13 @@ export const asyncRelease = (payload) => async (dispatch) => {
   if (data.category) {
     body.category_id = data.category.id;
   }
-  dispatch(release.request({ bundleId }));
+  if (data.cards) {
+    body.extra_info_cards = data.cards;
+  }
   try {
+    dispatch(release.request({ bundleId }));
     const { data: result } = await publishRequest(bundleId, body);
+    // TO_ENHANCE: may need to fetch bundle desc;
     dispatch(
       release.success({
         ...payload,
@@ -1075,11 +933,7 @@ export const asyncRelease = (payload) => async (dispatch) => {
         ],
       }),
     );
-    // sync drafts meta;
-    dispatch(asyncFetchUserDrafts());
     return result;
-  } catch (err) {
-    throw err;
   } finally {
     dispatch(
       release.fulfill({
@@ -1090,14 +944,10 @@ export const asyncRelease = (payload) => async (dispatch) => {
 };
 
 export const asyncPreRelease = (payload) => async (dispatch) => {
-  try {
-    await prePublishRequest(payload.bundleId, {
-      nodes: payload.data,
-    });
-    dispatch(preRelease.success(payload));
-  } catch (err) {
-    throw err;
-  }
+  await prePublishRequest(payload.bundleId, {
+    nodes: payload.data,
+  });
+  dispatch(preRelease.success(payload));
 };
 
 export const fetchBundleDesc = createRoutine(`DZ/PUBLICATION/BUNDLE_DESC`);
@@ -1130,6 +980,7 @@ export const fetchBundlePublication = createRoutine(
   `DZ/PUBLICATION/FETCH_OF_BUNDLE`,
 );
 
+// TO_ENHANCE: update publication data handling
 export const asyncFetchBundlePublication = (payload) => async (dispatch) => {
   dispatch(fetchBundlePublication.trigger(payload));
   try {
@@ -1173,12 +1024,6 @@ export const tryToFetchPublication = (payload) => async (
   }
 };
 
-// user dimzous
-export const fetchUserDimzous = createRoutine('DZ/USER/FETCH_BUNDLE_LIST');
-// export const asycnFetchUserDimzous = (payload) => async (dispatch) => {
-//   // TODO
-// }
-
 // dashboard related
 export const fetchDimzouReports = createRoutine('DZ/DASH/GET_DIMZOU_REPORTS');
 export const fetchReaderReport = createRoutine('DZ/DASH/READER_REPORT');
@@ -1205,9 +1050,9 @@ export const asyncFetchDimzouReportsList = (payload) => async (
           list: normalized.result,
           next: pagination.next
             ? {
-              page: pagination.next,
-              page_size: pagination.page_size,
-            }
+                page: pagination.next,
+                page_size: pagination.page_size,
+              }
             : null,
           hasMore: !!pagination.next,
           entities: normalized.entities,
@@ -1251,20 +1096,16 @@ export const asyncFetchReaderTasteList = (payload) => async (
     const { data, pagination } = await fetchReaderTasteRequest(params);
     const normalized = normalize(data, [dimzouBundleDescSchema]);
 
-    const templates = configTemplates(
-      subState.templates,
-      data.length,
-      pagination.pagination,
-    );
+    const templates = provider.getTemplates(data.length, subState.templates);
 
     dispatch(
       fetchReaderTaste.success({
         list: normalized.result,
         next: pagination.next
           ? {
-            ...params,
-            page: pagination.next,
-          }
+              ...params,
+              page: pagination.next,
+            }
           : null,
         hasMore: !!pagination.next,
         entities: normalized.entities,
@@ -1333,7 +1174,16 @@ export const asyncSectionRelease = (payload) => async (dispatch) => {
       summary: payload.summary,
       category_id: payload.category.id,
       cover: payload.cover,
+      extra_info_cards: JSON.stringify(payload.cards),
     });
+    dispatch(
+      sectionRelease.success({
+        bundleId: payload.bundleId,
+        nodeId: payload.nodeId,
+        titleId: payload.titleId,
+      }),
+    );
+    // TO_ENHANCE: 此处应该有更新 workshop 的动作。或者等待消息提示！！
     return data;
   } catch (err) {
     dispatch(

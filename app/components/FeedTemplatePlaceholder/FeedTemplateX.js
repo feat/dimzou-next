@@ -3,28 +3,15 @@ import { FeedTemplateX as Base } from '@feat/feat-ui/lib/feed-template';
 import DimzouCardIII from '@feat/feat-ui/lib/dimzou-card/DimzouCardIIIPlaceholder';
 import DimzouCardII from '@feat/feat-ui/lib/dimzou-card/DimzouCardIIPlaceholder';
 
-
 class FeedTemplateX extends Base {
   static displayName = 'FeedTemplateX';
 
   renderI(item, index) {
-    return (
-      <DimzouCardIII
-        titleLines={2}
-        bodyLines={5}
-        key={index}
-      />
-    );
+    return <DimzouCardIII titleLines={2} bodyLines={5} key={index} />;
   }
 
   renderII(item, index) {
-    return (
-      <DimzouCardII
-        titleLines={2}
-        bodyLines={7}
-        key={index}
-      />
-    );
+    return <DimzouCardII titleLines={2} bodyLines={7} key={index} />;
   }
 }
 

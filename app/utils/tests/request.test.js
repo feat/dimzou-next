@@ -2,22 +2,22 @@
  * Test the request function
  */
 import moxios from 'moxios';
-import request, { instance, baseURL } from '../request';
+import request from '../request';
 
 describe('request', () => {
   // Before each test, stub the fetch function
   beforeEach(() => {
-    moxios.install(instance);
+    moxios.install(request);
   });
 
   afterEach(() => {
-    moxios.uninstall(instance);
+    moxios.uninstall(request);
   });
 
   describe('stubbing successful response', () => {
     // Before each test, pretend we got a successful response
     beforeEach(() => {
-      moxios.stubRequest(`${baseURL}/thisurliscorrect`, {
+      moxios.stubRequest(`/thisurliscorrect`, {
         status: 200,
         responseText: '{"hello": "world"}',
         headers: { 'Content-Type': 'application/json' },
@@ -39,7 +39,7 @@ describe('request', () => {
   describe('stubbing 204 response', () => {
     // Before each test, pretend we got a successful response
     beforeEach(() => {
-      moxios.stubRequest(`${baseURL}/thisurliscorrect`, {
+      moxios.stubRequest(`/thisurliscorrect`, {
         status: 204,
         statusText: 'No Content',
         responseText: '',
@@ -61,7 +61,7 @@ describe('request', () => {
   describe('stubbing error response', () => {
     // Before each test, pretend we got an unsuccessful response
     beforeEach(() => {
-      moxios.stubRequest(`${baseURL}/thisdoesntexist`, {
+      moxios.stubRequest(`/thisdoesntexist`, {
         status: 404,
         statusText: 'Not Found',
         headers: {
@@ -72,10 +72,11 @@ describe('request', () => {
 
     it('should catch errors', (done) => {
       request({
-        url: `${baseURL}/thisdoesntexist`,
+        url: `/thisdoesntexist`,
       }).catch((err) => {
         expect(err.response.status).toBe(404);
         expect(err.response.statusText).toBe('Not Found');
+        expect(err.toJSON).toBeTruthy();
         done();
       });
     });
@@ -83,7 +84,7 @@ describe('request', () => {
 
   describe('stubbing api error response', () => {
     beforeEach(() => {
-      moxios.stubRequest(`${baseURL}/thisreturnerror`, {
+      moxios.stubRequest(`/thisreturnerror`, {
         status: 400,
         headers: {
           'Content-type': 'application/json',
@@ -95,7 +96,7 @@ describe('request', () => {
 
     it('should return api error instance if has related info', (done) => {
       request({
-        url: `${baseURL}/thisreturnerror`,
+        url: `/thisreturnerror`,
       }).catch((err) => {
         expect(err.code).toBe('API_ERROR');
         expect(err.message).toBe('Api error description');

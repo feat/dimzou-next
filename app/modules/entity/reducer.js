@@ -14,7 +14,7 @@ Object.values(schemas).forEach((schema) => {
 export default function entityReducer(state = initialState, action) {
   const entities = get(action, 'payload.entities');
   const entityMutators = get(action, 'payload.entityMutators');
-  
+
   let nextState = state;
   if (entities) {
     nextState = merge(nextState, entities);

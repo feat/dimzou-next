@@ -1,21 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-
-import { formatMessage } from '@/services/intl';
-import { getAvatar, getUsername } from '@/utils/user';
-import { sliceComments, treeToFlatList } from '@/utils/comment';
+import { injectIntl } from 'react-intl';
+import { getAvatar, getUsername } from '@/modules/user/utils';
 
 import Avatar from '@feat/feat-ui/lib/avatar';
-import { Row, Col } from '@feat/feat-ui/lib/grid';
-import SimpleForm from '@/components/SimpleForm';
-import Username from '@/components/Username';
-import Meta from '@/components/Meta';
+
 import LiveClock from '@/components/LiveClock';
 import LoadMoreAnchor from '@/components/LoadMoreAnchor';
 import TranslatableMessage from '@/modules/language/containers/TranslatableMessage';
-import { replyKey } from '../../cache';
 
+import { replyKey } from '../../cache';
+import { sliceComments, treeToFlatList } from '../../utils';
+
+import CommentForm from '../CommentForm';
 import CommentSection from './CommentSection';
 import intlMessages from './messages';
 import './style.scss';
@@ -30,7 +28,7 @@ class CommentBundle extends React.Component {
   setCache = (key, data = {}) => {
     this.props.cache.set(key, data.content ? data.htmlContent : '');
     this.forceUpdate();
-  }
+  };
 
   hasNoContent = () => {
     const { entityCapabilities, bundleState } = this.props;
@@ -64,10 +62,7 @@ class CommentBundle extends React.Component {
   renderCommentForm() {
     const {
       currentUser,
-      entityCapabilities: {
-        canComment,
-        commentLimit,
-      },
+      entityCapabilities: { canComment, commentLimit },
       autoFocus,
       showCommentForm,
       cache,
@@ -80,8 +75,10 @@ class CommentBundle extends React.Component {
     }
     // user has commented;
     if (
-      commentLimit && 
-      bundleState.comments.filter((c) => c.user && c.user.uid === currentUser.uid).length >= commentLimit
+      commentLimit &&
+      bundleState.comments.filter(
+        (c) => c.user && c.user.uid === currentUser.uid,
+      ).length >= commentLimit
     ) {
       return null;
     }
@@ -95,8 +92,12 @@ class CommentBundle extends React.Component {
       <div className="cm-RootCommentForm">
         {header && (
           <div className="cm-RootCommentForm__note">
-            {header === true ? <TranslatableMessage message={intlMessages.thoughtShare} /> : header}
-          </div>  
+            {header === true ? (
+              <TranslatableMessage message={intlMessages.thoughtShare} />
+            ) : (
+              header
+            )}
+          </div>
         )}
         <div className="cm-RootCommentForm__wrap">
           <div className="cm-RootCommentForm__avatar">
@@ -104,22 +105,26 @@ class CommentBundle extends React.Component {
           </div>
           <div className="cm-RootCommentForm__main">
             <div className="cm-RootCommentForm__header">
-              <Username>
-                {getUsername(currentUser) || <TranslatableMessage message={intlMessages.anonymous} />}
-              </Username>
-              <Meta>{currentUser.expertise}</Meta>
-              <Meta>
+              <span className="t-username margin_r_5">
+                {getUsername(currentUser) || (
+                  <TranslatableMessage message={intlMessages.anonymous} />
+                )}
+              </span>
+              <span className="t-meta t-meta_primary">
+                {currentUser.expertise}
+              </span>
+              <span className="t-meta">
                 <LiveClock format="HH:mm" ticking />
-              </Meta>
+              </span>
             </div>
-            <SimpleForm
-              className="typo-comment"
+            <CommentForm
+              className="cm-Typo"
               autoFocus={autoFocus}
               onSubmit={this.handleCreateComment}
               showUserInfo={false}
               initialContent={cache.get(replyKey(null))}
-              updateCache={(data) => { 
-                this.setCache(replyKey(null), data)
+              updateCache={(data) => {
+                this.setCache(replyKey(null), data);
               }}
               placeholder={
                 <TranslatableMessage message={intlMessages.placeholder} />
@@ -138,6 +143,8 @@ class CommentBundle extends React.Component {
       currentUser,
       entityCapabilities,
       showSectionHeader,
+      showAvatar,
+      intl: { formatMessage },
     } = this.props;
     if (comments.length === 0) {
       return null;
@@ -151,34 +158,48 @@ class CommentBundle extends React.Component {
             <TranslatableMessage message={intlMessages.opinions} />
           </div>
         )}
-        <Row flex wrap className="cm-CommentSections">
-          {slices.map((slice, index) => (
-            <Col className="cm-CommentSections__cell" span={12} key={index}>
-              {slice[0].map((comment) => (
-                <CommentSection
-                  escapeChildren
-                  maxReplyLimit={entityCapabilities.maxReplyLimit}
-                  reachMaxReplyHint={formatMessage(
-                    intlMessages.reachMaxReplyLimitHint,
-                  )}
-                  replyCache={cache.get(replyKey(comment.id))}
-                  updateReplyCache={(data) => {
-                    this.setCache(replyKey(comment.id), data)
-                  }}
-                  key={comment.id}
-                  comment={comment}
-                  parentInfo={comment.parentInfo}
-                  isRootComment={!comment.parent_id}
-                  currentUser={currentUser}
-                  onReply={this.handleCreateComment}
-                  onUpdate={this.handleUpdateComment}
-                  onDelete={this.handleDeleteComment}
-                  getCapabilities={this.props.getCommentCapabilities}
-                />
-              ))}
-            </Col>
-          ))}
-        </Row>
+        <div className="cm-CommentSections cm-CommentSections_page">
+          {slices.map((slice, index) => {
+            const [items, lineCount] = slice;
+            return (
+              <div
+                className={classNames('cm-CommentSectionStack', {
+                  'is-multi': lineCount > 32, // 估算行高大于一页， 只是预估值，可能会造成第二页没有页码的情况，或者第二页只有页码的情况
+                  'has-avatar': showAvatar,
+                })}
+                key={index}
+              >
+                <div className="cm-CommentSectionStack__content">
+                  {items.map((comment) => (
+                    <CommentSection
+                      escapeChildren
+                      showAvatar={showAvatar}
+                      maxReplyLimit={entityCapabilities.maxReplyLimit}
+                      reachMaxReplyHint={formatMessage(
+                        intlMessages.reachMaxReplyLimitHint,
+                      )}
+                      hasReplyHint={formatMessage(intlMessages.hasReplyHint)}
+                      replyCache={cache.get(replyKey(comment.id))}
+                      updateReplyCache={(data) => {
+                        this.setCache(replyKey(comment.id), data);
+                      }}
+                      key={comment.id}
+                      comment={comment}
+                      parentInfo={comment.parentInfo}
+                      isRootComment={!comment.parent_id}
+                      currentUser={currentUser}
+                      onReply={this.handleCreateComment}
+                      onUpdate={this.handleUpdateComment}
+                      onDelete={this.handleDeleteComment}
+                      getCapabilities={this.props.getCommentCapabilities}
+                    />
+                  ))}
+                </div>
+                <div className="cm-CommentSectionStack__footer" />
+              </div>
+            );
+          })}
+        </div>
       </>
     );
   }
@@ -189,6 +210,8 @@ class CommentBundle extends React.Component {
       currentUser,
       entityCapabilities,
       cache,
+      showAvatar,
+      intl: { formatMessage },
     } = this.props;
     return (
       <div className="cm-CommentSections">
@@ -200,6 +223,7 @@ class CommentBundle extends React.Component {
             reachMaxReplyHint={formatMessage(
               intlMessages.reachMaxReplyLimitHint,
             )}
+            hasReplyHint={formatMessage(intlMessages.hasReplyHint)}
             isRootComment
             replyCache={cache.get(replyKey(comment.id))}
             updateReplyCache={(data) => {
@@ -210,6 +234,7 @@ class CommentBundle extends React.Component {
             onUpdate={this.handleUpdateComment}
             onDelete={this.handleDeleteComment}
             getCapabilities={this.props.getCommentCapabilities}
+            showAvatar={showAvatar}
           />
         ))}
       </div>
@@ -260,11 +285,12 @@ class CommentBundle extends React.Component {
           style={style}
         >
           {hasNoContent &&
-            !entityCapabilities.canComment && showNoContentHint && (
-            <div className="cm-CommentBundle__noContentHint">
-              <TranslatableMessage message={intlMessages.noContentHint} />
-            </div>
-          )}
+            !entityCapabilities.canComment &&
+            showNoContentHint && (
+              <div className="cm-CommentBundle__noContentHint">
+                <TranslatableMessage message={intlMessages.noContentHint} />
+              </div>
+            )}
           {this.renderCommentForm()}
           {this.props.pageLayout
             ? this.renderCommentWithPageLayout()
@@ -284,6 +310,15 @@ class CommentBundle extends React.Component {
 CommentBundle.propTypes = {
   style: PropTypes.object,
   className: PropTypes.string,
+  autoFocus: PropTypes.bool,
+  pageLayout: PropTypes.bool,
+  showCommentForm: PropTypes.bool,
+  isComment: PropTypes.bool,
+  showSectionHeader: PropTypes.bool,
+  showNoContentHint: PropTypes.bool,
+  showAvatar: PropTypes.bool,
+  fetchOnMount: PropTypes.bool,
+  header: PropTypes.oneOfType([PropTypes.bool, PropTypes.node]),
   entityCapabilities: PropTypes.shape({
     canComment: PropTypes.bool,
     maxReplyLimit: PropTypes.number,
@@ -292,33 +327,26 @@ CommentBundle.propTypes = {
   bundleState: PropTypes.shape({
     isInitialized: PropTypes.bool,
     comments: PropTypes.array,
+    rootCount: PropTypes.number,
+    isFetchingComments: PropTypes.bool,
   }),
   cache: PropTypes.object,
+  currentUser: PropTypes.shape({
+    username: PropTypes.string,
+    uid: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    avatar: PropTypes.string,
+    expertise: PropTypes.string,
+  }),
+  wrapper: PropTypes.func,
+  getCommentCapabilities: PropTypes.func,
+  onCommented: PropTypes.func,
+  // authorize: PropTypes.func.isRequired,
   loadMore: PropTypes.func.isRequired,
   onCreateComment: PropTypes.func.isRequired,
   onUpdateComment: PropTypes.func.isRequired,
   onDeleteComment: PropTypes.func.isRequired,
-  currentUser: PropTypes.shape({
-    username: PropTypes.string,
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    avatar: PropTypes.string,
-    expertise: PropTypes.string,
-  }),
-  autoFocus: PropTypes.bool,
-  pageLayout: PropTypes.bool,
-  wrapper: PropTypes.func,
-  getCommentCapabilities: PropTypes.func,
-  showCommentForm: PropTypes.bool,
-  onCommented: PropTypes.func,
-  fetchOnMount: PropTypes.bool,
-  // authorize: PropTypes.func.isRequired,
-  isComment: PropTypes.bool,
-  showSectionHeader: PropTypes.bool,
-  showNoContentHint: PropTypes.bool,
-  header: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.node,
-  ]),
+
+  intl: PropTypes.object,
 };
 
 CommentBundle.defaultProps = {
@@ -328,6 +356,7 @@ CommentBundle.defaultProps = {
   showSectionHeader: true,
   showNoContentHint: true,
   header: true,
+  showAvatar: true,
 };
 
-export default CommentBundle;
+export default injectIntl(CommentBundle, { forwardRef: true });

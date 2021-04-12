@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
 
-import { getAvatar, getUsername } from '@/utils/user';
+import { getAvatar, getUsername } from '@/modules/user/utils';
 import commonMessages from '@/messages/common';
 
 import Avatar from '@feat/feat-ui/lib/avatar/Avatar';
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
 
+import ActionButton from '@/components/ActionButton';
 import RewordingCommentBundle from '../RewordingCommentBundle';
 import DimzouEditor from '../DimzouEditor';
 import RewordingLikeWidget from '../RewordingLike';
@@ -30,33 +30,26 @@ class Rewording extends React.Component {
       <div
         className={classNames(
           'dz-RewordingSection dz-RewordingSection_pending',
-          {
-            'has-avatar': showAvatar,
-          },
         )}
       >
-        <div
-          className={classNames('dz-Rewording dz-Rewording_pending', {
-            'has-avatar': showAvatar,
-          })}
-        >
+        <div className={classNames('dz-Rewording dz-Rewording_pending')}>
           <div className="dz-Rewording__para">
             {/* 修改序号(版本) */}
             {/* {this.props.count - this.props.index} */}
           </div>
           <div className="dz-Rewording__main">
             <div className="dz-Rewording__flexbox">
-              {showAvatar && (
-                <div className="dz-Rewording__userAvatar">
-                  <Avatar
-                    // round
-                    size="xs"
-                    avatar={getAvatar(currentUser, 'md')}
-                  />
-                </div>
-              )}
               <div className="dz-Rewording__flexbox_item">
                 <div className="dz-Rewording__userInfo">
+                  {showAvatar && (
+                    <div className="">
+                      <Avatar
+                        round
+                        size="xxs"
+                        avatar={getAvatar(currentUser, 'md')}
+                      />
+                    </div>
+                  )}
                   <span className="dz-Rewording__username">
                     {getUsername(currentUser) || (
                       <FormattedMessage {...commonMessages.anonymous} />
@@ -65,28 +58,32 @@ class Rewording extends React.Component {
                   <span className="margin_l_12 dz-Rewording__expertise">
                     {currentUser.expertise}
                   </span>
-                  <FormattedMessage {...intlMessages.editing} />
+                  <span className="margin_l_12">
+                    <FormattedMessage {...intlMessages.editing} />
+                  </span>
                 </div>
-                <DimzouEditor
-                  className="typo-Article"
-                  editorState={uiState.editorState}
-                  mode={uiState.editorMode}
-                  onChange={this.props.onEditorChange}
-                  currentUser={currentUser}
-                />
+                <div className="dz-Rewording__content">
+                  <DimzouEditor
+                    className="dz-Typo dz-ContentEditRegion"
+                    editorState={uiState.editorState}
+                    mode={uiState.editorMode}
+                    onChange={this.props.onEditorChange}
+                    currentUser={currentUser}
+                  />
+                </div>
               </div>
             </div>
             <div className="dz-Rewording__footer dz-RewordingFooter">
               <div className="dz-RewordingFooter__right">
-                <IconButton
+                <ActionButton
                   className="dz-RewordingFooter__action"
-                  svgIcon="no-btn"
+                  type="no"
                   onClick={this.props.exitEditMode}
                   disabled={uiState.submitting}
                 />
-                <IconButton
+                <ActionButton
                   className="dz-RewordingFooter__action"
-                  svgIcon="ok-btn"
+                  type="ok"
                   onClick={this.props.onSubmit}
                   disabled={uiState.submitting}
                 />
@@ -122,29 +119,18 @@ class Rewording extends React.Component {
       <div
         className={classNames(
           `dz-RewordingSection dz-RewordingSection_${modifier}`,
-          {
-            'has-avatar': showAvatar,
-          },
         )}
       >
-        <div
-          className={classNames(`dz-Rewording dz-Rewording_${modifier}`, {
-            'has-avatar': showAvatar,
-          })}
-        >
+        <div className={classNames(`dz-Rewording dz-Rewording_${modifier}`)}>
           <div className="dz-Rewording__main">
             <div className="dz-Rewording__flexbox">
-              {showAvatar && (
-                <div className="dz-Rewording__userAvatar">
-                  <Avatar
-                    // round
-                    size="xs"
-                    avatar={getAvatar(user, 'md')}
-                  />
-                </div>
-              )}
               <div className="dz-Rewording__flexbox_item">
                 <div className="dz-Rewording__userInfo">
+                  {showAvatar && (
+                    <div className="dz-Rewording__userAvatar">
+                      <Avatar round size="xxs" avatar={getAvatar(user, 'md')} />
+                    </div>
+                  )}
                   <span className="dz-Rewording__username">
                     {user.username || user.uid}
                   </span>
@@ -158,20 +144,21 @@ class Rewording extends React.Component {
                     />
                   </span>
                 </div>
-
-                <RewordingPreviewWidget
-                  className="dz-Rewording__content"
-                  data={data}
-                  onDrop={onDrop}
-                  onRemove={this.props.onRemove}
-                  onClick={this.props.tryToEnterEditMode}
-                  isSubmittingFile={uiState.isSubmittingFile}
-                  fileSubmitting={uiState.fileSubmitting}
-                  renderLevel={renderLevel}
-                  canElect={userCapabilities.canElect}
-                  onElect={this.props.onElect}
-                  currentUser={this.props.currentUser}
-                />
+                <div className="dz-Rewording__content">
+                  <RewordingPreviewWidget
+                    className="dz-ContentPreviewRegion"
+                    data={data}
+                    onDrop={onDrop}
+                    onRemove={this.props.onRemove}
+                    onClick={this.props.tryToEnterEditMode}
+                    isSubmittingFile={uiState.isSubmittingFile}
+                    fileSubmitting={uiState.fileSubmitting}
+                    renderLevel={renderLevel}
+                    canElect={userCapabilities.canElect}
+                    onElect={this.props.onElect}
+                    currentUser={this.props.currentUser}
+                  />
+                </div>
               </div>
             </div>
             <div className="dz-Rewording__footer dz-RewordingFooter">
@@ -218,8 +205,8 @@ class Rewording extends React.Component {
               <div className="dz-RewordingFooter__right">
                 {canElect && (
                   <span className="dz-RewordingFooter__action">
-                    <IconButton
-                      svgIcon="no-btn"
+                    <ActionButton
+                      type="no"
                       onClick={this.props.onReject}
                       disabled={isElecting}
                     />
@@ -227,8 +214,8 @@ class Rewording extends React.Component {
                 )}
                 {canElect && (
                   <span className="dz-RewordingFooter__action">
-                    <IconButton
-                      svgIcon="ok-btn"
+                    <ActionButton
+                      type="ok"
                       onClick={this.props.onElect}
                       disabled={isElecting}
                     />
@@ -236,11 +223,6 @@ class Rewording extends React.Component {
                 )}
               </div>
             </div>
-            <div
-              className={classNames({
-                'dz-RewordingFooter__line': data.comments_count,
-              })}
-            />
             <RewordingCommentBundle
               bundleId={this.props.bundleId}
               nodeId={this.props.nodeId}
@@ -256,6 +238,7 @@ class Rewording extends React.Component {
                 commentLimit: 1,
                 maxReplyLimit: 1,
               }}
+              onCommentFormSubmit={this.props.toggleCommentPanel}
             />
           </div>
         </div>

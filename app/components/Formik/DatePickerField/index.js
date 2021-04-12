@@ -117,10 +117,10 @@ class DatePickerField extends React.PureComponent {
               </Button>
               {custom.canClear &&
                 field.value && (
-                <SquareButton onClick={this.handleReset}>
+                  <SquareButton onClick={this.handleReset}>
                     &times;
-                </SquareButton>
-              )}
+                  </SquareButton>
+                )}
             </div>
           </Popover>
         )}

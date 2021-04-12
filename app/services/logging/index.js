@@ -9,47 +9,47 @@ const isProd = process.env.NODE_ENV === 'production';
 
 export const log = isProd
   ? (...args) => {
-    const data = args[0];
-    const level = args[args.length - 1];
-    const extraInfo = args.slice(1, -1);
+      const data = args[0];
+      const level = args[args.length - 1];
+      const extraInfo = args.slice(1, -1);
 
-    if (data instanceof Error) {
-      captureException(data);
-    } else {
-      if (extraInfo.length === 1) {
-        if (extraInfo[0] instanceof Error) {
-          console.error(...extraInfo);
+      if (data instanceof Error) {
+        captureException(data);
+      } else {
+        if (extraInfo.length === 1) {
+          if (extraInfo[0] instanceof Error) {
+            console.error(...extraInfo);
+          } else {
+            addBreadcrumb({
+              type: 'default',
+              level,
+              message: data,
+              data: extraInfo[0],
+            });
+          }
         } else {
           addBreadcrumb({
             type: 'default',
             level,
             message: data,
-            data: extraInfo[0],
+            data: extraInfo,
           });
         }
-      } else {
-        addBreadcrumb({
-          type: 'default',
-          level,
-          message: data,
-          data: extraInfo,
-        });
+        captureMessage(data);
       }
-      captureMessage(data);
     }
-  }
   : console.log.bind(console);
 
 export const info = isProd
   ? (message, extra) => {
-    addBreadcrumb({
-      type: 'default',
-      level: 'info',
-      category: 'info',
-      message,
-      data: extra,
-    });
-  }
+      addBreadcrumb({
+        type: 'default',
+        level: 'info',
+        category: 'info',
+        message,
+        data: extra,
+      });
+    }
   : console.log.bind(console);
 
 export const warn = isProd
@@ -70,5 +70,3 @@ if (typeof window === 'object') {
     debug,
   };
 }
-
-

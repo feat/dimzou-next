@@ -15,17 +15,19 @@ function NodeCover(props) {
   const bundleState = useContext(BundleContext);
   const nodeState = useContext(NodeContext);
   const userCapabilities = useContext(UserCapabilitiesContext);
-  const node = nodeState && nodeState.data;
+  const nodeBasic = nodeState && nodeState.basic;
   const currentUser = useSelector(selectCurrentUser);
+
+  const block = nodeState.blocks[nodeState.cover];
 
   return (
     <RewordableSection
       mode={bundleState.mode}
-      bundleId={node.bundle_id}
-      nodeId={node.id}
-      blockId={node.cover ? node.cover.id : {}}
-      rewordings={node.cover ? node.cover.rewordings : {}}
-      info={node.cover ? node.cover.info : {}}
+      bundleId={nodeBasic.bundle_id}
+      nodeId={nodeBasic.id}
+      blockId={nodeState.cover || `node:${nodeBasic.id}`}
+      rewordings={block ? block.rewordings : undefined}
+      info={block ? block.info : {}}
       structure="cover"
       template={props.template}
       currentUser={currentUser}

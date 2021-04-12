@@ -3,6 +3,7 @@
 @include block(ns(ParaTailing, dz)) {
     position: relative;
     height: px-to-rem(30);
+    margin-top: px-to-rem(8);
     @include element(hint) {
       display: block;
       width: 100%;
@@ -50,5 +51,10 @@
     @include element(dropHint, true) {
       opacity: 1;
     }
+  }
+
+  @include state(disabled, is) {
+    pointer-events: none;
+    opacity: 0 !important;
   }
 }

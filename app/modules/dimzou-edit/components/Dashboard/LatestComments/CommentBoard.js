@@ -16,20 +16,17 @@ class CommentBoard extends React.PureComponent {
     const href = {
       pathname: '/dimzou-edit',
       query: {
+        pageName: 'view',
         bundleId: entity.bundle_id,
-        isPublicationView: true,
       },
-    }
+    };
     const asPath = getAsPath(href);
 
     return (
       <TCommentBoard>
         <TCommentBoard.Header>
           <TCommentBoard.Title>
-            <Link 
-              href={href}
-              as={asPath}
-            >
+            <Link href={href} as={asPath}>
               <a>{title}</a>
             </Link>
           </TCommentBoard.Title>

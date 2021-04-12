@@ -119,7 +119,7 @@ dimzouBundleDesc.define({
   nodes: [dimzouNodeDesc],
   user,
   all_copies: [dimzouBundleDesc],
-})
+});
 
 rewordingComment.define({
   user,

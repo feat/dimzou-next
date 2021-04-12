@@ -1,10 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.4, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" class='icon-release'  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
-<circle class='icon-release__circle' fill="#F4F5F5" stroke="#666666" stroke-width="8" cx="256" cy="256" r="240"/>
-<rect x="124.046" y="180.121" fill="#FFFFFF" stroke="#1D1C1A" stroke-width="8" width="151.619" height="151.828"/>
-<line fill="none" stroke="#1D1C1A" stroke-width="8" x1="387.953" y1="256" x2="209.61" y2="256"/>
-<polyline fill="none" stroke="#1D1C1A" stroke-width="8" points="329.842,210.803 387.953,256 329.842,301.267 "/>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <g id="icon-release" transform="translate(-613 -331)">
+    <rect id="矩形_320" data-name="矩形 320" width="128" height="128" transform="translate(613 331)" fill="#f6f6f6"/>
+    <path id="路径_183" data-name="路径 183" d="M61.516,11.869a5.511,5.511,0,0,0,4.163-1.853,15,15,0,0,0,2.928-4.963l28.5-74.427A18.071,18.071,0,0,0,98-72.141a10.693,10.693,0,0,0,.3-2.356,4.79,4.79,0,0,0-1.3-3.545,4.79,4.79,0,0,0-3.545-1.3,9.848,9.848,0,0,0-2.379.32,25.429,25.429,0,0,0-2.745.869L13.576-49.52a14.02,14.02,0,0,0-4.643,2.768A5.489,5.489,0,0,0,7.08-42.567,5.011,5.011,0,0,0,9.139-38.13a18.858,18.858,0,0,0,5.215,2.379l31.2,9.149L54.609,4.276a21.1,21.1,0,0,0,2.424,5.444A4.982,4.982,0,0,0,61.516,11.869ZM47.793-33.921,19.568-42.567a1.837,1.837,0,0,1-.686-.3.5.5,0,0,1-.183-.389.609.609,0,0,1,.16-.412,1.31,1.31,0,0,1,.572-.32L74.142-64.8q2.653-1.006,5.284-2.264T84.8-69.556q-2.287,1.83-4.8,3.911t-4.391,3.911ZM62.248.341a.5.5,0,0,1-.435-.229,2.462,2.462,0,0,1-.3-.732L52.87-28.844,80.683-56.656q1.784-1.83,3.911-4.437l3.957-4.849q-1.235,2.745-2.516,5.4t-2.287,5.352L62.934-.482a2.116,2.116,0,0,1-.3.618A.478.478,0,0,1,62.248.341Z" transform="translate(623.994 428.42)" fill="#333"/>
+  </g>
 </svg>

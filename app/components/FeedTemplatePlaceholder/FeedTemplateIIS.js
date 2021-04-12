@@ -6,13 +6,7 @@ class FeedTemplateIIS extends Base {
   static displayName = 'FeedTemplateIIS';
 
   renderI(item, index) {
-    return (
-      <DimzouCardIII
-        titleLines={3}
-        bodyLines={4}
-        key={index}
-      />
-    );
+    return <DimzouCardIII titleLines={3} bodyLines={4} key={index} />;
   }
 }
 

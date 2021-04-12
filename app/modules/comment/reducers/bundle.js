@@ -11,9 +11,7 @@ import { normalize } from 'normalizr';
 import merge from '@/utils/merge';
 import { mapHandleActions } from '@/utils/reducerCreators';
 
-import {
-  comment as commentSchema,
-} from '@/schema';
+import { comment as commentSchema } from '../schema';
 
 import {
   registerBundle,
@@ -28,29 +26,7 @@ import {
   receiveUpdatedComment,
 } from '../actions';
 
-const initialBundleState = {
-  isInitialized: false,
-  isFetchingComments: false,
-  comments: [],
-  pagination: null,
-  rootCount: 0,
-  entities: {
-    [commentSchema.key]: {},
-  },
-  instances: {},
-  createPayload: null,
-};
-
-export function getBundleKey(payload = {}) {
-  const { entityType, entityId } = payload;
-  if (!entityType) {
-    logging.warn('entityType is required');
-  }
-  if (!entityId) {
-    logging.warn('entityId is required');
-  }
-  return `${entityType}_${entityId}`;
-}
+import { getBundleKey, initialBundleState } from '../config';
 
 const commentBundleReducer = mapHandleActions(
   {
@@ -116,14 +92,6 @@ const commentBundleReducer = mapHandleActions(
       };
     },
 
-    [createComment]: (bundleState, action) => {
-      const { payload } = action;
-      return {
-        ...bundleState,
-        createPayload: payload,
-      };
-    },
-
     [combineActions(createComment.SUCCESS, receiveNewComment)]: (
       bundleState,
       action,
@@ -147,7 +115,6 @@ const commentBundleReducer = mapHandleActions(
       }
       return {
         ...bundleState,
-        createPayload: null,
         entities: update(bundleEntitiesPatched, {
           [commentSchema.key]: {
             [parentId]: {
@@ -198,4 +165,3 @@ const commentBundleReducer = mapHandleActions(
 );
 
 export default commentBundleReducer;
-export const REDUCER_KEY = 'commentBundle';

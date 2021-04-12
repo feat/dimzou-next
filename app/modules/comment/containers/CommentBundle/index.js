@@ -10,7 +10,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-import get from 'lodash/get';
 
 import { selectCurrentUser } from '@/modules/auth/selectors';
 
@@ -28,24 +27,21 @@ import {
   unregisterBundle,
 } from '../../actions';
 
-import {
-  getBundleCache,
-  initBundleCache,
-} from '../../cache'
+import { getBundleCache, initBundleCache } from '../../cache';
 
 export class CommonCommentBundle extends React.Component {
   constructor(props) {
     super(props);
-    const cache = getBundleCache(props);
-    if (!cache || (!cache.options.userId && props.currentUser.uid)) {
-      initBundleCache({
+    initBundleCache(
+      {
         entityId: this.props.entityId,
         entityType: this.props.entityType,
-      }, props.currentUser.uid)
-    }
+      },
+      props.currentUser.uid,
+    );
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.props.registerBundle({
       entityType: this.props.entityType,
       entityId: this.props.entityId,
@@ -70,7 +66,7 @@ export class CommonCommentBundle extends React.Component {
     });
   }
 
-  getCache = () => getBundleCache(this.props)
+  getCache = () => getBundleCache(this.props);
 
   handleCreateComment = ({ htmlContent, parentId }) => {
     const { entityType, entityId, createComment } = this.props;
@@ -142,8 +138,6 @@ export class CommonCommentBundle extends React.Component {
       return null;
     }
 
-    const initialCreateFormContent = get(bundleState, 'createPayload.content');
-
     return (
       <CommentBundle
         wrapper={wrapper}
@@ -151,7 +145,6 @@ export class CommonCommentBundle extends React.Component {
         bundleState={bundleState}
         cache={this.getCache()}
         currentUser={currentUser}
-        initialCreateFormContent={initialCreateFormContent}
         onCreateComment={this.handleCreateComment}
         onUpdateComment={this.handleUpdateComment}
         onDeleteComment={this.handleDeleteComment}
@@ -173,7 +166,7 @@ CommonCommentBundle.propTypes = {
   entityCapabilities: PropTypes.shape({
     canComment: PropTypes.bool,
   }),
-  disabled: PropTypes.bool,  // 控制滚动时是否加载更多
+  disabled: PropTypes.bool, // 控制滚动时是否加载更多
   entityType: PropTypes.any.isRequired,
   entityId: PropTypes.any.isRequired,
   channel: PropTypes.string,
@@ -200,16 +193,13 @@ CommonCommentBundle.propTypes = {
   fetchOnMount: PropTypes.bool,
   onCommented: PropTypes.func, // callback
   initialData: PropTypes.array,
-  header: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.bool,
-  ]),
+  header: PropTypes.oneOfType([PropTypes.node, PropTypes.bool]),
   getCommentCapabilities: PropTypes.func,
 };
 
 CommonCommentBundle.defaultProps = {
   shouldRender: true,
-}
+};
 
 const mapStateToProps = () =>
   createStructuredSelector({

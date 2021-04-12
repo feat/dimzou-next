@@ -6,12 +6,7 @@ class FeedTemplateXIII extends Base {
   static displayName = 'FeedTemplateXIII';
 
   renderI() {
-    return (
-      <DimzouCardIV
-        titleLines={2}
-        bodyLines={6}
-      />
-    );
+    return <DimzouCardIV titleLines={2} bodyLines={6} />;
   }
 }
 
@@ -19,6 +14,5 @@ FeedTemplateXIII.defaultProps = {
   ...Base.defaultProps,
   items: Object.keys([...new Array(Base.maxItemCount)]).map((id) => ({ id })),
 };
-
 
 export default FeedTemplateXIII;

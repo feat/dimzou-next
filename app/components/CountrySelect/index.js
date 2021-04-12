@@ -57,12 +57,12 @@ class CountrySelect extends React.Component {
       >
         {option &&
           option.flag && (
-          <img
-            style={{ width: 20, height: 'auto', marginRight: 12 }}
-            src={option.flag}
-            alt={option.label}
-          />
-        )}
+            <img
+              style={{ width: 20, height: 'auto', marginRight: 12 }}
+              src={option.flag}
+              alt={option.label}
+            />
+          )}
         <span>{option ? option.label : placeholder}</span>
       </Button>
     );

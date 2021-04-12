@@ -5,17 +5,24 @@ import classNames from 'classnames';
 import './style.scss';
 
 function CoverTemplate(props) {
-  const { title, summary, cover, extra, author, copyright, className, ...domProps } = props;
+  const {
+    title,
+    summary,
+    cover,
+    extra,
+    author,
+    copyright,
+    className,
+    ...domProps
+  } = props;
   return (
-    <div className={classNames("dz-BundleCover", className)} {...domProps}>
+    <div className={classNames('dz-BundleCover', className)} {...domProps}>
       <div className="dz-BundleCover__inner">
         <div className="dz-BundleCover__cover">{cover}</div>
         <div className="dz-BundleCover__title">{title}</div>
         <div className="dz-BundleCover__summary">{summary}</div>
         <div className="dz-BundleCover__author">{author}</div>
-        <div className="dz-BundleCover__copyright">
-          {copyright}
-        </div>
+        <div className="dz-BundleCover__copyright">{copyright}</div>
       </div>
       {extra}
     </div>

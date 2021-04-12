@@ -12,7 +12,7 @@ export default function CategoryTags(props) {
     <div className={classNames(className, 'ft-CategoryTags')}>
       {data.map((cat) => (
         <span key={cat.id} className="ft-CategoryTags__item">
-          <Link 
+          <Link
             href={{
               pathname: '/category-feed',
               query: {
@@ -21,7 +21,7 @@ export default function CategoryTags(props) {
             }}
             as={`/category/${cat.id}`}
           >
-            <a className="ft-CategoryTag" >
+            <a className="ft-CategoryTag">
               <TranslatableMessage
                 message={{
                   id: `category.${cat.slug}`,
@@ -41,28 +41,33 @@ export const CategoryTagReverse = (props) => {
   const categoryTags = [...data];
   categoryTags.reverse();
   return (
-    <div 
+    <div
       className={classNames(className, 'ft-CategoryTags')}
-      onClick={stopPropagation ? (e) => {
-        e.stopPropagation();
-      } : undefined}
+      onClick={
+        stopPropagation
+          ? (e) => {
+              e.stopPropagation();
+            }
+          : undefined
+      }
     >
       {categoryTags.map((cat) => (
         <span key={cat.id} className="ft-CategoryTags__reverseItem">
-          <Link 
+          <Link
             href={{
               pathname: '/category-feed',
               query: {
                 id: cat.id,
               },
             }}
-            as={`/category/${cat.id}`} 
+            as={`/category/${cat.id}`}
           >
-            <a
-              className="ft-ReverseCategoryTag"
-            >
+            <a className="ft-ReverseCategoryTag">
               <TranslatableMessage
-                message={{ id: `category.${cat.slug}`, defaultMessage: cat.name }}
+                message={{
+                  id: `category.${cat.slug}`,
+                  defaultMessage: cat.name,
+                }}
               />
             </a>
           </Link>

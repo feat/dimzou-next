@@ -9,12 +9,13 @@
 }
 
 @include block(ns(Rewording, dz)) {
-  margin-top: px-to-rem(12);
-  margin-bottom: px-to-rem(24);
+  margin-bottom: px-to-rem(12);
+  // margin-bottom: px-to-rem(24);
 
   // padding-left: px-to-rem(16);
   padding-right: px-to-rem(16);
-  padding-top: px-to-rem(8);
+  padding-top: px-to-rem(10);
+  padding-bottom: px-to-rem(4);
   padding-left: px-to-rem(12);
   margin-left: px-to-rem(-12);
 
@@ -62,16 +63,17 @@
   }
 
   @include element(userInfo) {
-    line-height: px-to-rem(12);
+    height: px-to-rem(24);
+    display: flex;
+    align-items: center;
     margin-bottom: px-to-rem(3);
+    font-size: px-to-rem(14);
   }
   @include element(username) {
     color: $color-avatar-username;
-    font-size: px-to-rem(14);
   }
   @include element(expertise) {
     color: $color-avatar-desc;
-    font-size: px-to-rem(14);
   }
   @include element(avatar) {
     width: px-to-rem(32);
@@ -82,7 +84,7 @@
     flex: 1;
     min-width: 0;
     // padding-left: px-to-rem(4);
-    .typo-Article {
+    .dz-Typo {
       font-size: px-to-rem(16);
       h1, h2, h3, h4 {
         margin-top: 0;
@@ -102,6 +104,9 @@
   @include element(shareBtn) {
   }
   @include element(content) {
+
+    padding-top: px-to-rem(8);
+    padding-bottom :px-to-rem(8);
 
     [data-entity-type='annotation:add'] {
       // background-color: rgb(152, 247, 136);
@@ -143,7 +148,7 @@
       line-height: 1.5;
     }
 
-    .typo-Article {
+    .dz-Typo {
       font-size: px-to-rem(20);
     }
   }
@@ -158,7 +163,7 @@
 
   &__left,
   &__right {
-    height: px-to-rem(48);
+    height: px-to-rem(40);
     display: flex;
     align-items: center;
   }
@@ -178,17 +183,12 @@
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     margin-top: px-to-rem(24);
   }
-  .dz-RewordingVersion,
-  .dz-RewordingCommentTrigger,
-  .dz-RewordingLikeWidget,
-  .dz-RewordingInvitation {
-    .ft-IconButton {
-      width: px-to-rem(24);
-      height: px-to-rem(24);
-      margin-right: px-to-rem(8);
-    }
-    font-size: px-to-rem(14);
-  }
+  // .dz-RewordingVersion,
+  // .dz-RewordingCommentTrigger,
+  // .dz-RewordingLikeWidget,
+  // .dz-RewordingInvitation {
+  //   font-size: px-to-rem(14);
+  // }
 }
 
 // @include block(ns(BlockSection, dz)) {

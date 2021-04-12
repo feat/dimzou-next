@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
+import { injectIntl } from 'react-intl';
 import {
   convertToRaw,
   BlockMapBuilder,
@@ -10,13 +10,12 @@ import {
   EditorState,
 } from '@feat/draft-js';
 import DraftPasteProcessor from '@feat/draft-js/lib/DraftPasteProcessor';
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
 import notification from '@feat/feat-ui/lib/notification';
 import message from '@feat/feat-ui/lib/message';
-import DragDropBoard from '@/components/DragDropBoard';
+
+import ActionButton from '@/components/ActionButton';
 
 import SimpleCache from '@/services/cache';
-import { formatMessage } from '@/services/intl';
 import { getText } from '@/utils/content';
 
 import DimzouEditor, {
@@ -25,9 +24,9 @@ import DimzouEditor, {
   getHTML,
   clearHTML,
 } from '../DimzouEditor';
+import DraftDocker from '../DraftDocker';
 import { validation as vMessages } from '../../messages';
 import './style.scss';
-import DimzouEditorToolbar from '../DimzouEditorToolbar';
 
 const initTitleRaw = {
   blocks: [{ type: 'header-one', text: '' }],
@@ -40,9 +39,9 @@ const initSummaryRaw = {
 };
 
 const initContentRaw = {
-  blocks: [{ type: 'unstyled', text: ''}],
+  blocks: [{ type: 'unstyled', text: '' }],
   entityMap: {},
-}
+};
 
 class ChapterCreate extends Component {
   constructor(props) {
@@ -87,16 +86,22 @@ class ChapterCreate extends Component {
   handleSummaryEditor = (summaryEditorState) => {
     this.setState({ summaryEditorState });
     if (this.shouldCache) {
-      this.cache.set('summary', getHTML(summaryEditorState.getCurrentContent()));
+      this.cache.set(
+        'summary',
+        getHTML(summaryEditorState.getCurrentContent()),
+      );
     }
   };
 
   handleContentEditor = (contentEditorState) => {
     this.setState({ contentEditorState });
     if (this.shouldCache) {
-      this.cache.set('content', getHTML(contentEditorState.getCurrentContent()));
+      this.cache.set(
+        'content',
+        getHTML(contentEditorState.getCurrentContent()),
+      );
     }
-  }
+  };
 
   handleTitleKeyCommand = (editorState, onChange, command) => {
     // block first block type change;
@@ -170,7 +175,9 @@ class ChapterCreate extends Component {
           );
           if (contentBlocks.length <= 2) {
             this.setState({
-              summaryEditorState: EditorState.moveFocusToEnd(summaryEditorState),
+              summaryEditorState: EditorState.moveFocusToEnd(
+                summaryEditorState,
+              ),
             });
           } else {
             this.setState({ summaryEditorState });
@@ -182,14 +189,16 @@ class ChapterCreate extends Component {
                 this.state.contentEditorState.getCurrentContent(),
                 this.state.contentEditorState.getSelection(),
                 contentMap,
-              )
+              );
               const contentEditorState = EditorState.push(
                 this.state.contentEditorState,
                 content,
                 'insert-fragment',
               );
               this.setState({
-                contentEditorState: EditorState.moveFocusToEnd(contentEditorState),
+                contentEditorState: EditorState.moveFocusToEnd(
+                  contentEditorState,
+                ),
               });
             }
           }
@@ -217,7 +226,7 @@ class ChapterCreate extends Component {
       return 'handled';
     }
     return 'not-handled';
-  }
+  };
 
   handleSummaryKeyCommand = (editorState, onChange, command) => {
     if (command === 'backspace') {
@@ -227,12 +236,21 @@ class ChapterCreate extends Component {
         content.getFirstBlock().getText().length === 0
       ) {
         if (content.getFirstBlock().getType() !== 'unstyled') {
-          const summaryEditorState =  EditorState.push(editorState, Modifier.setBlockType(content, editorState.getSelection(), 'unstyled'));
+          const summaryEditorState = EditorState.push(
+            editorState,
+            Modifier.setBlockType(
+              content,
+              editorState.getSelection(),
+              'unstyled',
+            ),
+          );
           this.setState({
             summaryEditorState,
-          })
+          });
         } else {
-          const titleEditorState = EditorState.moveFocusToEnd(this.state.titleEditorState);
+          const titleEditorState = EditorState.moveFocusToEnd(
+            this.state.titleEditorState,
+          );
           this.setState({ titleEditorState });
         }
         // this.titleEditor.focus();
@@ -250,37 +268,48 @@ class ChapterCreate extends Component {
         content.getFirstBlock().getText().length === 0
       ) {
         if (content.getFirstBlock().getType() !== 'unstyled') {
-          const contentEditorState =  EditorState.push(editorState, Modifier.setBlockType(content, editorState.getSelection(), 'unstyled'));
+          const contentEditorState = EditorState.push(
+            editorState,
+            Modifier.setBlockType(
+              content,
+              editorState.getSelection(),
+              'unstyled',
+            ),
+          );
           this.setState({
             contentEditorState,
-          })
+          });
         } else {
-          const summaryEditorState = EditorState.moveFocusToEnd(this.state.summaryEditorState);
+          const summaryEditorState = EditorState.moveFocusToEnd(
+            this.state.summaryEditorState,
+          );
           this.setState({ summaryEditorState });
         }
         return 'handled';
       }
     }
     return 'not-handled';
-  }
-
+  };
 
   resetEditor = () => {
     this.cache.flush();
     if (this.props.onCancel) {
       this.props.onCancel();
     } else {
-      this.setState(
-        {
-          titleEditorState: EditorState.moveFocusToEnd(createFromRawData(initTitleRaw)),
-          summaryEditorState: createFromRawData(initSummaryRaw),
-          contentEditorState: createFromRawData(initContentRaw),
-        }
-      );
+      this.setState({
+        titleEditorState: EditorState.moveFocusToEnd(
+          createFromRawData(initTitleRaw),
+        ),
+        summaryEditorState: createFromRawData(initSummaryRaw),
+        contentEditorState: createFromRawData(initContentRaw),
+      });
     }
   };
 
   handleSubmit = () => {
+    const {
+      intl: { formatMessage },
+    } = this.props;
     const titleContentState = this.state.titleEditorState.getCurrentContent();
     const summaryContentState = this.state.summaryEditorState.getCurrentContent();
     const contentContentState = this.state.contentEditorState.getCurrentContent();
@@ -288,7 +317,7 @@ class ChapterCreate extends Component {
     const title = convertToRaw(titleContentState);
     const htmlSummary = getHTML(summaryContentState);
     const summary = convertToRaw(summaryContentState);
-    
+
     const data = {
       title,
       htmlTitle,
@@ -338,12 +367,24 @@ class ChapterCreate extends Component {
   };
 
   render() {
-    const titleHasText = this.state.titleEditorState.getCurrentContent().getPlainText().trim();
-    const summaryHasText = this.state.summaryEditorState.getCurrentContent().getPlainText().trim();
+    const titleHasText = this.state.titleEditorState
+      .getCurrentContent()
+      .getPlainText()
+      .trim();
+    const summaryHasText = this.state.summaryEditorState
+      .getCurrentContent()
+      .getPlainText()
+      .trim();
 
     const isReady = titleHasText && summaryHasText;
 
-    const { titlePlaceholder, summaryPlaceholder, contentPlaceholder, currentUser, canCancel } = this.props;
+    const {
+      titlePlaceholder,
+      summaryPlaceholder,
+      contentPlaceholder,
+      currentUser,
+      canCancel,
+    } = this.props;
     const { isSubmitting } = this.state;
     const footerStyle = !canCancel && !isReady ? { opacity: 0 } : undefined;
 
@@ -354,14 +395,14 @@ class ChapterCreate extends Component {
       currentEditor = 'titleEditorState';
     } else if (this.state.summaryEditorState.getSelection().getHasFocus()) {
       structure = 'summary';
-      currentEditor = 'summaryEditorState'
+      currentEditor = 'summaryEditorState';
     } else if (this.state.contentEditorState.getSelection().getHasFocus()) {
       structure = 'content';
       currentEditor = 'contentEditorState';
     }
 
     return (
-      <div className="typo-Article">
+      <div className="dz-Typo">
         <div className="dz-BlockSection dz-BlockSection_title">
           <DimzouEditor
             mode="create"
@@ -369,7 +410,7 @@ class ChapterCreate extends Component {
               this.titleEditor = c;
             }}
             placeholder={
-              <div className="typo-Article__titlePlaceholder">
+              <div className="dz-Typo__titlePlaceholder">
                 {titlePlaceholder}
               </div>
             }
@@ -382,7 +423,7 @@ class ChapterCreate extends Component {
           />
         </div>
         <div className="dz-BlockSection dz-BlockSection_summary">
-          <div className="typo-Article">
+          <div className="dz-Typo">
             <DimzouEditor
               mode="create"
               ref={(c) => {
@@ -410,39 +451,31 @@ class ChapterCreate extends Component {
             currentUser={currentUser}
           />
         </div>
-        <div
-          className="dz-DimzouCreation__footer"
-          style={footerStyle}
-        >
-          <IconButton
-            svgIcon="no-btn"
+        <div className="dz-DimzouCreation__footer" style={footerStyle}>
+          <ActionButton
+            type="no"
             size="md"
-            disabled={canCancel ? isSubmitting : (!isReady || isSubmitting)}
+            disabled={canCancel ? isSubmitting : !isReady || isSubmitting}
             onClick={this.resetEditor}
           />
-          <IconButton
-            svgIcon="ok-btn"
+          <ActionButton
+            type="ok"
             size="md"
             className="margin_l_24"
             onClick={this.handleSubmit}
             disabled={!isReady || isSubmitting}
           />
         </div>
-        <DragDropBoard>
-          <div className="dz-EditDocker">
-            <DimzouEditorToolbar 
-              className="dz-EditDocker__section"
-              structure={structure}
-              editorState={this.state[currentEditor]}
-              onChange={(editorState) => {
-                this.setState({
-                  [currentEditor]: editorState,
-                })
-              }}
-              mode="create"
-            />
-          </div>
-        </DragDropBoard>
+        <DraftDocker
+          blockStructure={structure}
+          editorState={this.state[currentEditor]}
+          onEditorChange={(editorState) => {
+            this.setState({
+              [currentEditor]: editorState,
+            });
+          }}
+          editorMode="create"
+        />
       </div>
     );
   }
@@ -457,10 +490,12 @@ ChapterCreate.propTypes = {
   currentUser: PropTypes.object,
   canCancel: PropTypes.bool,
   cacheKey: PropTypes.string,
+
+  intl: PropTypes.object,
 };
 
 ChapterCreate.defaultProps = {
   cacheKey: 'dimzou-create',
 };
 
-export default ChapterCreate;
+export default injectIntl(ChapterCreate, { forwardRef: true });

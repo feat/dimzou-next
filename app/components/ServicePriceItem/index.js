@@ -19,13 +19,13 @@ class ServicePriceItem extends React.PureComponent {
       >
         {isAvailable
           ? [
-            <span className="ServicePriceItem__unit" key="unit">
-              {unit}
-            </span>,
-            <span className="ServicePriceItem__price" key="price">
-              {price}
-            </span>,
-          ]
+              <span className="ServicePriceItem__unit" key="unit">
+                {unit}
+              </span>,
+              <span className="ServicePriceItem__price" key="price">
+                {price}
+              </span>,
+            ]
           : '--'}
       </button>
     );
