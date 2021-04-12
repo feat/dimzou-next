@@ -16,9 +16,12 @@ Feat.com的工程开发所需的资金筹款在接收、开销、管理等整个
 
 ## 关于 Dimzou
 
-Dimzou 是一个多人写作工具，允许用户聚集在一起开始创作。有别于实时的编辑方案（Operational Transformation 等方案)，这里采用的方式更像是 `revision control`。每一个参与者提交的内容会出去“待审核”状态，知道管理人员对段落进行审核。这种方案更加符合“分工合作”的自然场景。
+Dimzou 是一个多人写作工具，允许用户聚集在一起开始创作。有别于实时的编辑方案（Operational Transformation 等方案)，这里采用的方式更接近 `revision control`。每一个参与者提交的内容会出去“待审核”状态，知道管理人员对段落进行审核。这种方案更加符合“分工合作”的自然场景。
 
-产品说明可查阅: [Dimzou 产品说明](https://www.openwriter.com/dimzou-publication/246/269)
+产品说明可查阅: 
+
+- [Dimzou 产品说明](https://www.openwriter.com/dimzou-publication/246/269)
+- [Dimzou 需求整理](https://www.feat.com/draft/108309/108657)
 
 ## 核心编辑模型
 
@@ -65,51 +68,33 @@ interface RewordingRecord {
   ```
 
   ```
-  ## API proxy
-  # ==========
+  NODE_TLS_REJECT_UNAUTHORIZED=0
+
+  # API
   API_ENDPOINT=https://www.featapi.com
-  SOCKET_ENDPOINT=
-  STORAGE_ENDPOINT=
+  STORAGE_ENDPOINT=https://www.feat.com
+  SOCKET_ENDPOINT=http://www.featapi.com
+  # SOCKET_TOKEN=
+
+  # OAUTH
   # 需要在 feat.com 上创建 Application。https://www.feat.com/application
-  FEAT_CLIENT_ID=
-  FEAT_CLIENT_SECRET=
+  # 建议替换下方的 FEAT_CLIENT_ID, FEAT_CLIENT_SECRET
+  FEAT_SCOPE=all
+  FEAT_CLIENT_ID=n5CGTssKj6aBzmeYPfi94y3GxVPS67qMSKfliQzC
+  FEAT_CLIENT_SECRET=lQaIOjyIo2n06r1WNr2Z0Ewzd4YULHSWV0Eigk9gLjqJlH1FLXrBJJfWm2galtcZHyCkcuve2vJdNPI6d2ZpkQM1YmUN2U9QExACXm6Y6dm7kq3163hetamfccWn72KM
+  FEAT_AUTHORIZATION_URL=https://www.feat.com/authorize
+  FEAT_ACCESS_TOKEN_URL=https://www.feat.com/api/o/token/
 
-  PORT=3100
-
-  ## APP config
-  # ==========
-  # HTTPS=true
-  # NEXT_ASSET_PREFIX=
-  # SENTRY_DSN=
-  SESSION_SECRET=random_string
-  # seconds, 86400 --> 24h
-  SESSION_TTL=86400
+  APP_URL=http://localhost:3400
+  PORT=3400
 
   REDIS_HOST=127.0.0.1
   REDIS_PASSWORD=
   REDIS_PORT=6379
-  REDIS_DB=0
-  REDIS_PREFIX=feat_web_
+  REDIS_DB=3
+  REDIS_PREFIX=dimzou_next_
 
-  # Services
-  # ==========
-  FACEBOOK_APP_ID=
-  WEIBO_APP_KEY=
-
-  # 开发用
-  DEBUG=feat-web:*
-  # 生产用
-  # DEBUG=feat-web:request,feat-web:server,proxy:*
-
-
-  ## Dev related
-  # ==========
-  # GOOGLE_API_KEY=
-  # SENTRY_AUTH_TOKEN=
-  # SENTRY_ORG=
-  # SENTRY_PROJECT=
-  # SENTRY_URL=
-
+  DEBUG=dimzou-next:*
   ```
 
 4. 将开发证书放到 `server/cert`，证书命名规则，详见目录中的 `README.md`。当`.env` 中未设置 `HTTPS` 时，可忽略这个步骤

@@ -6,7 +6,6 @@ import getReducerInjectors from '@/utils/reducerInjectors';
 import Layout, { Site, SiteContent } from '@/components/Layout';
 import Header from '@/containers/Header';
 import Footer from '@/containers/Footer';
-import Sidebar from '@/containers/Sidebar';
 
 import Render from '@/routes/DimzouIndex';
 import {
@@ -29,7 +28,7 @@ function DimzouIndex() {
       <SiteContent>
         <Layout>
           <Layout.Main>
-            <Layout.Main modifier="base" id="main">
+            <Layout.Main modifier="base" id="main" style={{ marginRight: 12 }}>
               <Head>
                 <title>Dimzou</title>
               </Head>
@@ -37,7 +36,6 @@ function DimzouIndex() {
             </Layout.Main>
             <Footer />
           </Layout.Main>
-          <Sidebar />
         </Layout>
       </SiteContent>
     </Site>
