@@ -1,29 +1,18 @@
-import request from '@/utils/request';
-
-export const getUserInfo = (userId, params, headers) => request({
-  url: `/api/user/user-info/${userId}/`,
-  method: 'GET',
-  params,
-  headers,
+export const getUsersBasic = (uids) => ({
+  url: `/api/user/user-simple-info/`,
+  method: 'POST',
+  data: {
+    uid: uids,
+  },
 });
 
-export const getUserStatistics = (userId, params, headers) => request({
-  url: `/api/user/${userId}/statistics/`,
+export const getUserInfo = ({ id, params }) => ({
+  url: `/api/user/user-info/${id}/`,
   method: 'GET',
   params,
-  headers,
-})
+});
 
-export const getDimzouScore = (userId, params, headers) => request({
-  url: `/api/dimzou/${userId}/dimzou-score/`,
-  method: 'GET',
+export const getApplicationAvailableInfo = ({ params }) => ({
+  url: `/api/user/user-application-available/`,
   params,
-  headers,
-})
-
-export const getApplicationAvailableInfo = (userId, params, headers) => 
-  request({
-    url: `/api/user/user-application-available/`,
-    params: { uid: userId },
-    headers,
-  })
+});

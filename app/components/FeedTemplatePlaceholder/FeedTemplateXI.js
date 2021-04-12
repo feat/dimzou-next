@@ -7,22 +7,11 @@ class FeedTemplateXI extends Base {
   static displayName = 'FeedTemplateXI';
 
   renderI() {
-    return (
-      <DimzouCardV
-        titleLines={2}
-        bodyLines={2}
-        imageRatio={10 / 3}
-      />
-    );
+    return <DimzouCardV titleLines={2} bodyLines={2} imageRatio={10 / 3} />;
   }
 
   renderII() {
-    return (
-      <DimzouCardI
-        titleLines={2}
-        bodyLines={2}
-      />
-    );
+    return <DimzouCardI titleLines={2} bodyLines={2} />;
   }
 }
 

@@ -8,12 +8,12 @@ import { createRoutine } from 'redux-saga-routines';
 
 import { normalize } from 'normalizr';
 
-import { category as categorySchema } from '@/schema';
+import { category as categorySchema } from './schema';
 
 import {
   fetchUserCategories as fetchUserCategoriesRequest,
   createCategory as createCategoryRequest,
-} from '@/client/category';
+} from './requests';
 
 const NS = 'CATEGORY';
 
@@ -40,7 +40,7 @@ export const asyncCreateCategory = (payload) => async (dispatch) => {
     dispatch(createCategory.failure(err));
     throw err;
   }
-}
+};
 
 export const asyncFetchUserCategories = () => async (dispatch) => {
   try {
@@ -56,4 +56,4 @@ export const asyncFetchUserCategories = () => async (dispatch) => {
     dispatch(fetchUserCategories.failure(err));
     throw err;
   }
-}
+};

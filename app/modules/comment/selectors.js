@@ -2,15 +2,12 @@ import { createSelector } from 'reselect';
 import { denormalize } from 'normalizr';
 import get from 'lodash/get';
 
-import {
-  comment as commentSchema,
-} from '@/schema';
 import { selectEntities } from '@/modules/entity/selectors';
 
 import tryToGetKey from '@/utils/tryToGetKey';
+import { comment as commentSchema } from './schema';
 
-import { getBundleKey } from './reducers/bundle';
-import { REDUCER_KEY } from './reducers';
+import { REDUCER_KEY, getBundleKey } from './config';
 
 /**
  * Direct selector to the comment state domain
@@ -44,10 +41,10 @@ export const selectCommentBundle = (state, props) => {
   return get(state, [REDUCER_KEY, 'bundles', key]);
 };
 
-export const makeSelectCommentsCount = () =>
-  createSelector(selectCommentBundle, (bundleState) => ({
-    count: bundleState ? bundleState.rootCount : undefined,
-  }));
+export const selectCommentsCount = (state, props) => {
+  const key = getBundleKey(props);
+  return get(state, [REDUCER_KEY, 'bundles', key, 'rootCount']);
+};
 
 export const selectBundleComment = (state, props) => {
   const bundleState = selectCommentBundle(state, props);

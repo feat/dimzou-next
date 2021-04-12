@@ -1,12 +1,10 @@
 import request from '@/utils/request';
 
-export const fetchUserDimzous = (userId, params) =>
-  request({
-    url: `/api/user/${userId}/dimzou/`,
-    method: 'GET',
-    params,
-  });
-
+/**
+ *
+ * @param {bundle, node, related} params
+ * @param {*} headers
+ */
 export function fetchPublication(params, headers = {}) {
   return request({
     url: `/api/dimzou/publication/`,
@@ -20,7 +18,7 @@ export function createCopyBundle(bundleId) {
   return request({
     url: `/api/dimzou/bundle/${bundleId}/create-copy/`,
     method: 'POST',
-  })
+  });
 }
 
 export function createTranslationBundle(payload) {

@@ -1,8 +1,8 @@
 @import 'base.scss';
 
 @include block(ShareModal) {
-  width: px-to-rem($modal-lg-width);
-  height: px-to-rem($modal-lg-height);
+  width: px-to-rem($modal-md-width);
+  height: px-to-rem($modal-md-height);
   background-color: white;
 
   @include element(header) {
@@ -147,7 +147,7 @@
   // Extra Large Desktop
   @media(min-width: $screen-xl-min){
     @include element(label) {
-      width: #{$modal-lg-width - 280};
+      width: #{$modal-md-width - 280};
     }
   }
   // Extreme Large Desktop
@@ -159,7 +159,7 @@
     @include element(label) {
       margin-left: px-to-rem(80);
       margin-bottom: px-to-rem(24);
-      width: px-to-rem($modal-lg-width - 280);
+      width: px-to-rem($modal-md-width - 280);
     }
     @include element(copyBtn) {
       min-width: px-to-rem(140);

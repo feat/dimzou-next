@@ -94,6 +94,11 @@ $header-height: 56px;
 $fixed-header-index: 1000;
 $header-scroll-height: 50px;
 
+$site-fixed-nav-width: 180px;
+$page-min-width: 1200px;
+$site-fixed-content-width: 1280px;
+$site-fixed-adPanel-width: 180px;
+
 // Alert
 $alert-md-padding-x: 12px;
 $alert-md-padding-y: 8px;
@@ -238,3 +243,12 @@ $im-party-view-nav-width: 90px;
 
 // mobile
 $mobile-footer-bar-height: 56px;
+
+// z-index
+$nprogress-z-index: map-get($zindex, 'nprogress');   // fixed-header-z-index + 50;
+$page-sticky-header-z-index: map-get($zindex, 'sticky'); // 用于：页面内需要 sticky 的头部元素，如用户页面顶部菜单，受 leaflet 限制
+$dimzou-sidebar-z-index: map-get($zindex, 'sticky') + 10;
+$dimzou-docker-z-index: map-get($zindex, 'sticky') + 20;
+
+$dimzou-draft-theme-color: rgb(189, 22, 34);
+$dimzou-translation-theme-color: #1d70b7;

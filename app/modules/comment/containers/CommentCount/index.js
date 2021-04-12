@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import { makeSelectCommentsCount } from '../../selectors';
+import { selectCommentsCount } from '../../selectors';
 
 function CommentsCount(props) {
-  return (
-    <span>{props.count === undefined ? props.initialCount : props.count}</span>
-  );
+  const { entityType, entityId, initialCount, ...rest } = props;
+  const count = useSelector((state) => selectCommentsCount(state, props));
+  return <span {...rest}>{count !== undefined ? count : initialCount}</span>;
 }
 
 CommentsCount.propTypes = {
@@ -15,5 +15,4 @@ CommentsCount.propTypes = {
   count: PropTypes.number,
 };
 
-const selectCommentsCount = makeSelectCommentsCount();
-export default connect(selectCommentsCount)(CommentsCount);
+export default CommentsCount;

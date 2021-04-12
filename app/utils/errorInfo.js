@@ -4,5 +4,5 @@ export default function errorInfo(err) {
   }
   return {
     message: err.message,
-  }
+  };
 }

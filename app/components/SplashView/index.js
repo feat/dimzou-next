@@ -1,17 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import fIcon from '@/images/f.svg';
+import FIcon from '@/components/FIcon';
 import './style.scss';
 
 function SplashView(props) {
   return (
     <div className="SplashView">
       <div className="SplashView__inner">
-        <div
-          className="SplashView__logo"
-          dangerouslySetInnerHTML={{ __html: fIcon }}
-        />
+        <div className="SplashView__logo">
+          <FIcon />
+        </div>
         <div className="SplashView__hint">{props.hint}</div>
       </div>
     </div>

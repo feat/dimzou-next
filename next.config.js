@@ -1,170 +1,77 @@
 /* eslint-disable no-param-reassign */
 const path = require('path');
 // const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
-const withSass = require('@zeit/next-sass');
-const withCSS = require('@zeit/next-css');
+const withPlugins = require('next-compose-plugins');
 const withSourceMaps = require('@zeit/next-source-maps')({
   devtool: 'hidden-source-map',
 });
 const withTM = require('@weco/next-plugin-transpile-modules');
-const aliases = require('./alias-config');
+const withStyle = require('./next/withStyle');
+const withOptimize = require('./next/withOptimize');
+const extraWebpackConfig = require('./next/webpack.custom.config');
 
-const appPath = path.resolve(path.join(process.cwd(), 'app'));
+const appSrc = path.resolve(path.join(process.cwd(), 'app'));
 
-module.exports = withTM(
-  withSourceMaps(
-    withCSS(
-      withSass({
-        distDir: 'build',
-        generateBuildId: async () => process.env.RELEASE_TAG || 'preview',
-        inlineImageLimit: 10240,
-        assetPrefix: process.env.NEXT_ASSET_PREFIX || '',
-        publicRuntimeConfig: {
-          share: {
-            facebook: {
-              appId: process.env.FACEBOOK_APP_ID,
-            },
-            weibo: {
-              appKey: process.env.WEIBO_APP_KEY,
-            },
-            twitter: {
-              via: process.env.TWITTER_VIA,
-            },
-            host: process.env.HOST,
-          },
-          openwriterHost: process.env.OPENWRITER_HOST,
-          sentryDsn: process.env.SENTRY_DSN,
+// 此处使用 自定义 css 样式，是因为还没有准备好进行 css module 的迁移
+module.exports = withPlugins(
+  [withSourceMaps, withTM, withStyle, withOptimize],
+  {
+    distDir: 'build',
+    generateBuildId: async () => process.env.RELEASE_TAG || 'preview',
+    inlineImageLimit: 10240,
+    assetPrefix: process.env.NEXT_ASSET_PREFIX || '',
+    publicRuntimeConfig: {
+      appName: process.env.APP_NAME,
+      share: {
+        facebook: {
+          appId: process.env.FACEBOOK_APP_ID,
         },
-        env: {
-          RELEASE_TAG: process.env.RELEASE_TAG || 'preview',
-          BRANCH: process.env.CI_COMMIT_REF_NAME,
+        weibo: {
+          appKey: process.env.WEIBO_APP_KEY,
         },
-        crossOrigin: 'anonymous',
-        cssModules: false,
-        cssLoaderOptions: {
-          ignoreOrder: true,
+        twitter: {
+          via: process.env.TWITTER_VIA,
         },
-        sassLoaderOptions: {
-          includePaths: [path.resolve(appPath, './styles')],
-        },
-        transpileModules: [
-          '@feat/feat-ui',
-          '@feat/feat-editor',
-          'react-dnd-html5-backend',
-          'react-dnd',
-        ],
-        webpack(config, options) {
-          const { isServer, config: nextConfig } = options;
-          config.resolve.alias = {
-            ...config.resolve.alias,
-            ...aliases,
-          };
-          config.module.rules.push({
-            test: /\.(jpg|png|gif)$/,
-            issuer: /\.js$/,
-            use: [
-              {
-                loader: 'file-loader',
-                options: {
-                  name: '[name]-[hash].[ext]',
-                  publicPath: `${nextConfig.assetPrefix}/_next/static/images/`,
-                  outputPath: `${isServer ? '../' : ''}static/images/`,
-                },
-              },
-            ],
-          });
+        host: process.env.HOST,
+      },
+      openwriterHost: process.env.OPENWRITER_HOST,
+      sentryDsn: process.env.SENTRY_DSN,
+      gaTrackingId: process.env.GA_TRACKING_ID,
+    },
+    env: {
+      RELEASE_TAG: process.env.RELEASE_TAG || 'preview',
+      BRANCH: process.env.CI_COMMIT_REF_NAME,
+    },
+    crossOrigin: 'anonymous',
+    cssLoaderOptions: {
+      ignoreOrder: true,
+      sourceMap: true,
+    },
+    shouldUseSourceMap: true,
+    paths: {
+      appSrc,
+    },
+    sassOptions: {
+      includePaths: [path.resolve(appSrc, './styles')],
+    },
+    transpileModules: ['@feat/feat-ui', '@feat/feat-editor'],
+    webpack(config) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        ...extraWebpackConfig.resolve.alias,
+      };
+      // console.log(config.resolve);
+      // console.log(extraWebpackConfig.module.rules);
+      extraWebpackConfig.module.rules.forEach((rule) =>
+        config.module.rules.push(rule),
+      );
+      // config.plugins.push(
+      //   new FilterWarningsPlugin({
+      //     exclude: /mini-css-extract-plugin[^]*Conflicting order between:/,
+      //   }),
+      // );
 
-          config.module.rules.push({
-            test: /\.(jpg|png|gif)$/,
-            issuer: /\.s?css$/,
-            use: [
-              {
-                loader: 'url-loader',
-                options: {
-                  limit: nextConfig.inlineImageLimit,
-                  fallback: {
-                    loader: 'file-loader',
-                    options: {
-                      name: '[name]-[hash].[ext]',
-                      publicPath: `${
-                        nextConfig.assetPrefix
-                      }/_next/static/images/`,
-                      outputPath: `${isServer ? '../' : ''}static/images/`,
-                    },
-                  },
-                },
-              },
-            ],
-          });
-
-          config.module.rules.push({
-            test: /\.(mp3|mp4|webm)$/,
-            use: {
-              loader: 'url-loader',
-              options: {
-                limit: nextConfig.inlineImageLimit,
-                fallback: require.resolve('file-loader'),
-                publicPath: `${nextConfig.assetPrefix}/_next/static/media/`,
-                outputPath: `${isServer ? '../' : ''}static/media/`,
-                name: '[name]-[hash].[ext]',
-              },
-            },
-          });
-
-          config.module.rules.push({
-            test: /\.(eot|otf|ttf|woff|woff2)$/,
-            use: [
-              {
-                loader: 'url-loader',
-                options: {
-                  limit: nextConfig.inlineImageLimit,
-                  fallback: require.resolve('file-loader'),
-                  publicPath: `${nextConfig.assetPrefix}/_next/static/fonts/`,
-                  outputPath: `${isServer ? '../' : ''}static/fonts/`,
-                  name: '[name]-[hash].[ext]',
-                },
-              },
-            ],
-          });
-
-          config.module.rules.push({
-            test: /fonts?\/.*?\.svg$/,
-            use: [
-              {
-                loader: 'url-loader',
-                options: {
-                  limit: nextConfig.inlineImageLimit,
-                  fallback: require.resolve('file-loader'),
-                  publicPath: `${nextConfig.assetPrefix}/_next/static/fonts/`,
-                  outputPath: `${isServer ? '../' : ''}static/fonts/`,
-                  name: '[name]-[hash].[ext]',
-                },
-              },
-            ],
-          });
-
-          config.module.rules.push({
-            test: (path) =>
-              /\.svg$/.test(path) && !/fonts?\/.*?\.svg$/.test(path),
-            use: [
-              {
-                loader: 'svg-inline-loader',
-                options: {
-                  removingTagAttrs: ['id'],
-                },
-              },
-            ],
-          });
-
-          // config.plugins.push(
-          //   new FilterWarningsPlugin({
-          //     exclude: /mini-css-extract-plugin[^]*Conflicting order between:/,
-          //   }),
-          // );
-
-          return config;
-        },
-      }),
-    ),
-  ),
+      return config;
+    },
+  },
 );

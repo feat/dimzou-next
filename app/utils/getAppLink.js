@@ -13,7 +13,7 @@ export default function getAppLink(item, kind) {
             },
           },
           as: `/dimzou/${item.bundle_id}/${item.node_id}`,
-        }
+        };
       }
       return {
         href: {
@@ -23,7 +23,7 @@ export default function getAppLink(item, kind) {
           },
         },
         as: `/dimzou/${item.bundle_id}`,
-      }
+      };
     case 'user':
       return {
         href: {
@@ -33,7 +33,7 @@ export default function getAppLink(item, kind) {
           },
         },
         as: `/profile/${item.bundle_id}`,
-      }
+      };
     case 'awesome':
       return {
         href: {
@@ -43,7 +43,7 @@ export default function getAppLink(item, kind) {
           },
         },
         as: `/profile/${item.bundle_id}`,
-      }
+      };
     default:
       return {
         href: `/${itemKind}/${item.id}`,

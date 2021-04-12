@@ -1,0 +1,124 @@
+@import 'base.scss';
+
+.base {
+  height: 100%;
+  min-height: calc(100vh - #{$header-height});
+
+  .sidebarFirst {
+    width: 200px;
+    overflow: auto;
+  }
+  .sidebarSecond {
+    width: 180px; // ads-panel;
+    overflow: auto;
+  }
+  .footer {
+    margin-top: 36px;
+    padding-bottom: 120px;
+  }
+  .main {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+.I {
+  display: flex;
+  flex: 1;
+  .mainContainer {
+    flex: 1;
+    min-width: 0;
+  }
+  .mainWrap {
+    display: flex;
+  }
+  .main {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.II {
+  display: flex;
+  flex: 1;
+
+  .mainContainer {
+    flex: 1;
+    min-width: 0;
+  }
+  .mainWrap {
+    display: flex;
+  }
+  .main {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.III {
+  min-height: calc(100vh - #{$header-height});
+  flex: 1;
+  .header {
+    display: flex;
+  }
+  .info {
+    width: 44%;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  .cover {
+    width: 56%;
+  }
+  .mainContainer {
+    display: flex;
+  }
+  .mainWrap {
+    flex: 1;
+    padding-top: 24px;
+  }
+}
+
+.IV {
+  display: flex;
+  flex: 1;
+  .mainContainer {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+  }
+  .mainWrap {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.V {
+  flex: 1;
+  .mainContainer {
+    display: flex;
+  }
+
+  .mainWrap {
+    flex: 1;
+  }
+}
+
+.cover {
+  display: flex;
+  flex: 1;
+  .mainContainer {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+  }
+  
+  .BookCover {
+    margin: 0 auto;
+  }
+}
+
+.BookCover {
+  width: 760px;
+  padding: 64px 80px;
+  @include pop-shadow;
+}

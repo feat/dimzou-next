@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
+import classNames from 'classnames';
+import ButtonBase from '@feat/feat-ui/lib/button/ButtonBase';
 import {
   disableTranslationMode,
   closeTranslateLanguageSelect,
@@ -10,9 +10,10 @@ import {
 } from '../../actions';
 
 import { selectTranslatableTriggerState } from '../../selectors';
+import TranslateIcon from '../../components/TranslateIcon';
 
 const TranslatableTrigger = (props) => (
-  <div
+  <ButtonBase
     onClick={() => {
       if (props.isTranslateModeEnabled) {
         props.disableTranslationMode();
@@ -23,15 +24,14 @@ const TranslatableTrigger = (props) => (
       }
     }}
   >
-    <IconButton
-      svgIcon="translate-v2"
-      size="md"
-      isActive={
-        props.isTranslateModeEnabled || props.isTranslateLanguageSelectOpened
-      }
+    <TranslateIcon
+      className={classNames('size_md', {
+        'is-active':
+          props.isTranslateModeEnabled || props.isTranslateLanguageSelectOpened,
+      })}
     />
     {props.label}
-  </div>
+  </ButtonBase>
 );
 
 TranslatableTrigger.propTypes = {

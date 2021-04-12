@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { RectShape } from '@feat/feat-ui/lib/placeholder';
-import {
-  getTemplateCoverRatio,
-} from '../../utils/template';
+import { getTemplateCoverRatio } from '../../utils/template';
 
 function CoverSectionPlaceholder(props) {
   const { template } = props;
@@ -12,7 +10,6 @@ function CoverSectionPlaceholder(props) {
     <div className="margin_b_36">
       <RectShape ratio={ratio} />
     </div>
-
   );
 }
 

@@ -2,11 +2,12 @@
 
 @include block(ns(LabelButton, dz)) {
     display: inline-block;
-    cursor: pointer;
+    // cursor: pointer;
     max-width: 100%;
     padding: 0 px-to-rem(4);
     border-radius: px-to-rem(6);
     vertical-align: middle;
+    color: inherit;
     @include btn-animation();
     @include text-truncate();
     &:hover {

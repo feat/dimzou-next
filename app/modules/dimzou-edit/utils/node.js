@@ -44,11 +44,18 @@ export function getActiveHeading(hash, outline) {
 
 export function getFakeLoadingTime(node) {
   let count = 0;
-  node.title && node.title.rewordings && (count += node.title.rewordings.length);
-  node.summary && node.summary.rewordings && (count += node.summary.rewordings.length);
-  node.cover && node.cover.rewordings && (count += node.cover.rewordings.length);
-  node.content && node.content.forEach((b) => {
-    b.rewordings && (count += b.rewordings.length);
-  })
+  node.title &&
+    node.title.rewordings &&
+    (count += node.title.rewordings.length);
+  node.summary &&
+    node.summary.rewordings &&
+    (count += node.summary.rewordings.length);
+  node.cover &&
+    node.cover.rewordings &&
+    (count += node.cover.rewordings.length);
+  node.content &&
+    node.content.forEach((b) => {
+      b.rewordings && (count += b.rewordings.length);
+    });
   return Math.round(count / 100);
 }

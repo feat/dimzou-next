@@ -9,7 +9,7 @@ import rMessages from '../../messages';
 
 export default function ReleaseValidating(props) {
   return (
-    <FeatModal>
+    <FeatModal fixedHeight>
       <FeatModal.Wrap>
         <FeatModal.Header>
           <FeatModal.Title>
@@ -17,7 +17,17 @@ export default function ReleaseValidating(props) {
           </FeatModal.Title>
         </FeatModal.Header>
         <FeatModal.Content>
-          <div style={{ display: 'flex', height: '100%', alignItems: 'center', paddingLeft: 48, paddingRight: 48, paddingBottom: 48, justifyContent: 'space-around'}}> 
+          <div
+            style={{
+              display: 'flex',
+              height: '100%',
+              alignItems: 'center',
+              paddingLeft: 48,
+              paddingRight: 48,
+              paddingBottom: 48,
+              justifyContent: 'space-around',
+            }}
+          >
             <Button
               style={{ width: 200, height: 200 }}
               onClick={props.initStandaloneReleaseFlow}
@@ -25,7 +35,7 @@ export default function ReleaseValidating(props) {
               <TranslatableMessage message={rMessages.standaloneRelease} />
             </Button>
             <Button
-              style={{ width: 200, height: 200 }}   
+              style={{ width: 200, height: 200 }}
               onClick={props.initBundleReleaseFlow}
             >
               <TranslatableMessage message={rMessages.bundleRelease} />
@@ -34,10 +44,10 @@ export default function ReleaseValidating(props) {
         </FeatModal.Content>
       </FeatModal.Wrap>
     </FeatModal>
-  )
+  );
 }
 
 ReleaseValidating.propTypes = {
   initStandaloneReleaseFlow: PropTypes.func,
   initBundleReleaseFlow: PropTypes.func,
-}
+};

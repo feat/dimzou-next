@@ -1,4 +1,4 @@
-import uuidv1 from 'uuid/v1';
+// import uuidv1 from 'uuid/v1';
 
 import {
   BLOCK_CONTENT_TYPE_TEXT,
@@ -8,9 +8,9 @@ import {
   EDIT_MODE_ORIGIN,
 } from '../constants';
 
-export function generateParaId() {
-  return `${uuidv1()}-0`;
-}
+// export function generateParaId() {
+//   return `${uuidv1()}-0`;
+// }
 
 export function constructAppendParaId(paragraphId) {
   if (!paragraphId) {
@@ -26,12 +26,12 @@ export function getLastBlock(dimzou) {
   return lastBlock;
 }
 
-export function getInsertBlockKey(dimzou) {
-  const lastBlock = getLastBlock(dimzou);
-  return lastBlock
-    ? constructAppendParaId(lastBlock.paragraphId)
-    : generateParaId();
-}
+// export function getInsertBlockKey(dimzou) {
+//   const lastBlock = getLastBlock(dimzou);
+//   return lastBlock
+//     ? constructAppendParaId(lastBlock.paragraphId)
+//     : generateParaId();
+// }
 
 export function matchCodeBlockInfo(htmlContent) {
   const codeBlockReg = /^<pre(?:.*)?>.*?<code(?: data-origin=".*")? data-language="(.*)">((?:(?:\n?).*)*)\n?<\/code><\/pre>$/;

@@ -3,6 +3,7 @@
 @include block(ns(PublicationDocker, dz)) {
   padding: px-to-rem(8) px-to-rem(12);
 //   background-color: $gray-2;
+  cursor: grab;
 
   @include element(action) {
     display: inline-block;
@@ -11,7 +12,7 @@
     margin-bottom: px-to-rem(4);
 
     & > .ft-Button {
-        background-color: transparent;
+        background-color: white;
         border: 1px solid $gray-10;
         border-radius: px-to-rem($btn-sm-size / 2);
         padding-left: px-to-rem(10);
@@ -23,9 +24,23 @@
         }
     }
   }
+}
+
+@include block(ns(PublicationDockerWrap, dz)) {
+  position: fixed;
+  z-index: $dimzou-docker-z-index;
+
+  @include state(dragging) {
+    opacity: 0;
+  }
+
   .dz-FloatCommentBundle {
-      position: absolute;
-      bottom: 100%;
-      width: px-to-rem(320);
+    position: absolute;
+    bottom: 100%;
+    padding: 12px;
+    background-color: white;
+    width: 360px;
+    margin-bottom: 12px;
+    @include pop-shadow;
   }
 }

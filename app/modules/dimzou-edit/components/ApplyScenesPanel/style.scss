@@ -1,0 +1,30 @@
+@import 'base.scss';
+
+@include block(ns(ApplyScenesPanel, dz)) {
+  @include element(content) {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  @include element(desc) {
+    max-width: 500px;
+    font-size: 14px;
+    color: $gray-7;
+    margin-bottom: 1em;
+  }
+  @include element(input) {
+    display: flex;
+    max-width: 1000px;
+    .TagGroupWidget {
+      min-width: 400px;
+      border: 1px solid $gray-10;
+      padding: 3px 3px 0px 3px;
+    }
+    .TagGroupWidget__inputWrap {
+      margin-bottom: 3px;
+    }
+    .TagGroupItem {
+      margin-right: 3px;
+      margin-bottom: 3px;
+    }
+  }
+}

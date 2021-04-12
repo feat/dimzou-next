@@ -8,10 +8,11 @@ import rewordingReducer from './rewording';
 import appendingReducer from './appending';
 import likeReducer from './like';
 import workspaceReducer from './workspace';
-import userDraftsReducer from './userDrafts';
 import userRelatedReducer from './userRelated';
 import publicationReducer from './publication';
 import dashboardReducer from './dashboard';
+import workshopReducer from './workshop';
+
 // TODO request queue-idle machine
 
 export default combineReducers({
@@ -23,7 +24,7 @@ export default combineReducers({
   rewordingComments: commentReducer,
   likes: likeReducer,
   workspace: workspaceReducer,
-  userDrafts: userDraftsReducer,
+  workshop: workshopReducer,
   userRelated: userRelatedReducer,
   publications: publicationReducer,
   dashboard: dashboardReducer,

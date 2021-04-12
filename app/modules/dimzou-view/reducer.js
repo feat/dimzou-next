@@ -1,101 +1,66 @@
-import { combineReducers } from 'redux'
-import update from 'immutability-helper';
+import { combineReducers } from 'redux';
 import { mapHandleActions } from '@/utils/reducerCreators';
 
-import { fetchUserDimzous, initDimzouView, fetchNodePublication } from './actions'
+import { fetchBundlePublicationMeta, fetchNodePublication } from './actions';
+import { initialMetaState, initialContentState } from './config';
 
-export const REDUCER_KEY = 'dimzou-view';
-
-export const initialListState = {
-  onceFetched: false,
-  templates: [],
-  list: undefined,
-  next: undefined,
-  loading: false,
-  error: null,
-  hasMore: true,
-}
-const userListReducer = mapHandleActions(
+const metaReducer = mapHandleActions(
   {
-    [fetchUserDimzous.TRIGGER]: (state) => ({
+    [fetchBundlePublicationMeta.TRIGGER]: (state) => ({
       ...state,
       onceFetched: true,
-      error: null,
+      fetchError: null,
     }),
-    [fetchUserDimzous.REQUEST]: (state) => ({
+    [fetchBundlePublicationMeta.REQUEST]: (state) => ({
       ...state,
       loading: true,
     }),
-    [fetchUserDimzous.SUCCESS]: (state, action) => ({
+    [fetchBundlePublicationMeta.SUCCESS]: (state, action) => ({
       ...state,
-      next: action.payload.next,
-      templates: action.payload.templates,
-      hasMore: !!action.payload.next,
-      list: [...(state.list || []), ...action.payload.list],
+      data: action.payload.data,
     }),
-    [fetchUserDimzous.FAILURE]: (state, action) => ({
+    [fetchBundlePublicationMeta.FAILURE]: (state, action) => ({
       ...state,
-      error: action.payload.data,
+      fetchError: action.payload.data,
     }),
-    [fetchUserDimzous.FULFILL]: (state) => ({
+    [fetchBundlePublicationMeta.FULFILL]: (state) => ({
       ...state,
       loading: false,
     }),
   },
-  initialListState,
-  (action) => action.payload.userId,
-)
+  initialMetaState,
+  (action) => action.payload.bundleId,
+);
 
-export const initialDimzouViewState = {
-  loading: false,
-  nodes: undefined,
-  loaded: {},
-  initialized: false,
-  error: null,
-};
-const dimzouViewReducer = mapHandleActions(
+const contentReducer = mapHandleActions(
   {
-    [initDimzouView.TRIGGER]: (state) => ({
+    [fetchNodePublication.TRIGGER]: (state) => ({
       ...state,
-      error: null,
+      fetchError: null,
+      onceFetched: true,
     }),
-    [initDimzouView.REQUEST]: (state) => ({
+    [fetchNodePublication.REQUEST]: (state) => ({
       ...state,
       loading: true,
     }),
-    [initDimzouView.SUCCESS]: (state, action) => {
-      const { data } = action.payload;
-      return update(state, {
-        type: { $set: data.type },
-        initialized: { $set: true },
-        nodes: { $set: data.nodes },
-        loaded: {
-          [data.nodeId]: { $set: data.publicationId },
-        },
-      })
-    },
-    [initDimzouView.FAILURE]: (state, action) => ({
+    [fetchNodePublication.SUCCESS]: (state, action) => ({
       ...state,
-      error: action.payload.data,
+      data: action.payload.data,
     }),
-    [initDimzouView.FULFILL]: (state) => ({
+    [fetchNodePublication.FAILURE]: (state, action) => ({
+      ...state,
+      fetchError: action.payload.data,
+    }),
+    [fetchNodePublication.FULFILL]: (state) => ({
       ...state,
       loading: false,
     }),
-    [fetchNodePublication.SUCCESS]: (state, action) => {
-      const { data } = action.payload;
-      return update(state, {
-        loaded: {
-          [data.nodeId]: { $set: data.publicationId },
-        },
-      })
-    },
-  }, 
-  initialDimzouViewState,
-  (action) => action.payload.bundleId
-)
+  },
+  initialContentState,
+  (action) => action.payload.nodeId,
+);
 
 export default combineReducers({
-  users: userListReducer,
-  bundles: dimzouViewReducer,
-})
+  meta: metaReducer,
+  content: contentReducer,
+});

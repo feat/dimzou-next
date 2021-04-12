@@ -1,14 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import get from 'lodash/get';
 import { createStructuredSelector } from 'reselect';
-import { formatMessage } from '@/services/intl';
+import { injectIntl } from 'react-intl';
 
 import message from '@feat/feat-ui/lib/message';
 
 import {
-  // electBlock,
-  // rejectBlock,
   removeRewording,
   electRewording,
   rejectRewording,
@@ -52,15 +52,8 @@ import Rewording from '../Rewording';
 import { extractWidgetInfo, noInteration } from '../../utils/rewordings';
 import { getNodeCache, rewordingKey } from '../../utils/cache';
 import intlMessages from '../../messages';
-import { MeasureContext } from '../../context';
 
 class RewordingWrap extends React.PureComponent {
-  componentDidUpdate(prevProps) {
-    if (this.context && this.props.uiState !== prevProps.uiState) {
-      this.context();
-    }
-  }
-
   handleElect = () => {
     // const creator =
     //   this.props.blockStatus === BLOCK_STATUS_PENDING
@@ -128,6 +121,7 @@ class RewordingWrap extends React.PureComponent {
       dispatch,
       userHasPendingRewording,
       userCapabilities: { canEdit },
+      intl: { formatMessage },
     } = this.props;
 
     if (!canEdit) {
@@ -270,6 +264,7 @@ class RewordingWrap extends React.PureComponent {
       structure,
       userCapabilities,
       dispatch,
+      intl: { formatMessage },
     } = this.props;
     const contentState = editorState.getCurrentContent();
     const htmlContent = getHTML(contentState);
@@ -336,7 +331,9 @@ class RewordingWrap extends React.PureComponent {
   }
 }
 
-RewordingWrap.contextType = MeasureContext;
+RewordingWrap.propTyps = {
+  intl: PropTypes.object,
+};
 
 const mapStateToProps = createStructuredSelector({
   uiState: selectRewordingState,
@@ -344,4 +341,6 @@ const mapStateToProps = createStructuredSelector({
   rewordingLikesCount: selectRewordingLikesCount,
 });
 
-export default connect(mapStateToProps)(RewordingWrap);
+export default injectIntl(connect(mapStateToProps)(RewordingWrap), {
+  forwardRef: true,
+});

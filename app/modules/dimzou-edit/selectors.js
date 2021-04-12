@@ -2,68 +2,65 @@ import { createSelector } from 'reselect';
 import { denormalize } from 'normalizr';
 import get from 'lodash/get';
 
-import { 
-  rewordingComment as rewordingCommentSchema,
-  dimzouBundleDesc as dimzouBundleDescSchema,
-  dimzouPublication as publicationSchema,
-} from '@/schema';
 import { selectEntities } from '@/modules/entity/selectors';
 
 import { selectCurrentUser } from '@/modules/auth/selectors';
+import {
+  rewordingComment as rewordingCommentSchema,
+  dimzouBundleDesc as dimzouBundleDescSchema,
+  dimzouPublication as publicationSchema,
+} from './schema';
 import { isAdmin, isOwner, getUserRole } from './utils/collaborators';
 import { BLOCK_KEY_SEPARATOR } from './constants';
 
-const REDUCER_KEY ='dimzou-edit';
+const REDUCER_KEY = 'dimzou-edit';
 const getAppendingKey = ({ nodeId }) => nodeId;
 
-export const selectWorkspaceState = (state) => get(state, [REDUCER_KEY, 'workspace']);
+export const selectWorkspaceState = (state) =>
+  get(state, [REDUCER_KEY, 'workspace']);
 
 export const selectBundleState = createSelector(
-  (state, props) => get(state, [
-    REDUCER_KEY,
-    'dimzouBundles',
-    props.bundleId,
-  ]),
+  (state, props) => get(state, [REDUCER_KEY, 'dimzouBundles', props.bundleId]),
   selectEntities,
   (bundleState, entities) => {
     if (!bundleState) {
       return bundleState;
     }
     if (bundleState.data) {
-      const data = denormalize(bundleState.data, dimzouBundleDescSchema, entities);
+      const data = denormalize(
+        bundleState.data,
+        dimzouBundleDescSchema,
+        entities,
+      );
       return {
         ...bundleState,
         data,
-      }
+      };
     }
     return bundleState;
-  }
-)
-  
+  },
+);
+
 export const selectNodeState = (state, props) =>
-  get(state, [
-    REDUCER_KEY,
-    'dimzouNodes',
-    props.nodeId,
-  ]);
+  get(state, [REDUCER_KEY, 'dimzouNodes', props.nodeId]);
 
 export const selectBundleData = (state, props) => {
   const bundleState = selectBundleState(state, props);
   return bundleState ? bundleState.data : undefined;
 };
 
-export const selectNodeData = (state, props) => {
+export const selectNodeBasic = (state, props) => {
   const nodeState = selectNodeState(state, props);
-  return nodeState ? nodeState.data : undefined;
+  return nodeState ? nodeState.basic : undefined;
 };
 
 export const selectNodeCollaborators = (state, props) => {
-  const node = selectNodeData(state, props);
+  const node = selectNodeBasic(state, props);
   return node ? node.collaborators : [];
 };
 
 export const selectNodeEditPermission = (state, props) => {
-  const node = selectNodeData(state, props);
+  const node = selectNodeBasic(state, props);
   return node ? node.permission : undefined;
 };
 
@@ -106,7 +103,7 @@ export const selectBundleUserCapabilities = createSelector(
 );
 
 export const selectNodeUserRewordingLikes = createSelector(
-  selectNodeData,
+  selectNodeBasic,
   (node) => {
     const map = {};
     if (node && node.user_rewording_likes) {
@@ -121,10 +118,7 @@ export const selectNodeUserRewordingLikes = createSelector(
 );
 
 export const selectRewordingState = (state, props) =>
-  get(
-    state,
-    [REDUCER_KEY, 'rewordings', props.rewordingId],
-  );
+  get(state, [REDUCER_KEY, 'rewordings', props.rewordingId]);
 
 export const selectAppendingState = (state, props) => {
   const key = getAppendingKey(props);
@@ -180,13 +174,16 @@ export const selectRewordingCommentsUserCount = createSelector(
       return undefined;
     }
     const comments = bundleState.entities[rewordingCommentSchema.key];
-    return comments ? Object.values(comments).filter((comment) => (
-      comment &&
-      !comment.parent_id && 
-      String(comment.user) === String(userId)
-    )).length : 0;
-  }
-)
+    return comments
+      ? Object.values(comments).filter(
+          (comment) =>
+            comment &&
+            !comment.parent_id &&
+            String(comment.user) === String(userId),
+        ).length
+      : 0;
+  },
+);
 
 export const commentHasLoaded = (state, props) => {
   const bundleState = selectRewordingCommentBundle(state, props);
@@ -202,14 +199,19 @@ export const commentHasLoaded = (state, props) => {
   );
 };
 
-export const selectRewordingLikesCount = (state, props) => 
-  get(state, [REDUCER_KEY, 'likes', String(props.rewordingId), 'rewordingLikesCount']);
+export const selectRewordingLikesCount = (state, props) =>
+  get(state, [
+    REDUCER_KEY,
+    'likes',
+    String(props.rewordingId),
+    'rewordingLikesCount',
+  ]);
 
 export const selectIsDeteting = (state, props) => {
   const { nodeId } = props;
   const bundleState = selectBundleState(state, props);
-  return bundleState && bundleState.deletingNodes[nodeId]
-}
+  return bundleState && bundleState.deletingNodes[nodeId];
+};
 
 export const selectUserDraftsState = createSelector(
   (state) => get(state, [REDUCER_KEY, 'userDrafts']),
@@ -222,8 +224,8 @@ export const selectUserDraftsState = createSelector(
       ...state,
       data: denormalize(state.data, [dimzouBundleDescSchema], entities),
       loaded: denormalize(state.loaded, [dimzouBundleDescSchema], entities),
-    }
-  }
+    };
+  },
 );
 export const selectUserRelatedDrafts = createSelector(
   (state, props) => get(state, [REDUCER_KEY, 'userRelated', props.userId]),
@@ -236,37 +238,40 @@ export const selectUserRelatedDrafts = createSelector(
       ...state,
       data: denormalize(state.data, [dimzouBundleDescSchema], entities),
       loaded: denormalize(state.loaded, [dimzouBundleDescSchema], entities),
-    }
-  }
+    };
+  },
 );
 
-export const selectInvitationContext = (state) => get(state, [REDUCER_KEY, 'workspace', 'invitationContext']);
+export const selectInvitationContext = (state) =>
+  get(state, [REDUCER_KEY, 'workspace', 'invitationContext']);
 export const selectUserInvitationCode = (state, props) => {
   const nodeState = selectNodeState(state, props);
   return nodeState && nodeState.userInvitations[0];
-}
+};
 
 // PUBLICATION
 export const selectPublicationBundleState = createSelector(
-  (state, props) => get(state, [REDUCER_KEY, 'publications', 'desc', props.bundleId]),
+  (state, props) =>
+    get(state, [REDUCER_KEY, 'publications', 'desc', props.bundleId]),
   selectEntities,
   (descState, entityMap) => {
     if (!descState) {
       return descState;
     }
-    return denormalize(descState, { data: dimzouBundleDescSchema }, entityMap)
-  }
-)
+    return denormalize(descState, { data: dimzouBundleDescSchema }, entityMap);
+  },
+);
 export const selectNodePublication = createSelector(
-  (state, props) => get(state, [REDUCER_KEY, 'publications', 'nodes', props.nodeId]),
+  (state, props) =>
+    get(state, [REDUCER_KEY, 'publications', 'nodes', props.nodeId]),
   selectEntities,
   (nodeState, entityMap) => {
     if (!nodeState) {
       return nodeState;
     }
     return denormalize(nodeState, { data: publicationSchema }, entityMap);
-  }
-)
+  },
+);
 
 // Dashboard related
 export const selectPlainDimzouReports = (state) =>
@@ -284,13 +289,17 @@ export const selectDimzouReports = createSelector(
   },
 );
 
-
 export const selectReaderReport = (state) =>
   get(state, [REDUCER_KEY, 'dashboard', 'readerReport']);
 
 export const selectPlainReaderTaste = (state) =>
   get(state, [REDUCER_KEY, 'dashboard', 'readerTaste']);
 
+export const selectResourceBriefReport = (state) =>
+  get(state, [REDUCER_KEY, 'dashboard', 'resourceBriefReport']);
+
+export const selectResourceStats = (state) =>
+  get(state, [REDUCER_KEY, 'dashboard', 'resourceStats']);
 
 export const selectReaderTaste = createSelector(
   selectPlainReaderTaste,
@@ -306,3 +315,9 @@ export const selectReaderTaste = createSelector(
 
 export const selectReaderCommented = (state) =>
   get(state, [REDUCER_KEY, 'dashboard', 'commented']);
+
+export const selectWorkshopNavigator = (state) =>
+  get(state, [REDUCER_KEY, 'workshop', 'navigator']);
+
+export const selectSidebarHasFocus = (state) =>
+  get(state, [REDUCER_KEY, 'workshop', 'ui', 'hasFocus']);

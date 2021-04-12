@@ -1,0 +1,44 @@
+@import 'base.scss';
+
+$card-item-vertical-gap: 24px;
+
+@include block(ns(CardPreviewPanel, dz)) {
+  @include element(content) {
+    overflow: auto;
+    margin-left: 24px;
+    margin-right: 24px;
+    position: relative;
+  }
+  @include element(desc) {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    padding-bottom: 8px;
+    z-index: 2;
+  }
+  @include element(descInner) {
+    max-width: 500px;
+  }
+  @include element(canvas) {
+    position: relative;
+    background-color: $gray-1;
+    padding-top: $card-item-vertical-gap;
+    padding-left: calc((100% - 1149px) / 2);
+    padding-right: calc((100% - 1149px) / 2);
+    &::after {
+        content: '';
+        display: table;
+        clear: both;
+    }
+  }
+  @include element(item) {
+    min-height: 130px;
+    background-color: white;
+    margin-bottom: $card-item-vertical-gap;
+  }
+  @include element(control) {
+    position: absolute;
+    right: 20px;
+    top: 5px;
+  }
+}

@@ -41,7 +41,7 @@ function cleanRepo(callback) {
       if (isClonedRepo) {
         process.stdout.write('\nDo you want to clear old repository? [Y/n] ');
         process.stdin.resume();
-        process.stdin.on('data', pData => {
+        process.stdin.on('data', (pData) => {
           const val = pData.toString().trim();
           if (val === 'y' || val === 'Y' || val === '') {
             process.stdout.write('Removing old repository');

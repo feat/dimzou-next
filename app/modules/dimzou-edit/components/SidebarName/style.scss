@@ -1,7 +1,10 @@
 @import 'base.scss';
 
 @include block(ns(SidebarName, dz)) {
-  font-size: px-to-rem(48);
+  font-size: px-to-rem(32);
   font-weight: bold;
   font-family: Cambria;
+  padding-left: 10px;
+  padding-top: 24px;
+  padding-bottom: 8px;
 }

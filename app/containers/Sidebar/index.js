@@ -5,11 +5,8 @@ import { compose } from 'redux';
 import Layout from '@/components/Layout';
 import { withDeviceInfo } from '@/modules/device-info';
 
-
 const Sidebar = () => (
-  <Layout.Sidebar modifier="ads">
-    {/* <div>AD PNAEL</div> */}
-  </Layout.Sidebar>
+  <Layout.Sidebar modifier="ads">{/* <div>AD PNAEL</div> */}</Layout.Sidebar>
 );
 
 Sidebar.displayName = 'Sidebar';
@@ -19,6 +16,4 @@ Sidebar.propTypes = {
   }),
 };
 
-export default compose(
-  withDeviceInfo,
-)(Sidebar);
+export default compose(withDeviceInfo)(Sidebar);

@@ -53,6 +53,9 @@ class LanguageSelectModal extends React.PureComponent {
 
   render() {
     const { isOpen, onClose, ...restProps } = this.props;
+    if (!isOpen) {
+      return null;
+    }
     return (
       <Modal
         isOpen={isOpen}

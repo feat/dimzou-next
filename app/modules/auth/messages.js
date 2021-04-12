@@ -5,4 +5,4 @@ export default defineMessages({
     id: 'auth.login-success',
     defaultMessage: 'Login Success',
   },
-})
+});

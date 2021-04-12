@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Button from '@feat/feat-ui/lib/button';
+import ButtonBase from '@feat/feat-ui/lib/button/ButtonBase';
 
 class StyleButton extends Component {
   onToggle = (e) => {
@@ -10,13 +10,20 @@ class StyleButton extends Component {
   };
 
   render() {
-    const { icon, label, description, style, isActive, iconFirst, disabled } = this.props;
+    const {
+      icon,
+      label,
+      description,
+      style,
+      isActive,
+      iconFirst,
+      disabled,
+    } = this.props;
     return (
-      <Button
-        type="merge"
+      <ButtonBase
         className={classNames(
-          'dz-EditorButton',
-          `dz-EditorButton_${style.toLowerCase()}`,
+          'dz-DockerButton',
+          `dz-DockerButton_${style.toLowerCase()}`,
           { 'is-active': isActive },
         )}
         onMouseDown={this.onToggle}
@@ -25,7 +32,7 @@ class StyleButton extends Component {
       >
         {icon}
         {iconFirst && icon ? null : label}
-      </Button>
+      </ButtonBase>
     );
   }
 }

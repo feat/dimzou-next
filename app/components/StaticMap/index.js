@@ -40,9 +40,9 @@ class StaticMap extends React.PureComponent {
         style={
           this.state.shouldRender
             ? {
-              ...(style || {}),
-              backgroundImage: `url(${getSpotImageUrl(data, this.state)})`,
-            }
+                ...(style || {}),
+                backgroundImage: `url(${getSpotImageUrl(data, this.state)})`,
+              }
             : style
         }
         ref={(n) => {

@@ -1,0 +1,13 @@
+import './style.scss';
+export { default as DimzouFeedCardI } from './I';
+export { default as DimzouFeedCardII } from './II';
+export { default as DimzouFeedCardIII } from './III';
+export { default as DimzouFeedCardIV } from './IV';
+export { default as DimzouFeedCardV } from './V';
+export { default as DimzouFeedCardVI } from './VI';
+export { default as DimzouFeedCardVII } from './VII';
+export { default as DimzouFeedCardVIII } from './VIII';
+export { default as DimzouFeedCardIX } from './IX';
+export { default as DimzouFeedCardX } from './X';
+export { default as DimzouFeedCardXI } from './XI';
+export { default as DimzouFeedCardXII } from './XII';

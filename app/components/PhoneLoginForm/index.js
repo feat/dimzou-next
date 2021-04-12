@@ -33,7 +33,7 @@ class PhoneLoginForm extends Component {
         notification.error({
           message: 'Error',
           description: err.message,
-        })
+        });
       });
     }
     import('fingerprintjs2').then(({ default: Fingerprint }) => {
@@ -48,20 +48,19 @@ class PhoneLoginForm extends Component {
     if (this.initialValues) {
       return this.initialValues;
     }
-    
-    if (
-      authCache.getInitType() !== 'last_logined' &&
-      !authCache.isDirty()
-    ) {
+
+    if (authCache.getInitType() !== 'last_logined' && !authCache.isDirty()) {
       try {
         const cachedData = JSON.parse(storage.getItem(CACHE_KEY));
         const options = get(this.props.countryCallingCodes, 'data');
-        const country = options.find((item) => item.iso3 === cachedData.country);
+        const country = options.find(
+          (item) => item.iso3 === cachedData.country,
+        );
         if (country) {
           authCache.initWithLastLogined({
             country,
             phone: cachedData.phone,
-          })
+          });
         }
       } catch (err) {
         logging.debug(err);
@@ -77,18 +76,18 @@ class PhoneLoginForm extends Component {
           authCache.initWithRegionDefault({
             country,
             phone: '',
-          })
+          });
         }
-      }  
+      }
     }
-    
+
     const { country, phone } = authCache.getData();
     this.initialValues = {
       calling_code: country ? country.calling_code : '',
       phone: phone || '',
       country,
       password: '',
-    }
+    };
     return this.initialValues;
   }
 
@@ -132,7 +131,7 @@ class PhoneLoginForm extends Component {
           authCache.update({
             country,
             phone,
-          })
+          });
         }}
       />
     );

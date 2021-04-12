@@ -1,8 +1,9 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useIntl } from 'react-intl';
+
 import Modal from '@feat/feat-ui/lib/modal';
 import message from '@feat/feat-ui/lib/message';
-import { formatMessage } from '@/services/intl';
 
 import CategorySelectModal from '@/modules/category/containers/CategorySelectModal';
 import { delay } from '@/utils/control';
@@ -13,26 +14,29 @@ import ReleaseNodeSelect from './components/ReleaseNodeSelect';
 import ReleaseValidationFailed from './components/ReleaseValidationFailed';
 import ReleaseFailed from './components/ReleaseFailed';
 
+import { selectWorkspaceState } from '../../selectors';
 import {
-  selectWorkspaceState,
-} from '../../selectors';
-import { 
-  exitRelease, 
-  setReleaseData, 
-  setReleaseStep, 
-  asyncPreRelease, 
-  asyncSetApplyScenes, 
+  exitRelease,
+  setReleaseData,
+  setReleaseStep,
+  asyncPreRelease,
+  asyncSetApplyScenes,
   asyncRelease,
 } from '../../actions';
-import intlMessages from './messages'
+import intlMessages from './messages';
 
 import './style.scss';
 
 function ReleaseModal() {
-  const isReleasePanelOpened = useSelector((state) => selectWorkspaceState(state).isReleasePanelOpened)
-  const releaseContext = useSelector((state) => selectWorkspaceState(state).releaseContext);
+  const { formatMessage } = useIntl();
+  const isReleasePanelOpened = useSelector(
+    (state) => selectWorkspaceState(state).isReleasePanelOpened,
+  );
+  const releaseContext = useSelector(
+    (state) => selectWorkspaceState(state).releaseContext,
+  );
   const dispatch = useDispatch();
-  if (!isReleasePanelOpened ||!releaseContext) {
+  if (!isReleasePanelOpened || !releaseContext) {
     return null;
   }
   let panel;
@@ -48,40 +52,52 @@ function ReleaseModal() {
               message.error(formatMessage(intlMessages.selectCategoryHint));
               return;
             }
-            dispatch(setReleaseData({
-              category,
-            }))
-            dispatch(setReleaseStep('review'))
+            dispatch(
+              setReleaseData({
+                category,
+              }),
+            );
+            dispatch(setReleaseStep('review'));
           }}
         />
-      )
+      );
       break;
     case 'applyScenes':
       panel = (
         <ReleaseApplyScenes
           data={
-            releaseContext.applyScenes || releaseContext.initialValues.applyScenes
+            releaseContext.applyScenes ||
+            releaseContext.initialValues.applyScenes
           }
           onConfirm={(data) => {
-            dispatch(setReleaseData({
-              applyScenes: data,
-            }))
-            dispatch(setReleaseStep('review'))
+            dispatch(
+              setReleaseData({
+                applyScenes: data,
+              }),
+            );
+            dispatch(setReleaseStep('review'));
           }}
         />
-      )
+      );
       break;
     case 'review':
       panel = (
         <ReleaseReview
           bundle={releaseContext.bundle}
           nodes={releaseContext.nodes}
-          category={releaseContext.category || releaseContext.initialValues.category}
-          applyScenes={releaseContext.applyScenes || releaseContext.initialValues.applyScenes}
+          category={
+            releaseContext.category || releaseContext.initialValues.category
+          }
+          applyScenes={
+            releaseContext.applyScenes ||
+            releaseContext.initialValues.applyScenes
+          }
           onApplyScenesChange={(values) => {
-            dispatch(setReleaseData({
-              applyScenes: values,
-            }))
+            dispatch(
+              setReleaseData({
+                applyScenes: values,
+              }),
+            );
           }}
           initSelectCategory={() => {
             dispatch(setReleaseStep('category'));
@@ -92,46 +108,52 @@ function ReleaseModal() {
             const nodeIds = nodes.map((item) => item.id);
             dispatch(setReleaseStep('validating'));
             try {
-              await dispatch(asyncPreRelease({
-                bundleId: bundle.id,
-                data: nodeIds,
-              }))
+              await dispatch(
+                asyncPreRelease({
+                  bundleId: bundle.id,
+                  data: nodeIds,
+                }),
+              );
             } catch (err) {
-              dispatch(setReleaseData({ validationError: err }))
+              dispatch(setReleaseData({ validationError: err }));
               dispatch(setReleaseStep('validationFailed'));
-              return ;
+              return;
             }
             dispatch(setReleaseStep('releasing'));
             try {
               if (applyScenes) {
-                await dispatch(asyncSetApplyScenes({
-                  bundleId: bundle.id,
-                  data: applyScenes.map((item) => item.label),
-                }))
+                await dispatch(
+                  asyncSetApplyScenes({
+                    bundleId: bundle.id,
+                    data: applyScenes.map((item) => item.label),
+                  }),
+                );
               }
-              await dispatch(asyncRelease({
-                bundleId: bundle.id,
-                data: {
-                  nodes: nodeIds,
-                  category: category || releaseContext.initialValues.category,
-                },
-              }))
-              dispatch(setReleaseStep('releaseSuccess'))
+              await dispatch(
+                asyncRelease({
+                  bundleId: bundle.id,
+                  data: {
+                    nodes: nodeIds,
+                    category: category || releaseContext.initialValues.category,
+                  },
+                }),
+              );
+              dispatch(setReleaseStep('releaseSuccess'));
 
               // open publication
               const pubUrl = `${window.location.origin}/dimzou/${bundle.id}`;
               window.open(pubUrl);
-            
+
               // close modal
               await delay(2000);
               dispatch(exitRelease());
             } catch (err) {
-              dispatch(setReleaseData({ releaseError: err }))
+              dispatch(setReleaseData({ releaseError: err }));
               dispatch(setReleaseStep('releaseFailed'));
             }
           }}
         />
-      )
+      );
       break;
     case 'validationFailed':
       panel = (
@@ -139,21 +161,20 @@ function ReleaseModal() {
           nodes={releaseContext.nodes}
           error={releaseContext.validationError}
           onConfirm={() => {
-            dispatch(exitRelease())
+            dispatch(exitRelease());
           }}
         />
-      )
+      );
       break;
     case 'releaseFailed':
       panel = (
         <ReleaseFailed
           error={releaseContext.releaseError}
           onConfirm={() => {
-            dispatch(exitRelease())
+            dispatch(exitRelease());
           }}
         />
-
-      )
+      );
       break;
     case 'validating':
     case 'releasing':
@@ -170,9 +191,11 @@ function ReleaseModal() {
               message.error(formatMessage(intlMessages.nodesRequired));
               return;
             }
-            dispatch(setReleaseData({
-              nodes: data,
-            }));
+            dispatch(
+              setReleaseData({
+                nodes: data,
+              }),
+            );
             dispatch(setReleaseStep('category'));
           }}
         />
@@ -196,5 +219,3 @@ function ReleaseModal() {
 }
 
 export default ReleaseModal;
-
-

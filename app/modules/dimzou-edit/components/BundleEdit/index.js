@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
-import AppSidebarFirst from '../AppSidebarFirst';
+import WorkshopNavigator from '../WorkshopNavigator';
 import { BundleContext, WorkspaceContext } from '../../context';
 import Node from './Node';
 
 import CollaboratorBlock from '../CollaboratorBlock';
 import SettingsBlock from '../SettingsBlock';
-import Docker from '../Docker';
-import { BundleRender } from '../AppRenders'
+import Docker from '../NodeEdit/Docker';
+import { BundleRender } from '../AppRenders';
 
 import './style.scss';
 
@@ -20,12 +20,12 @@ function BundleEdit() {
       main={
         <>
           {nodes.map((node, index) => (
-            <Node 
-              brief={node} 
-              bundleId={bundleId} 
-              nodeId={node.id} 
-              activeNodeId={activeNodeId} 
-              key={node.id} 
+            <Node
+              brief={node}
+              bundleId={bundleId}
+              nodeId={node.id}
+              activeNodeId={activeNodeId}
+              key={node.id}
               nodes={nodes}
               index={index}
             />
@@ -33,17 +33,15 @@ function BundleEdit() {
           <Docker />
         </>
       }
-      sidebarFirst={(
-        <AppSidebarFirst />
-      )}
-      sidebarSecond={(
+      sidebarFirst={<WorkshopNavigator />}
+      sidebarSecond={
         <>
           <CollaboratorBlock />
           <SettingsBlock />
         </>
-      )}
+      }
     />
-  )
+  );
 }
 
 export default BundleEdit;

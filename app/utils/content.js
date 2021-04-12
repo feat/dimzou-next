@@ -4,12 +4,12 @@ function htmlToText(html) {
     dom.innerHTML = html;
     return dom.innerText.trim();
   }
-  const regex = /(<([^>]+)>)/ig
-  return html.replace(regex, '').trim()
+  const regex = /(<([^>]+)>)/gi;
+  return html.replace(regex, '').trim();
 }
 
 export function maxTextContent(html, length) {
-  const text = htmlToText(html)
+  const text = htmlToText(html);
   if (length && text.length > length) {
     return `${text.slice(0, length)}...`;
   }
@@ -53,7 +53,7 @@ export function getText(html, maxLength) {
   if (maxLength) {
     return prettyTruncate(text, maxLength);
   }
-  return text
+  return text;
 }
 
 // truncate text, with words as unit

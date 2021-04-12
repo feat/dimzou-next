@@ -1,7 +1,4 @@
-import {
-  isHeading,
-  getHeadingLevel,
-} from '../utils/content'
+import { isHeading, getHeadingLevel } from '../utils/content';
 
 const basic = '<h2>Demo</h2>';
 const multiLine2 = `<h2>
@@ -17,15 +14,15 @@ describe('isHeading', () => {
   it('single line', () => {
     const blockIsHeading = isHeading(basic);
     expect(blockIsHeading).toBe(true);
-  })
+  });
   it('multiline', () => {
     const blockIsHeading = isHeading(multiLine);
     expect(blockIsHeading).toBe(true);
     expect(isHeading(multiLine2)).toBe(true);
-  })
+  });
   it('level2', () => {
     expect(getHeadingLevel(basic)).toEqual('2');
     expect(getHeadingLevel(multiLine)).toEqual('2');
     expect(getHeadingLevel(multiLine2)).toEqual('2');
-  })
-})
+  });
+});

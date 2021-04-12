@@ -3,10 +3,10 @@ import { takeEvery, call, put, fork, take, select } from 'redux-saga/effects';
 import { normalize } from 'normalizr';
 
 import { selectCurrentUserId } from '@/modules/auth/selectors';
-import { like as likeRequest, unlike as unlikeRequest } from '@/client/like';
-import { like as likeSchema } from '@/schema';
-
 import message from '@feat/feat-ui/lib/message';
+import { like as likeSchema } from './schema';
+
+import { like as likeRequest, unlike as unlikeRequest } from './requests';
 
 import { initWidget, createLike, deleteLike, likeSignal } from './actions';
 import { CHANNEL_OBJECT_TYPE_MAP } from './constants';
@@ -113,7 +113,7 @@ function* listenLikeSocket() {
 }
 
 export default function* watchLike() {
-  // public
+  logging.debug('like service');
   yield fork(listenLikeSocket);
   // auth requried
   yield takeEvery(initWidget, initWidgetFlow);

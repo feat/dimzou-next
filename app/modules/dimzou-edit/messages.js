@@ -116,9 +116,18 @@ export default defineMessages({
     id: 'dz.dimzou-edit.apply-scenes',
     defaultMessage: 'Apply Scenes',
   },
+  applyScenesDesc: {
+    id: 'dz.dimzou-edit.apply-scenes-desc',
+    defaultMessage:
+      'Add application scenarios to your article, the more you add, the more likely other users will find your article in the scenario search.',
+  },
   selectCategoryHint: {
     id: 'dz.dimzou-edit.select-category-hint',
     defaultMessage: 'Please select a category.',
+  },
+  inputApplyScenesHint: {
+    id: 'dz.dimzou-edit.input-apply-scenes-hint',
+    defaultMessage: 'Please input at least an apply scene.',
   },
   dropImageTips: {
     id: 'dz.dimzou-edit.drop-image-tips',
@@ -216,32 +225,47 @@ export default defineMessages({
     id: 'dz.dimzou-edit.editing',
     defaultMessage: 'Editing',
   },
+  my: {
+    id: 'dz.dimzou-edit.my',
+    defaultMessage: 'My',
+  },
+  workshopFilterHint: {
+    id: 'dz.dimzou-edit.workshop-filter',
+    defaultMessage: '筛选',
+  },
+  newCategoryHint: {
+    id: 'dz.dimzou-edit.new-category-hint',
+    defaultMessage: 'New Category',
+  },
 });
 
-export const collaboratorRole = defineMessages({
-  [ROLE_OWNER]: {
-    id: 'dz.collaborator-role.owner',
-    defaultMessage: 'Owner',
+export const collaboratorRole = defineMessages(
+  {
+    [ROLE_OWNER]: {
+      id: 'dz.collaborator-role.owner',
+      defaultMessage: 'Owner',
+    },
+    [ROLE_ADMIN]: {
+      id: 'dz.collaborator-role.admin',
+      defaultMessage: 'Admin',
+    },
+    [ROLE_PARTICIPATOR]: {
+      id: 'dz.collaborator-role.participant',
+      defaultMessage: 'Participant',
+    },
+    [ROLE_BLOCKED]: {
+      id: 'dz.collaborator-role.blocked',
+      defaultMessage: 'Blocked',
+    },
   },
-  [ROLE_ADMIN]: {
-    id: 'dz.collaborator-role.admin',
-    defaultMessage: 'Admin',
+  {
+    prefix: 'Dimzou Collaborator role',
+    fallback: (key) => ({
+      id: `dz.collaborator-role.${key}`,
+      defaultMessage: key,
+    }),
   },
-  [ROLE_PARTICIPATOR]: {
-    id: 'dz.collaborator-role.participant',
-    defaultMessage: 'Participant',
-  },
-  [ROLE_BLOCKED]: {
-    id: 'dz.collaborator-role.blocked',
-    defaultMessage: 'Blocked',
-  },
-}, {
-  prefix: 'Dimzou Collaborator role',
-  fallback: (key) => ({
-    id: `dz.collaborator-role.${key}`,
-    defaultMessage: key,
-  }),
-});
+);
 
 export const chapterTemplateOption = defineMessages({
   [CHAPTER_TEMPLATE_I]: {
@@ -283,6 +307,10 @@ export const alert = defineMessages({
     id: 'dz.alert.remove-collaborator',
     defaultMessage: 'Remove collaborator?',
   },
+  separateNodeConfirm: {
+    id: 'dz.alert.separate-node-confirm',
+    defaultMessage: 'Sure to separate chapter?.',
+  },
 });
 
 export const copyright = defineMessages({
@@ -290,7 +318,7 @@ export const copyright = defineMessages({
     id: 'dz.copyright.year',
     defaultMessage: '@{year} Copyright',
   },
-})
+});
 
 export const createPlaceholders = defineMessages({
   title: {
@@ -307,9 +335,10 @@ export const createPlaceholders = defineMessages({
   },
   cover: {
     id: 'dz.dimzou-creation.cover-placeholder',
-    defaultMessage: 'Include a high-quality image in your story to make it more inviting to readers.',
+    defaultMessage:
+      'Include a high-quality image in your story to make it more inviting to readers.',
   },
-})
+});
 
 export const createChapterPlaceholders = defineMessages({
   title: {
@@ -324,7 +353,7 @@ export const createChapterPlaceholders = defineMessages({
     id: 'dz.chapter-creation.content-placeholder',
     defaultMessage: 'content',
   },
-})
+});
 
 export const createCoverPlaceholders = defineMessages({
   title: {
@@ -339,8 +368,7 @@ export const createCoverPlaceholders = defineMessages({
     id: 'dz.cover-creation.content-placeholder',
     defaultMessage: 'content',
   },
-})
-
+});
 
 export const validation = defineMessages({
   validationError: {
@@ -355,7 +383,7 @@ export const validation = defineMessages({
     id: 'dz.validation.summary-required',
     defaultMessage: 'Summary should not be empty.',
   },
-})
+});
 
 export const menu = defineMessages({
   createCopy: {
@@ -382,7 +410,7 @@ export const menu = defineMessages({
     id: 'dz.menu.section-release',
     defaultMessage: 'Release section',
   },
-})
+});
 
 export const bundleStatus = defineMessages({
   published: {
@@ -397,4 +425,157 @@ export const bundleStatus = defineMessages({
     id: 'dz.bundle-status.archived',
     defaultMessage: 'Archived',
   },
-})
+});
+
+export const release = defineMessages({
+  selectCategoryHint: {
+    id: 'dz.release.select-category-hint',
+    defaultMessage: 'Please select a category.',
+  },
+  releaseTypeTitle: {
+    id: 'dz.release.release-type',
+    defaultMessage: 'Release Type',
+  },
+  standaloneRelease: {
+    id: 'dz.release.standalone-release',
+    defaultMessage: 'Standalone Release',
+  },
+  bundleRelease: {
+    id: 'dz.release.bundle-release',
+    defaultMessage: 'Bundle Release',
+  },
+  applyScenes: {
+    id: 'dz.release.apply-scenes',
+    defaultMessage: 'Apply Scenes',
+  },
+  applyScenePlaceholder: {
+    id: 'dz.release.apply-scene-placeholder',
+    defaultMessage: 'New Application Secene, [ENTER] to confirm',
+  },
+  category: {
+    id: 'dz.release.category',
+    defaultMessage: 'Category',
+  },
+  review: {
+    id: 'dz.release.release-config-review',
+    defaultMessage: 'Release Config Review',
+  },
+  contentToRelease: {
+    id: 'dz.release.content-to-release',
+    defaultMessage: 'Content to release',
+  },
+  validatingHint: {
+    id: 'dz.release.validating-hint',
+    defaultMessage: 'Validating...',
+  },
+  releasingHint: {
+    id: 'dz.release.releasing-hint',
+    defaultMessage: 'Releasing...',
+  },
+  releaseSuccessHint: {
+    id: 'dz.release.release-success-hint',
+    defaultMessage: 'Release Success',
+  },
+  validationFailed: {
+    id: 'dz.release.validation-failed',
+    defaultMessage: 'Validation Failed',
+  },
+  releaseFailed: {
+    id: 'dz.release.release-failed',
+    defaultMessage: 'Release Failed',
+  },
+  nodeToRelease: {
+    id: 'dz.release.node-to-release',
+    defaultMessage: 'Select content to release',
+  },
+  nodesRequired: {
+    id: 'dz.release.nodes-required',
+    defaultMessage: 'Please select nodes to release',
+  },
+  coverShouldReleaseForInit: {
+    id: 'dz.release.cover-release-for-init',
+    defaultMessage: 'Bundle should release with a cover',
+  },
+  publishedWithUpdate: {
+    id: 'dz.release.published-with-update',
+    defaultMessage: 'Published (has updates)',
+  },
+  notPublished: {
+    id: 'dz.release.not-published',
+    defaultMessage: 'Not published',
+  },
+  published: {
+    id: 'dz.release.published',
+    defaultMessage: 'Published',
+  },
+  titleRequired: {
+    id: 'dz.release.title-required',
+    defaultMessage: 'Title requried',
+  },
+  summaryRequired: {
+    id: 'dz.release.summary-required',
+    defaultMessage: 'Summary required',
+  },
+  coverRequired: {
+    id: 'dz.release.cover-required',
+    defaultMessage: 'Cover required',
+  },
+  sectionRelease: {
+    id: 'dz.release.section-release',
+    defaultMessage: 'Section Release',
+  },
+  cardPreview: {
+    id: 'dz.release.card-preview',
+    defaultMessage: 'Card Preview',
+  },
+  close: {
+    id: 'dz.release.close',
+    defaultMessage: 'Close',
+  },
+});
+
+export const cardWidget = defineMessages({
+  coverPlaceholder: {
+    id: 'dz.card-wdiget.cover-placeholder',
+    defaultMessage: 'Use high-quality images to attract more readers',
+  },
+  shortCoverPlaceholder: {
+    id: 'dz.card-wdiget.short-cover-placeholder',
+    defaultMessage: 'Use high-quality images',
+  },
+});
+
+export const cardPreview = defineMessages({
+  title: {
+    id: 'dz.card-preview.title',
+    defaultMessage: 'Card Preview',
+  },
+  desc: {
+    id: 'dz.card-preview.desc',
+    defaultMessage:
+      'Note: The changes here will affect how your article is displayed on public pages such as the feat.com homepage, not the article itself.',
+  },
+  titleRequried: {
+    id: 'dz.card-preview.title-required',
+    defaultMessage: 'Please input title',
+  },
+  summaryRequired: {
+    id: 'dz.card-preview.summary-required',
+    defaultMessage: 'Please input summary',
+  },
+  updateAll: {
+    id: 'dz.card-preview.update-all',
+    defaultMessage: 'Bulk edit',
+  },
+});
+
+export const pageTitle = defineMessages({
+  createCover: {
+    id: 'dz.page-title.create-cover',
+    defaultMessage: 'Create cover',
+  },
+  createPage: {
+    id: 'dz.page-title.create-page',
+    defaultMessage: 'Create page',
+  },
+});

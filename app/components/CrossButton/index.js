@@ -28,7 +28,7 @@ class CrossButton extends Component {
         height: box.height,
       },
     });
-  }
+  };
 
   render() {
     const { className, ...buttonProps } = this.props;

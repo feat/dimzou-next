@@ -18,62 +18,60 @@ import { tryToFetchPublication } from '../../actions';
 function BookNodeRender(props) {
   const publicationState = useContext(PublicationContext);
   const dispatch = useDispatch();
-  
+
   const {
-    brief: { 
-      node_type,
-      text_title: title,
-      text_summary: summary,
-    },
+    brief: { node_type, text_title: title, text_summary: summary },
   } = props;
 
   const id = `node-${props.nodeId}`;
-  const className = classNames("dz-PageContent", {
+  const className = classNames('dz-PageContent', {
     'dz-PageContent_chapter': node_type === NODE_TYPE_CHAPTER,
     'dz-PageContent_cover': node_type === NODE_TYPE_COVER,
-  })
+  });
 
   const nextAnchor = (
     <NextAnchor
-      index={props.index} nodes={props.nodes} onActivate={(nodeDesc) => {
+      index={props.index}
+      nodes={props.nodes}
+      onActivate={(nodeDesc) => {
         logging.debug('prefetch publication data');
-        dispatch(tryToFetchPublication({
-          bundleId: props.bundleId,
-          nodeId: nodeDesc.id,
-        }));
-      }} 
+        dispatch(
+          tryToFetchPublication({
+            bundleId: props.bundleId,
+            nodeId: nodeDesc.id,
+          }),
+        );
+      }}
     />
-  )
+  );
 
   if (publicationState && publicationState.fetchError) {
     return (
       <div id={id} name={id} className={className} style={{ height: '90vh' }}>
-        <div className="typo-Article">
+        <div className="dz-Typo">
           <h1 style={{ marginTop: 24 }}>{title}</h1>
-          <div className="typo-Article__summary">
+          <div className="dz-Typo__summary">
             <p>{summary}</p>
           </div>
         </div>
-        <div>
-          {publicationState.fetchError.message}
-        </div>
+        <div>{publicationState.fetchError.message}</div>
         {nextAnchor}
       </div>
-    )
+    );
   }
 
   if (!publicationState || !publicationState.data) {
     return (
       <div id={id} name={id} className={className} style={{ height: '90vh' }}>
-        <div className="typo-Article">
+        <div className="dz-Typo">
           <h1 style={{ marginTop: 24 }}>{title}</h1>
-          <div className="typo-Article__summary">
+          <div className="dz-Typo__summary">
             <p>{summary}</p>
           </div>
         </div>
         <TranslatableMessage message={cMessages.loading} />
       </div>
-    )
+    );
   }
 
   if (node_type === NODE_TYPE_COVER) {
@@ -84,13 +82,13 @@ function BookNodeRender(props) {
         <PublicationCover template="IV" />
         {nextAnchor}
       </div>
-    )
+    );
   }
 
   if (node_type === NODE_TYPE_CHAPTER) {
     return (
       <div name={id} id={id} className={className}>
-        <div style={{ marginBottom: 24}}>
+        <div style={{ marginBottom: 24 }}>
           <PublicationCover template="CHAPTER" />
         </div>
         <PublicationTitle />
@@ -98,7 +96,7 @@ function BookNodeRender(props) {
         <PublicationContent />
         {nextAnchor}
       </div>
-    )
+    );
   }
 }
 

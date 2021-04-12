@@ -1,14 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Cropper from 'cropperjs';
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
 import notification from '@feat/feat-ui/lib/notification';
 
+import ActionButton from '@/components/ActionButton';
 import 'cropperjs/dist/cropper.css';
 
 const preventWheel = (e) => {
   e.preventDefault();
-}
+  e.stopPropagation();
+};
 class CoverCropper extends React.Component {
   state = {
     disabled: false,
@@ -65,7 +66,7 @@ class CoverCropper extends React.Component {
             left: canvasLeft,
             width: canvasWidth,
             height: canvasHeight,
-          })
+          });
         } else {
           cropper.setCanvasData({
             top: previewBox.top,
@@ -120,7 +121,7 @@ class CoverCropper extends React.Component {
           top: 0,
           width: '100%',
           height: '100vw',
-          zIndex: 200,
+          zIndex: 1230,
           overscrollBehavior: 'contain',
         }}
         ref={(n) => {
@@ -137,20 +138,20 @@ class CoverCropper extends React.Component {
         <div
           className="CoverCropper__actions"
           style={{
-            position: 'absolute',
+            position: 'fixed',
             top: previewBox.bottom + 16,
             right: `calc(100% - ${previewBox.right}px)`,
           }}
         >
-          <IconButton
-            onClick={this.handleCancel}
-            svgIcon="no-btn"
+          <ActionButton
+            type="no"
             size="sm"
             className="margin_r_24"
+            onClick={this.handleCancel}
             disabled={this.state.disabled}
           />
-          <IconButton
-            svgIcon="ok-btn"
+          <ActionButton
+            type="ok"
             size="sm"
             className="margin_r_12"
             onClick={this.handleConfirm}

@@ -7,53 +7,23 @@ class FeedTemplateI extends Base {
   static displayName = 'FeedTemplateI';
 
   renderI(item, index) {
-    return (
-      <DimzouCardIII
-        titleLines={4}
-        bodyLines={5}
-        key={index}
-      />
-    );
+    return <DimzouCardIII titleLines={4} bodyLines={5} key={index} />;
   }
 
   renderII(item, index) {
-    return (
-      <DimzouCardII
-        titleLines={2}
-        bodyLines={4}
-        key={index}
-      />
-    );
+    return <DimzouCardII titleLines={2} bodyLines={4} key={index} />;
   }
 
   renderIII(item, index) {
-    return (
-      <DimzouCardIII
-        titleLines={3}
-        bodyLines={12}
-        key={index}
-      />
-    );
+    return <DimzouCardIII titleLines={3} bodyLines={12} key={index} />;
   }
 
   renderIV(item, index) {
-    return (
-      <DimzouCardII
-        titleLines={2}
-        bodyLines={4}
-        key={index}
-      />
-    );
+    return <DimzouCardII titleLines={2} bodyLines={4} key={index} />;
   }
 
   renderV(item, index) {
-    return (
-      <DimzouCardIII
-        titleLines={2}
-        bodyLines={6}
-        key={index}
-      />
-    );
+    return <DimzouCardIII titleLines={2} bodyLines={6} key={index} />;
   }
 }
 

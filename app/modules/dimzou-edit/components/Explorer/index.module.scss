@@ -1,0 +1,122 @@
+@import 'base.scss';
+
+@include block(node) {
+  position: relative;
+  font-size: 14px;
+  min-height: 28px;
+  padding-right: 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: inherit;
+
+  &:hover {
+      background-color: $gray-1;
+  }
+
+  &.depth0 {
+      padding-left: 12px;
+  }
+
+  &.depth1 {
+      padding-left: 26px;
+  }
+  &.depth2 {
+    padding-left: 52px;
+  }
+
+  &.hasIcon {
+    &.depth0 {
+      padding-left: 8px;
+    }
+  }
+
+  @include element(icon) {
+    height: 22px;
+    width: 22px;
+    display: inline-block;
+    margin-right: 3px;
+    flex-shrink: 0;
+    padding: 1px;
+    line-height: 0;
+  }
+
+  @include element(main) {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  @include element(extra) {
+    margin-left: 5px;
+  }
+
+  @include element(label) {
+    @include btn-animation();
+    @include text-truncate();
+    // &.noIcon {
+    //   margin-left: 12px;
+    // }
+
+    h1, h2, h3 {
+      font-size: inherit;
+      margin: 0;
+      font-weight: inherit;
+    }
+  }
+
+  @include element(actions) {
+    display: none;
+    height: 28px;
+    align-items: center;
+    position: absolute;
+    right: 2px;
+    padding-right: 12px; // TODO: detect if has scroll bar
+    top: 0px;
+  }
+
+  &:hover {
+    @include element(actions, true) {
+      display: flex;
+      background-color: inherit;
+    }
+  }
+
+  a {
+    color: inherit;
+  } 
+
+  &.isActive {
+    background-color: $gray-10;
+    color: $gray-1;
+  }
+  .canToggle {
+      cursor: pointer;
+      @include btn-animation();
+  }
+}
+
+@include block(subTree) {
+  
+}
+
+@include block(element) {
+  position: relative;
+  &.isDropzoneActive {
+    background-color: $gray-1;
+  }
+}
+
+@include block(dropHint) {
+  height: 2px;
+  background-color: $color-tertiary;
+  width: 100%;
+  right: 0;
+
+  &.depth0 {
+    width: calc( 100% - 12px);
+  }
+  &.depth1 {
+    width: calc( 100% - 30px);
+  }
+}

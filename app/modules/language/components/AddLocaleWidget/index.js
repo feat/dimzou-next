@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
+import ActionButton from '@/components/ActionButton';
 
 import './style.scss';
 
@@ -83,10 +83,10 @@ class AddLocaleWidget extends React.PureComponent {
                 });
               }}
             />
-            <IconButton
+            <ActionButton
               className="lng-AddLocaleWidget__btn"
               size="sm"
-              svgIcon="ok-btn"
+              type="ok"
               htmlType="submit"
               disabled={!this.state.name.trim() || this.state.isSubmittting}
             />

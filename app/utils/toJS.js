@@ -1,4 +1,4 @@
-export default function(obj, defaultValue) {
+export default function toJS(obj, defaultValue) {
   if (!obj) {
     return defaultValue;
   }

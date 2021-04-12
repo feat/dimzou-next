@@ -1,30 +1,24 @@
-import React, { useEffect } from 'react';
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 
 import Link from 'next/link';
+import notification from '@feat/feat-ui/lib/notification';
 
-import { getAvatar } from '@/utils/user';
+import { getUsername } from '@/modules/user/utils';
 import mMessages from '@/messages/menu';
+import { asyncLogout } from '@/modules/auth/actions';
 
 import Menu from '@feat/feat-ui/lib/menu';
-import Button from '@feat/feat-ui/lib/button';
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
-import Avatar from '@feat/feat-ui/lib/avatar';
-import { LogoutBlock } from '@/modules/auth/containers/LogoutButton';
-
-import draft from '@/images/draft.svg';
+import { useDispatch } from 'react-redux';
 
 function UserMenu(props) {
+  const dispatch = useDispatch();
   const {
     user,
     intl: { formatMessage },
   } = props;
-
-  useEffect(() => {
-    // prefetch draft-creation
-    import(/* webpackChunkName: "dimzou-edit" */ '@/modules/dimzou-edit');
-  });
 
   return (
     <Menu className="HeaderUserMenu">
@@ -33,50 +27,57 @@ function UserMenu(props) {
         href={{
           pathname: '/dimzou-edit',
           query: {
-            isCreate: true,
+            pageName: 'create',
           },
         }}
       >
         <a
-          className="ft-Menu__item ft-Menu__item_icon"
+          className="ft-Menu__item"
           data-track-anchor="New_Dimzou"
           data-anchor-type="UserMenu"
         >
-          <button
-            type="button"
-            className="ft-IconButton ft-IconButton_default ft-IconButton_md"
-            dangerouslySetInnerHTML={{ __html: draft }}
-          />
-          <span className="padding_l_5">
-            {formatMessage(mMessages.newStory)}
-          </span>
+          <span className="">{formatMessage(mMessages.newStory)}</span>
         </a>
       </Link>
 
       <Link
         href={{
-          pathname: '/dimzou-edit',
+          pathname: '/user-profile',
           query: { userId: user.uid },
         }}
         as={`/profile/${user.uid}`}
       >
         <a
-          className="ft-Menu__item ft-Menu__item_icon"
+          className="ft-Menu__item"
           data-track-anchor="UserProfile"
           data-anchor-type="UserMenu"
         >
-          <IconButton size="md">
-            <Avatar avatar={getAvatar(user, 'md')} size="xs" round />
-          </IconButton>
-          <span className="padding_l_5">
+          <span className="">
             {/* {formatMessage(mMessages.dashboard)} */}
-            {user.username || user.uid}
+            {getUsername(user)}
           </span>
         </a>
       </Link>
-      <LogoutBlock className='ft-Menu__item'>
+      <a
+        href="#"
+        className="ft-Menu__item"
+        onClick={(e) => {
+          e.preventDefault();
+          dispatch(asyncLogout())
+            .then(() => {
+              window.location.reload();
+            })
+            .catch((err) => {
+              logging.error(err);
+              notification.error({
+                message: 'Error',
+                description: err.message,
+              });
+            });
+        }}
+      >
         {formatMessage(mMessages.logout)}
-      </LogoutBlock>
+      </a>
     </Menu>
   );
 }

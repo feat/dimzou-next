@@ -54,8 +54,7 @@ module.exports = {
       },
       {
         type: 'add',
-        path:
-          '../../app/modules/{{lowerCase name}}/tests/selectors.test.js',
+        path: '../../app/modules/{{lowerCase name}}/tests/selectors.test.js',
         templateFile: './module/selectors.test.js.hbs',
         abortOnFail: true,
       },

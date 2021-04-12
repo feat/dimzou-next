@@ -6,8 +6,9 @@
   }
   @include element(rootSelect) {
     position: relative;
-    margin-top: px-to-rem(32);
-    right: px-to-rem(-24);
+    margin-top: px-to-rem(12);
+    // margin-top: px-to-rem(32);
+    // right: px-to-rem(-24);
   }
   @include element(secondarySelect) {
     text-align: right;
@@ -108,28 +109,18 @@
   // Large Desktop
   @media(min-width: $screen-lg-min){
     @include element(main) {
-      margin-left: -20px;
-      margin-right: -40px;
+      // margin-left: -20px;
+      // margin-right: -40px;
     }
     @include element(secondaryPanel) {
-      width: 180px;
+      width: px-to-rem(180);
     }
   }
   // Extra Large Desktop
   @media(min-width: $screen-xl-min){
     @include element(main) {
-      margin-left: -24px;
-      margin-right: -48px;
-    }
-    @include element(secondaryPanel) {
-      width: 200px;
-    }
-  }
-  // Extreme Large Desktop
-  @media(min-width: $screen-xxl-min){
-    @include element(main) {
-      margin-left: px-to-rem(-24);
-      margin-right: px-to-rem(-48);
+      // margin-left: -24px;
+      // margin-right: -48px;
     }
     @include element(secondaryPanel) {
       width: px-to-rem(200);

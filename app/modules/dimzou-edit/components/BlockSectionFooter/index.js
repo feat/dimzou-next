@@ -28,16 +28,13 @@ function BlockSectionFooter(props) {
   const { user } = currentVersion;
 
   const isExpanded = !!expandedType;
-  
+
   const handleVersionClick = useCallback(() => {
-    toggleExpanded(BLOCK_EXPANDED_SECTION_VERSIONS)
+    toggleExpanded(BLOCK_EXPANDED_SECTION_VERSIONS);
   }, []);
-  const handleCommentClick = useCallback(
-    () => {
-      toggleExpanded(BLOCK_EXPANDED_SECTION_COMMENTS)
-    },
-    [],
-  )
+  const handleCommentClick = useCallback(() => {
+    toggleExpanded(BLOCK_EXPANDED_SECTION_COMMENTS);
+  }, []);
 
   return (
     <div
@@ -47,7 +44,7 @@ function BlockSectionFooter(props) {
     >
       <div className="dz-BlockSectionFooter__left">
         <span className="dz-BlockSectionFooter__action">
-          <RewordingVersion 
+          <RewordingVersion
             isActive={
               isExpanded && expandedType === BLOCK_EXPANDED_SECTION_VERSIONS
             }
@@ -95,9 +92,7 @@ function BlockSectionFooter(props) {
           </span>
         )}
       </div>
-      <div className="dz-BlockSectionFooter__right">
-        
-      </div>
+      <div className="dz-BlockSectionFooter__right" />
     </div>
   );
 }

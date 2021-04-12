@@ -41,7 +41,7 @@ const goUp = () => {
  */
 const goDown = () => {
   scrollIncrement += PX_DIFF;
-  containerEl.scrollTop = scrollIncrement;  
+  containerEl.scrollTop = scrollIncrement;
 
   if (isScrolling && scrollIncrement <= containerEl.scrollHeight) {
     window.requestAnimationFrame(goDown);
@@ -50,27 +50,24 @@ const goDown = () => {
 
 const onDragOver = (event) => {
   const clientRect = containerEl.getBoundingClientRect();
-  const isMouseOnTop = (
-    scrollIncrement >= 0 && event.clientY > clientRect.top
-    && event.clientY < (clientRect.top + OFFSET)
-  );
-  const isMouseOnBottom = (
-    scrollIncrement <= containerEl.scrollHeight
-    && event.clientY > (clientRect.bottom - OFFSET)
-    && event.clientY <= clientRect.bottom
-  );
+  const isMouseOnTop =
+    scrollIncrement >= 0 &&
+    event.clientY > clientRect.top &&
+    event.clientY < clientRect.top + OFFSET;
+  const isMouseOnBottom =
+    scrollIncrement <= containerEl.scrollHeight &&
+    event.clientY > clientRect.bottom - OFFSET &&
+    event.clientY <= clientRect.bottom;
   if (!isScrolling && (isMouseOnTop || isMouseOnBottom)) {
     isScrolling = true;
     scrollIncrement = containerEl.scrollTop;
 
     if (isMouseOnTop) {
       window.requestAnimationFrame(goUp);
-    }
-    else {
+    } else {
       window.requestAnimationFrame(goDown);
     }
-  }
-  else if (!isMouseOnTop && !isMouseOnBottom) {
+  } else if (!isMouseOnTop && !isMouseOnBottom) {
     isScrolling = false;
   }
 };
@@ -81,7 +78,7 @@ const onDragOver = (event) => {
 const throttleOnDragOver = throttle(onDragOver, 300);
 
 // IMPORTANT: CALL THIS METHOD IN: beginDrag!!!
-export const addEventListenerFor = (el) => {
+export const addEventListenerForScroll = (el) => {
   if (inSafari) {
     containerEl = el;
     el.addEventListener('dragover', throttleOnDragOver);
@@ -89,7 +86,7 @@ export const addEventListenerFor = (el) => {
 };
 
 // IMPORTANT: CALL THIS METHOD IN: endDrag!!!
-export const removeEventListenerFor = (el) => {
+export const removeEventListenerForScroll = (el) => {
   if (inSafari) {
     //   containerEl = null;
     isScrolling = false;
@@ -97,5 +94,3 @@ export const removeEventListenerFor = (el) => {
     throttleOnDragOver.cancel();
   }
 };
-
-

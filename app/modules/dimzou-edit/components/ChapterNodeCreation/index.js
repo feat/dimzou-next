@@ -1,33 +1,33 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import update from 'immutability-helper';
-import { EditorState, Modifier, convertToRaw } from '@feat/draft-js';
 
-// import Button from '@feat/feat-ui/lib/button';
-// import SvgIcon from '@feat/feat-ui/lib/svg-icon';
+import update from 'immutability-helper';
+import Router from 'next/router';
+
+import { EditorState, Modifier, convertToRaw } from '@feat/draft-js';
 
 import message from '@feat/feat-ui/lib/message';
 import notification from '@feat/feat-ui/lib/notification';
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
 
-import DragDropBoard from '@/components/DragDropBoard';
+import ActionButton from '@/components/ActionButton';
 import { selectCurrentUser } from '@/modules/auth/selectors';
 import SimpleCache from '@/services/cache';
-import { formatMessage } from '@/services/intl';
 import { getText } from '@/utils/content';
 
+import { useIntl } from 'react-intl';
 import DimzouEditor, {
   createFromRawData,
   createFromHTML,
   getHTML,
 } from '../DimzouEditor';
-import DimzouEditorToolbar from '../DimzouEditorToolbar';
-import TemplateSwitchButton from '../TemplateSwitchButton';
-import AppSidebarFirst from '../AppSidebarFirst';
+import WorkshopNavigator from '../WorkshopNavigator';
 import ImageDropzone from '../ImageDropzone';
+import DraftDocker from '../DraftDocker';
 
 import { getTemplateCoverRatio } from '../../utils/template';
+import { getAsPath } from '../../utils/router';
+
 import { getChapterRender } from '../AppRenders';
 import { EDIT_PERMISSION_PUBLIC } from '../../constants';
 import { validation as vMessages } from '../../messages';
@@ -48,10 +48,12 @@ const initContentRaw = {
 };
 
 function ChapterNodeCreation(props) {
+  const { formatMessage } = useIntl();
   const currentUser = useSelector(selectCurrentUser);
   const titleEditorRef = useRef(null);
   const summaryEditorRef = useRef(null);
   const contentEditorRef = useRef(null);
+
   const cache = useMemo(
     () =>
       new SimpleCache({
@@ -75,10 +77,6 @@ function ChapterNodeCreation(props) {
     cover: null,
   });
   const Render = getChapterRender(state.template);
-
-  const handleTitlePastedText = () => {
-    // TODO:handleTitlePastedText
-  };
 
   const titleHasText = state.titleEditorState
     .getCurrentContent()
@@ -118,41 +116,9 @@ function ChapterNodeCreation(props) {
     [state.template],
   );
 
-  const actionButtons = [];
-  if (props.canSelectTemplate) {
-    actionButtons.push(
-      <TemplateSwitchButton
-        key="template"
-        initialValue={state.template}
-        onChange={(value) => {
-          setState(
-            update(state, {
-              template: {
-                $set: value,
-              },
-            }),
-          );
-        }}
-      />,
-    );
-  }
-  // if (props.canCancel) {
-  //   actionButtons.push(
-  //     <Button
-  //       type="merge"
-  //       size="md"
-  //       className={'dz-EditDocker__action is-selected'}
-  //       onClick={props.onCancel}
-  //     >
-  //       <SvgIcon icon="add-part" />
-  //       <TranslatableMessage message={intlMessages.newChapter} />
-  //     </Button>
-  //   )
-  // }
-
   return (
     <Render
-      sidebarFirst={<AppSidebarFirst />}
+      sidebarFirst={<WorkshopNavigator />}
       cover={
         <ImageDropzone
           data={state.cover}
@@ -170,53 +136,58 @@ function ChapterNodeCreation(props) {
       }
       title={
         <div className="dz-BlockSection dz-BlockSection_title">
-          <DimzouEditor
-            mode="create"
-            ref={titleEditorRef}
-            placeholder={
-              <div className="typo-Article__titlePlaceholder">
-                {props.titlePlaceholder}
-              </div>
-            }
-            handleKeyCommand={(editorState, onChange, command) => {
-              if (command === 'backspace') {
-                const content = editorState.getCurrentContent();
-                if (
-                  content.getBlockMap().size === 1 &&
-                  content.getFirstBlock().getText().length === 0
-                ) {
+          <div className="dz-Typo">
+            <DimzouEditor
+              ref={titleEditorRef}
+              mode="create"
+              structure="title"
+              placeholder={
+                <div className="dz-Typo__titlePlaceholder">
+                  {props.titlePlaceholder}
+                </div>
+              }
+              handleKeyCommand={(editorState, onChange, command) => {
+                if (command === 'backspace') {
+                  const content = editorState.getCurrentContent();
+                  if (
+                    content.getBlockMap().size === 1 &&
+                    content.getFirstBlock().getText().length === 0
+                  ) {
+                    return 'handled';
+                  }
+                }
+                return 'not-handled';
+              }}
+              handleReturn={(editorState) => {
+                const contentState = editorState.getCurrentContent();
+                if (contentState.hasText()) {
+                  summaryEditorRef.current && summaryEditorRef.current.focus();
                   return 'handled';
                 }
-              }
-              return 'not-handled';
-            }}
-            handleReturn={(editorState) => {
-              const contentState = editorState.getCurrentContent();
-              if (contentState.hasText()) {
-                summaryEditorRef.current && summaryEditorRef.current.focus();
-                return 'handled';
-              }
-              return 'not-handled';
-            }}
-            editorState={state.titleEditorState}
-            onChange={(titleEditorState) => {
-              setState(
-                update(state, {
-                  titleEditorState: {
-                    $set: titleEditorState,
-                  },
-                }),
-              );
-              cache.set('title', getHTML(titleEditorState.getCurrentContent()));
-            }}
-            currentUser={currentUser}
-            handlePastedText={handleTitlePastedText}
-          />
+                return 'not-handled';
+              }}
+              editorState={state.titleEditorState}
+              onChange={(titleEditorState) => {
+                setState(
+                  update(state, {
+                    titleEditorState: {
+                      $set: titleEditorState,
+                    },
+                  }),
+                );
+                cache.set(
+                  'title',
+                  getHTML(titleEditorState.getCurrentContent()),
+                );
+              }}
+              currentUser={currentUser}
+            />
+          </div>
         </div>
       }
       summary={
         <div className="dz-BlockSection dz-BlockSection_summary">
-          <div className="typo-Article">
+          <div className="dz-Typo">
             <DimzouEditor
               mode="create"
               ref={summaryEditorRef}
@@ -290,7 +261,7 @@ function ChapterNodeCreation(props) {
       }
       content={
         <>
-          <div className="dz-BlockSection typo-Article">
+          <div className="dz-BlockSection dz-Typo">
             <DimzouEditor
               mode="create"
               ref={contentEditorRef}
@@ -353,8 +324,8 @@ function ChapterNodeCreation(props) {
             />
           </div>
           <div className="dz-DimzouCreation__footer" style={footerStyle}>
-            <IconButton
-              svgIcon="no-btn"
+            <ActionButton
+              type="no"
               size="md"
               disabled={
                 props.canCancel
@@ -384,8 +355,8 @@ function ChapterNodeCreation(props) {
                 }
               }}
             />
-            <IconButton
-              svgIcon="ok-btn"
+            <ActionButton
+              type="ok"
               size="md"
               className="margin_l_24"
               onClick={() => {
@@ -454,28 +425,44 @@ function ChapterNodeCreation(props) {
               disabled={!isReady || state.isSubmitting}
             />
           </div>
-          <DragDropBoard>
-            <div className="dz-EditDocker">
-              <DimzouEditorToolbar
-                className="dz-EditDocker__section"
-                structure={structure}
-                editorState={state[currentEditor]}
-                onChange={(editorState) => {
-                  setState(
-                    update(state, {
-                      [currentEditor]: {
-                        $set: editorState,
-                      },
-                    }),
-                  );
-                }}
-                mode="create"
-              />
-              {!!actionButtons.length && (
-                <div className="dz-EditDocker__section">{actionButtons}</div>
-              )}
-            </div>
-          </DragDropBoard>
+          <DraftDocker
+            blockStructure={structure}
+            editorState={state[currentEditor]}
+            onEditorChange={(editorState) => {
+              setState(
+                update(state, {
+                  [currentEditor]: {
+                    $set: editorState,
+                  },
+                }),
+              );
+            }}
+            editorMode="create"
+            initialTemplate={state.template}
+            changeTemplate={(value) => {
+              setState(
+                update(state, {
+                  template: {
+                    $set: value,
+                  },
+                }),
+              );
+            }}
+            isPageCreateActive
+            onPageCreateButtonClick={() => {
+              Router.back();
+            }}
+            onCoverCreateButtonClick={() => {
+              const href = {
+                pathname: '/dimzou-edit',
+                query: {
+                  pageName: 'create',
+                  type: 'cover',
+                },
+              };
+              Router.replace(href, getAsPath(href));
+            }}
+          />
         </>
       }
     />
@@ -491,7 +478,6 @@ ChapterNodeCreation.propTypes = {
   onCancel: PropTypes.func,
   onSubmit: PropTypes.func,
   canCancel: PropTypes.bool,
-  canSelectTemplate: PropTypes.bool,
 };
 
 export default ChapterNodeCreation;

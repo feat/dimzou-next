@@ -2,7 +2,7 @@ import { createSelector, createStructuredSelector } from 'reselect';
 import get from 'lodash/get';
 import { hasAuthedUser } from '@/modules/auth/selectors';
 
-import { REDUCER_KEY } from './reducer';
+import { REDUCER_KEY } from './config';
 /**
  * Direct selector to the languageToggle state domain
  */
@@ -15,7 +15,8 @@ export const selectMessages = createSelector(
     const translations = get(languageState, ['translations', locale]);
     const userTranslations = get(languageState, ['userTranslations', locale]);
     if (!translations) {
-      return null;
+      logging.warn(`No translations for locale: ${locale}`);
+      return {};
     }
     if (!userTranslations) {
       return translations;
@@ -51,6 +52,11 @@ const selectTargetLanguageMessages = createSelector(
 export const selectCurrentLocale = createSelector(
   selectLanguageDomain,
   (state) => state.locale,
+);
+
+export const isLanguageSelectOpened = createSelector(
+  selectLanguageDomain,
+  (state) => state.isLocaleSelectModalOpened,
 );
 
 export const isTranslateModeEnabled = createSelector(
@@ -131,14 +137,14 @@ export const selectTranslateLanguageSelect = createStructuredSelector({
 export const selectLanguageSelect = createStructuredSelector({
   canCreateLocale: hasAuthedUser,
   locales: selectLocales,
-  isOpen: (state) => {
-    const subState = selectLanguageDomain(state);
-    return subState.isLocaleSelectModalOpened;
-  },
-  selectedLang: (state) => {
-    const subState = selectLanguageDomain(state);
-    return subState.locale;
-  },
+  // isOpen: (state) => {
+  //   const subState = selectLanguageDomain(state);
+  //   return subState.isLocaleSelectModalOpened;
+  // },
+  // selectedLang: (state) => {
+  //   const subState = selectLanguageDomain(state);
+  //   return subState.locale;
+  // },
 });
 
 export const selectLanguageSelectTrigger = createStructuredSelector({

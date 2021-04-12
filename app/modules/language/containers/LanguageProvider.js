@@ -4,12 +4,15 @@
  *
  * this component connects the redux state language locale to the
  * IntlProvider component and i18n messages (loaded from `app/translations`)
+ * 
+ * 关于消息更新
+ * - 在 翻译模式 下应避免更新。
  */
 
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { IntlProvider } from 'react-intl';
+import { createIntl, RawIntlProvider } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
 
@@ -25,41 +28,31 @@ import {
 import { withFallbackLocale } from '../utils';
 
 export class LanguageProvider extends React.PureComponent {
-  // eslint-disable-line react/prefer-stateless-function
-  componentWillUpdate(nextProps) {
-    logging.debug(
-      'LanguageProvider update',
-      nextProps.messages === this.props.messages,
-    );
+  constructor(props) {
+    super(props);
+    this.intl = createIntl({
+      locale: withFallbackLocale(this.props.locale),
+      messages: this.props.messages,
+    });
+    setIntl(this.intl);
   }
 
-  registerInlt = (n) => {
-    if (n) {
-      const { intl } = n.getChildContext();
-      setIntl(intl);
+  componentDidUpdate(prevProps) {
+    if (prevProps.messages !== this.props.messages) {
+      this.intl = createIntl({
+        locale: withFallbackLocale(this.props.locale),
+        messages: this.props.messages,
+      });
+      setIntl(this.intl);
+      this.forceUpdate();
     }
-  };
+    // TODO check if messages has updated.
+  }
 
   render() {
-    const {
-      messages,
-      locale,
-      lastUpdatedAt,
-      isTranslateModeEnabled,
-    } = this.props;
-    if (!isTranslateModeEnabled) {
-      this.key = lastUpdatedAt;
-    }
     // use key to trigger rerender
     return (
-      <IntlProvider
-        locale={withFallbackLocale(locale)}
-        key={this.key}
-        messages={messages}
-        ref={this.registerInlt}
-      >
-        {this.props.children}
-      </IntlProvider>
+      <RawIntlProvider value={this.intl}>{this.props.children}</RawIntlProvider>
     );
   }
 }
@@ -67,9 +60,9 @@ export class LanguageProvider extends React.PureComponent {
 LanguageProvider.propTypes = {
   locale: PropTypes.string,
   messages: PropTypes.object,
-  isTranslateModeEnabled: PropTypes.bool,
+  // isTranslateModeEnabled: PropTypes.bool,
   // isInitializing: PropTypes.bool,
-  lastUpdatedAt: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  // lastUpdatedAt: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   children: PropTypes.element.isRequired,
 };
 

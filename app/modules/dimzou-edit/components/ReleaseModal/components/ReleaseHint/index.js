@@ -7,7 +7,7 @@ import rMessages from '../../messages';
 
 export default function ReleaseHint() {
   return (
-    <FeatModal>
+    <FeatModal fixedHeight>
       <FeatModal.Wrap>
         <FeatModal.Header>
           <FeatModal.Title>
@@ -16,6 +16,5 @@ export default function ReleaseHint() {
         </FeatModal.Header>
       </FeatModal.Wrap>
     </FeatModal>
-  )
+  );
 }
-

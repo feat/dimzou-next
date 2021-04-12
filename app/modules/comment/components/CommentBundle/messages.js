@@ -49,6 +49,10 @@ export default defineMessages({
     id: 'comment.comment-bundle.reach-max-reply-limit',
     defaultMessage: 'You have already replied before.',
   },
+  hasReplyHint: {
+    id: 'comment.comment-bundle.has-replied-hint',
+    defaultMessage: 'Your comment has been replied. You can not update it.',
+  },
   opinions: {
     id: 'comment.comment-bundle.opinions',
     defaultMessage: 'Opinions',

@@ -16,7 +16,7 @@ import {
   initRewordingEdit,
   exitRewordingEdit,
   updateRewordingEditor,
-  loadNodeEditInfo,
+  initNodeEdit,
 } from '../actions';
 import { createFromHTML } from '../components/DimzouEditor';
 import { getNodeCache } from '../utils/cache';
@@ -174,7 +174,9 @@ function initializeWithCache(state, action) {
     return state;
   }
   let newState = state;
-  const rewordings = Object.entries(cache.all()).filter(([key]) => /^rewording-/.test(key));
+  const rewordings = Object.entries(cache.all()).filter(([key]) =>
+    /^rewording-/.test(key),
+  );
   rewordings.forEach((data) => {
     if (typeof data[1] !== 'object' && !data.html) {
       return;
@@ -182,12 +184,12 @@ function initializeWithCache(state, action) {
     const { html, ...payload } = data[1];
     payload.editorState = createFromHTML(html);
     newState = baseRewordingReducer(newState, initRewordingEdit(payload));
-  })
+  });
   return newState;
 }
 
 function rewordingReducer(state = {}, action) {
-  if (action.type === loadNodeEditInfo.toString()) {
+  if (action.type === initNodeEdit.SUCCESS) {
     return initializeWithCache(state, action);
   }
   return baseRewordingReducer(state, action);

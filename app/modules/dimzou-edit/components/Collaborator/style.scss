@@ -1,0 +1,60 @@
+@import 'base.scss';
+
+@include block(ns(Collaborator, dz)) {
+  padding: px-to-rem(5);
+  margin-bottom: px-to-rem(5);
+  position: relative;
+  background-color: $main-container-bg-color;
+
+  @include element(meta) {
+    display: none;
+    line-height: 1.2;
+    text-align: right;
+    font-size: px-to-rem(14);
+    position: absolute;
+    bottom: px-to-rem(5);
+    right: px-to-rem(5);
+    padding-left: px-to-rem(5);
+    background-color: $main-container-bg-color;
+  }
+
+  @include element(main) {
+    display: flex;
+    min-width: 0;
+  }
+
+  @include element(info) {
+    font-size: px-to-rem(14);
+    display: -webkit-box;
+    line-height: 1.2;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
+  @include element(avatar) {
+    flex-shrink: 0;
+    width: px-to-rem(30);
+    height: px-to-rem(30);
+    border-radius: 50%;
+    margin-right: px-to-rem(5);
+  }
+
+  &:hover {
+    @include element(meta, true) {
+      display: block;
+     
+    }
+  }
+
+  // background-color: $gray-1;
+  @include state(pending, is) {
+    @include element(info, true) {
+      filter: grayscale(100%);      
+    }
+  }
+
+  @include state(archive, is) {
+    filter: grayscale(100%);
+  }
+}

@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import { useEffect, useRef } from 'react';
+import classNames from 'classnames';
+import StickySidebarWithAutoHeight from '@/components/StickySidebarWithAutoHeight';
 import {
   TemplateI,
   TemplateII,
@@ -11,7 +13,7 @@ import CoverTemplate from '../CoverTemplate';
 import SidebarName from '../SidebarName';
 
 const renderProps = {
-  id: PropTypes.string, // main content header,
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), // main content header,
   title: PropTypes.node,
   summary: PropTypes.node,
   content: PropTypes.node,
@@ -20,7 +22,7 @@ const renderProps = {
   sidebarSecond: PropTypes.node,
 };
 
-const delta = 15;
+const delta = 0;
 
 function setSidebarFirst(dom, wrapper, offsetTop = 0) {
   if (!dom || !wrapper) {
@@ -73,8 +75,7 @@ function useDimzouLayout(deps) {
     const updateSidebarHeight = () => {
       let offsetTop;
       if (labelRef.current) {
-        const marginBottom = window.getComputedStyle(labelRef.current)
-          .marginBottom;
+        const { marginBottom } = window.getComputedStyle(labelRef.current);
         offsetTop = labelRef.current.clientHeight + parseInt(marginBottom, 10);
       }
       setSidebarFirst(wrapRef.current, containerRef.current, offsetTop);
@@ -98,27 +99,28 @@ function useDimzouLayout(deps) {
   };
 }
 
-export function BaseRender({ main, sidebarFirst }) {
-  const {
-    containerRef,
-    wrapRef,
-    labelRef,
-    sidebarFirstRef,
-    sidebarSecondRef,
-  } = useDimzouLayout([]);
-
+export function BaseRender(props) {
+  const { main, sidebarFirst } = props;
   return (
-    <div className="dz-TemplateBase" ref={containerRef}>
-      <div className="dz-TemplateBase__sidebarFirst">
-        <div ref={sidebarFirstRef} style={{ position: 'sticky' }}>
-          <SidebarName ref={labelRef} />
-          <div style={{ overflow: 'hidden' }} ref={wrapRef}>
+    <div className="dz-TemplateBase">
+      <div className="dz-App__sidebarFirst">
+        <StickySidebarWithAutoHeight>
+          <div
+            style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+          >
+            <SidebarName />
             {sidebarFirst}
           </div>
-        </div>
+        </StickySidebarWithAutoHeight>
       </div>
-      <div className="dz-TemplateBase__main">{main}</div>
-      <div className="dz-TemplateBase__sidebarSecond" ref={sidebarSecondRef} />
+      <div className="dz-App__main">{main}</div>
+      <div
+        className={classNames(
+          'dz-App__sidebarSecond',
+          props.sidebarSecondClassName,
+        )}
+        style={props.sidebarSecondStyle}
+      />
       {/* <div className="dz-TemplateBase__sidebarThird"></div> */}
     </div>
   );
@@ -127,6 +129,8 @@ export function BaseRender({ main, sidebarFirst }) {
 BaseRender.propTypes = {
   main: PropTypes.node,
   sidebarFirst: PropTypes.node,
+  sidebarSecondStyle: PropTypes.object,
+  sidebarSecondClassName: PropTypes.string,
 };
 
 export function BundleRender({ main, sidebarFirst, sidebarSecond }) {

@@ -1,39 +1,6 @@
-import articleDefaultCover from './images/articleCover.png';
-import questionDefaultCover from './images/questionCover.png';
-import postDefaultCover from './images/postCover.png';
-import sentenceTruncate from '../../utils/sentenceTruncate';
-
 export default function mapEntities(items) {
   return items.map((item) => {
     switch (item.kind) {
-      case 'article':
-        return {
-          title: item.title,
-          body: item.summary || sentenceTruncate(item.content, 2),
-          author: item.author,
-          kind: item.kind,
-          id: item.id,
-          cover: item.coverImage || articleDefaultCover,
-          isDraft: !item.publishedRevision,
-        };
-      case 'question':
-        return {
-          title: item.title,
-          body: sentenceTruncate(item.content, 2),
-          author: item.author,
-          kind: item.kind,
-          id: item.id,
-          cover: item.coverImage || questionDefaultCover,
-        };
-      case 'post':
-        return {
-          title: item.title,
-          body: sentenceTruncate(item.content, 2),
-          author: item.author,
-          kind: item.kind,
-          id: item.id,
-          cover: item.coverImage || postDefaultCover,
-        };
       case 'dimzou':
         return {
           title: item.textTitle,
@@ -41,7 +8,7 @@ export default function mapEntities(items) {
           author: item.user,
           kind: item.kind,
           id: item.id,
-          cover: item.coverImage || postDefaultCover,
+          cover: item.coverImage,
           isDraft: !item.publishedAt,
           isTranslation: item.type === 'translate',
         };

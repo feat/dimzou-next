@@ -13,7 +13,6 @@ import {
   EDUCATION_TYPE_TRAINING,
 } from './constants';
 
-
 export const profile = defineMessages({
   genderLabel: {
     id: 'user.profile-field.gender',
@@ -141,4 +140,4 @@ export const dimzouScore = defineMessages({
     id: 'user.dimzou-score.score',
     defaultMessage: '{num} pts',
   },
-})
+});

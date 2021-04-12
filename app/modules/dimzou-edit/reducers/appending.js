@@ -7,14 +7,19 @@ import {
   commitBlock,
   submitMediaBlock,
   commitMediaBlock,
-  loadNodeEditInfo,
   // appending
   createAppendBlock,
   updateAppendBlock,
   removeAppendBlock,
+  initNodeEdit,
 } from '../actions';
 
-import { createEmpty, createEmptyWithFocus, createFromHTML, createFromHTMLWithFocus } from '../components/DimzouEditor';
+import {
+  createEmpty,
+  createEmptyWithFocus,
+  createFromHTML,
+  createFromHTMLWithFocus,
+} from '../components/DimzouEditor';
 
 import { TAILING_PIVOT } from '../constants';
 // import { generateParaId } from '../utils/blocks';
@@ -25,16 +30,22 @@ export const getAppendingKey = ({ nodeId }) => nodeId;
 const createTailingState = ({ bundleId, nodeId, shouldFocus, reset }) => {
   const cache = getNodeCache(nodeId);
   let editorState;
-  const blockCache = cache && cache.get(appendingBlockKey({
-    nodeId,
-    pivotId: TAILING_PIVOT,
-  }));
+  const blockCache =
+    cache &&
+    cache.get(
+      appendingBlockKey({
+        nodeId,
+        pivotId: TAILING_PIVOT,
+      }),
+    );
   if (blockCache && blockCache.html && !reset) {
-    editorState = shouldFocus ? createFromHTMLWithFocus(blockCache.html) : createFromHTML(blockCache.html);
+    editorState = shouldFocus
+      ? createFromHTMLWithFocus(blockCache.html)
+      : createFromHTML(blockCache.html);
   } else {
     editorState = shouldFocus ? createEmptyWithFocus() : createEmpty();
   }
-  
+
   return {
     type: 'editor',
     bundleId,
@@ -42,21 +53,23 @@ const createTailingState = ({ bundleId, nodeId, shouldFocus, reset }) => {
     pivotId: TAILING_PIVOT,
     isTailing: true,
     editorState,
-    editorInitialContent: blockCache ? null : editorState.getCurrentContent().getBlockMap(),
+    editorInitialContent: blockCache
+      ? null
+      : editorState.getCurrentContent().getBlockMap(),
     editorMode: 'create',
   };
 };
 
 const reducer = mapHandleActions(
   {
-    [loadNodeEditInfo]: (appendingState, action) => {
+    [initNodeEdit.SUCCESS]: (appendingState, action) => {
       const { payload } = action;
       return update(appendingState, {
         [TAILING_PIVOT]: {
           $set: createTailingState({
             bundleId: payload.bundleId,
             nodeId: payload.nodeId,
-            shouldFocus: payload.data.content.length === 0,
+            shouldFocus: payload.basic.node_paragraphs_count === 0,
           }),
         },
       });
@@ -109,34 +122,34 @@ const reducer = mapHandleActions(
         [payload.pivotId]: { $set: undefined },
       });
     },
-    [combineActions(
-      submitMediaBlock.TRIGGER,
-      commitMediaBlock.TRIGGER,
-    )]: (appendingState, action) => {
+    [combineActions(submitMediaBlock.TRIGGER, commitMediaBlock.TRIGGER)]: (
+      appendingState,
+      action,
+    ) => {
       const { payload } = action;
       return update(appendingState, {
         [payload.pivotId]: (blockState) => {
           if (!blockState) {
             return blockState;
           }
-          return ({
+          return {
             ...blockState,
             requestError: null,
-          })
+          };
         },
-      })
+      });
     },
-    [combineActions(
-      submitMediaBlock.FAILURE,
-      commitMediaBlock.FAILURE,
-    )]: (appendingState, action) => {
+    [combineActions(submitMediaBlock.FAILURE, commitMediaBlock.FAILURE)]: (
+      appendingState,
+      action,
+    ) => {
       const { payload } = action;
       return update(appendingState, {
         [payload.pivotId]: (blockState) => ({
           ...blockState,
           requestError: payload.err,
         }),
-      })
+      });
     },
     [combineActions(submitBlock.REQUEST, commitBlock.REQUEST)]: (
       appendingState,

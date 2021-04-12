@@ -4,6 +4,7 @@
   padding: px-to-rem(5);
   margin-bottom: px-to-rem(5);
   display: flex;
+  
   // background-color: $gray-1;
   @include state(pending, is) {
     filter: grayscale(100%);
@@ -15,5 +16,9 @@
   }
   @include state(archive, is) {
     filter: grayscale(100%);
+  }
+
+  .ft-AvatarStamp {
+    min-width: 0;
   }
 }

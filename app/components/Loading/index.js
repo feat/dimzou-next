@@ -1,12 +1,11 @@
 /**
-*
-* Loading
-*
-*/
+ *
+ * Loading
+ *
+ */
 
 import React from 'react';
 import Loader from '@feat/feat-ui/lib/loader';
-
 
 export default function Loading(props) {
   return (

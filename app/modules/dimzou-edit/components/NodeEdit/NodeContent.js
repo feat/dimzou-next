@@ -3,12 +3,14 @@ import {
   useRef,
   useMemo,
   useState,
-  useCallback,
   useEffect,
+  useCallback,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import Router, { useRouter } from 'next/router';
+// import Router from 'next/router';
+import { useIntl } from 'react-intl';
+import composeRefs from '@seznam/compose-react-refs';
 import classNames from 'classnames';
 import {
   WindowScroller,
@@ -18,461 +20,269 @@ import {
   List,
 } from 'react-virtualized';
 import { selectCurrentUser } from '@/modules/auth/selectors';
-import { formatMessage } from '@/services/intl';
-import message from '@feat/feat-ui/lib/message';
-import groupBy from 'lodash/groupBy';
-import get from 'lodash/get';
-import findIndex from 'lodash/findIndex';
-import {
-  selectUserRelatedDrafts,
-  selectUserDraftsState,
-} from '../../selectors';
-import commonMessages from '@/messages/common';
-import { BEGINNING_PIVOT, TAILING_PIVOT, ROLE_OWNER } from '../../constants';
+
+// import commonMessages from '@/messages/common';
+import { BEGINNING_PIVOT, TAILING_PIVOT } from '../../constants';
 import {
   NodeContext,
   BundleContext,
   UserCapabilitiesContext,
   ScrollContext,
-  OwnerContext,
 } from '../../context';
-import MeasureProvider from '../../providers/MeasureProvider';
 import {
   commitMediaBlock,
   submitMediaBlock,
-  asyncUpdateNodeInfo,
+  asyncBatchParagraph,
 } from '../../actions';
+
+import ContentDropzone from './ContentDropzone';
 import RewordableSection from '../RewordableSection';
 import ContentBlockRender from '../ContentBlockRender';
 import AppendingBlock from '../AppendingBlock';
 import DropHint from '../DropHint';
+import MeasureObserver from './MeasureObserver';
+import BlockSectionPlaceholder from '../BlockSectionPlaceholder';
+import BlockTailingWidget from '../BlockTailingWidget';
 import intlMessages from '../../messages';
 import { getActiveHash } from './utils';
-import { getAsPath } from '../../utils/router';
-import { groupByStatus } from '../../utils/bundle';
-import { getNodeCache } from '../../utils/cache';
-const TRANSITION_DURATION = 100;
-const DROP_REGION_HEIGHT = 40;
+import { isContentHash } from '../../utils/router';
+
+// import { getNodeCache } from '../../utils/cache';
+import {
+  combineBlockList,
+  isAppendingBlock,
+  isInternalBlock,
+} from '../../utils/content';
+
 const PARA_NUM_OFFSET = 56;
-const CONTENT_WIDTH = 720;
-const ELEMENT_DEFAULT_HEIGHT = 160;
+const CONTENT_WIDTH = 600; // 需要与 dz-Edit__main 同步修改
+const ELEMENT_DEFAULT_HEIGHT = 200;
+const DEFAULT_CHUNK_SIZE = 30;
+
+// debounce
+
+class RequestControl {
+  requesting = new Map();
+
+  batch(dispatch, ids) {
+    const [requesting, not_yet] = ids.reduce(
+      ([requesting, not_yet], id) =>
+        this.requesting.has(id)
+          ? [requesting.concat([this.requesting.get(id)]), not_yet]
+          : [requesting, not_yet.concat([id])],
+      [[], []],
+    );
+    if (not_yet.length) {
+      const promise = dispatch(asyncBatchParagraph({ ids: not_yet })).then(() =>
+        not_yet.forEach((id) => this.requesting.delete(id)),
+      );
+      not_yet.map((id) => this.requesting.set(id, promise));
+      requesting.push(promise);
+    }
+    return Promise.all(requesting);
+  }
+}
+
+const cacheControl = {
+  data: {},
+  timer: {},
+};
+const useMeasureCache = (nodeId) => {
+  if (!cacheControl.data[nodeId]) {
+    cacheControl.data[nodeId] = new CellMeasurerCache({
+      fixedWidth: true,
+      defaultHeight: ELEMENT_DEFAULT_HEIGHT,
+    });
+  }
+  useEffect(
+    () => {
+      clearTimeout(cacheControl.timer[nodeId]);
+      return () => {
+        cacheControl.timer[nodeId] = setTimeout(() => {
+          delete cacheControl.data[nodeId];
+        }, 300000); // 5 miniutes
+      };
+    },
+    [nodeId],
+  );
+  return cacheControl.data[nodeId];
+};
+
+// Dropzone feature
+// InfiniteLoader
 function NodeContent(props) {
+  const { formatMessage } = useIntl();
   const nodeState = useContext(NodeContext);
   const bundleState = useContext(BundleContext);
   const userCapabilities = useContext(UserCapabilitiesContext);
-  const ownerContext = useContext(OwnerContext);
-  const { uid } = ownerContext;
   const currentUser = useSelector(selectCurrentUser);
   const scrollContext = useContext(ScrollContext);
-  const currentUserDrafts = useSelector(selectUserDraftsState); // get current user's drafts, you are the current user
-  const userDrafts = useSelector((state) =>
-    selectUserRelatedDrafts(state, { userId: uid }),
-  ); // get other users's drafts, when you browsing other users' dimzou page
   const dispatch = useDispatch();
   const domRef = useRef(null);
-  // const nameIndexMap = useRef({});
   const [beginIndex, setBeginIndex] = useState(0);
-  const hasInitScrolled = useRef(false);
-  const router = useRouter();
-  const [scrollToIndex, setScrollToIndex] = useState(-1);
+  const measureCache = useMeasureCache(props.nodeId);
 
   const { mode } = bundleState;
-  const { data: node, appendings, outline } = nodeState;
-  const { content, node_paragraphs_count } = node;
+  const {
+    basic: nodeBasic,
+    contentList,
+    blocks,
+    appendings,
+    outline,
+  } = nodeState;
 
-  // loading提示
-  const [isLoading, setLoading] = useState(false);
-  const [scrollTime, setScrollTime] = useState(10);
-  const [scrollDirection, setDirection] = useState(0);
-  const [lastParagraphId, setParagraphId] = useState(-1);
-  const scrollDirectionRef = useRef(0);
+  const rControl = useRef(new RequestControl());
 
-  const [data, setData] = useState(
-    Array.from({ length: nodeState.data.node_paragraphs_count }).map(
-      // eslint-disable-next-line no-unused-vars
-      (_) => null,
-    ),
+  // 将插入段落以及内容列表组合在一起，形成完整的渲染列表
+  const blockList = useMemo(
+    () => combineBlockList(contentList, appendings, userCapabilities),
+    [contentList, appendings, userCapabilities],
   );
 
-  // check if on current user's dimzou page
-  const isCurrentDimZou = useMemo(() => uid === currentUser.uid, [uid]);
-
-  const drafts = useMemo(
+  const scrollToIndex = useMemo(
     () => {
-      const output = {};
-      // check if user on their Dimzou page and decide to use context
-      const { data: draftData, loaded, ids } = isCurrentDimZou
-        ? currentUserDrafts
-        : userDrafts;
-
-      const extraNodes = loaded.filter((item) => !ids[item.id]);
-      const flatNodes = draftData
-        ? draftData.reduce(
-          (els, bundle) =>
-            els.concat(bundle, bundle.all_copies ? bundle.all_copies : []),
-          [],
-        )
-        : [];
-      const bundleNodes = [...extraNodes, ...flatNodes];
-
-      const roleGrouped = groupBy(bundleNodes, (bundle) => {
-        const collaborators = get(bundle, 'nodes.0.collaborators');
-        if (collaborators) {
-          const info = collaborators.find(
-            (item) => item.user && item.user.uid === uid,
-          );
-          if (info && info.role === ROLE_OWNER) {
-            return 'created';
-          }
-          return 'participated';
-        }
-        if (bundle.user && bundle.user.uid === uid) {
-          return 'created';
-        }
-        return 'participated';
-      });
-      Object.keys(roleGrouped).forEach((key) => {
-        output[key] = groupByStatus(roleGrouped[key]);
-      });
-      if (roleGrouped.created && roleGrouped.created.length) {
-        output.hasCreated = true;
+      if (isContentHash(scrollContext.scrollHash)) {
+        const blockId = scrollContext.scrollHash.replace('#content-', '');
+        // eslint-disable-next-line eqeqeq
+        const index = blockList.findIndex((id) => id == blockId);
+        return index > -1 ? index : undefined;
       }
-      if (roleGrouped.participated && roleGrouped.participated.length) {
-        output.hasParticipated = true;
+      // 通过虚拟 #tailing 定位到内容底部
+      if (scrollContext.scrollHash === '#tailing') {
+        return blockList.length - 1;
       }
-      return output.created.draft;
+      return undefined;
     },
-    [uid],
+    [blockList, scrollContext.scrollHash],
   );
 
-  const [blockSections, nameIndexMap] = useMemo(
-    () => {
-      const sections = [];
-      const indexMap = {};
-      const tempData = [
-        ...Array.from({ length: nodeState.data.node_paragraphs_count - 2 }).map(
-          // eslint-disable-next-line no-unused-vars
-          (_) => null,
-        ),
-      ];
-      let counter = 0;
-      if (!content) {
-        return sections;
-      }
-      const blockCount = content.length;
-      const lastBlockId = blockCount
-        ? content[blockCount - 1].id
-        : BEGINNING_PIVOT;
-      content.forEach((block, index) => {
-        const appendingBlock = appendings[block.id];
-        sections.push({
-          component: RewordableSection,
-          props: {
-            key: block.id,
-            mode,
-            structure: 'content',
-            bundleId: node.bundle_id,
-            nodeId: node.id,
-            blockId: block.id,
-            info: block.info,
-            rewordings: block.rewordings,
-            status: block.status,
-            sort: block.sort,
-            isLastBlock: index + 1 === blockCount,
-            currentUser,
-            userCapabilities,
-            render: ContentBlockRender,
-            name: `content-${block.id}`,
-          },
-        });
-
-        tempData[block.sort - 1] = {
-          component: RewordableSection,
-          props: {
-            key: block.id,
-            mode,
-            structure: 'content',
-            bundleId: node.bundle_id,
-            nodeId: node.id,
-            blockId: block.id,
-            info: block.info,
-            rewordings: block.rewordings,
-            status: block.status,
-            sort: block.sort,
-            isLastBlock: index + 1 === blockCount,
-            currentUser,
-            userCapabilities,
-            render: ContentBlockRender,
-            name: `content-${block.id}`,
-          },
-        };
-
-        indexMap[`content-${block.id}`] = counter;
-        counter += 1;
-        if (appendingBlock) {
-          sections.push({
-            component: AppendingBlock,
-            props: {
-              bundleId: node.bundle_id,
-              nodeId: node.id,
-              pivotId: block.id,
-              userCapabilities,
-              key: `appending_${block.id}`,
-              placeholder: formatMessage(intlMessages.insertEditorPlaceholder),
-              currentUser,
-            },
-          });
-          counter += 1;
-          // tempData.push({
-          //   component: AppendingBlock,
-          //   props: {
-          //     bundleId: node.bundle_id,
-          //     nodeId: node.id,
-          //     pivotId: block.id,
-          //     userCapabilities,
-          //     key: `appending_${block.id}`,
-          //     placeholder: formatMessage(intlMessages.insertEditorPlaceholder),
-          //     currentUser,
-          //   },
-          // });
-        }
-      });
-      if (
-        userCapabilities.canEdit &&
-        userCapabilities.canAppendContent &&
-        Object.keys(appendings).length === 0
-      ) {
-        sections.push({
-          component: AppendingBlock,
-          props: {
-            bundleId: node.bundle_id,
-            nodeId: node.id,
-            pivotId: TAILING_PIVOT,
-            lastBlockId,
-            userCapabilities,
-            key: TAILING_PIVOT,
-            placeholder: formatMessage(intlMessages.tailingEditorPlaceholder),
-            currentUser,
-          },
-        });
-
-        if (content.length - node_paragraphs_count >= -2) {
-          tempData[content.length] = {
-            component: AppendingBlock,
-            props: {
-              bundleId: node.bundle_id,
-              nodeId: node.id,
-              pivotId: TAILING_PIVOT,
-              lastBlockId,
-              userCapabilities,
-              key: TAILING_PIVOT,
-              placeholder: formatMessage(intlMessages.tailingEditorPlaceholder),
-              currentUser,
-              sort: tempData.length + 1,
-            },
-          };
-        } else {
-          tempData.splice(-1, 1, {
-            component: AppendingBlock,
-            props: {
-              bundleId: node.bundle_id,
-              nodeId: node.id,
-              pivotId: TAILING_PIVOT,
-              lastBlockId,
-              userCapabilities,
-              key: TAILING_PIVOT,
-              placeholder: formatMessage(intlMessages.tailingEditorPlaceholder),
-              currentUser,
-              sort: tempData.length,
-            },
-          });
-        }
-      }
-      setData(tempData);
-      return [sections, indexMap];
-    },
-    [content, appendings, userCapabilities],
-  );
-
-  // detect if view needs to be scrolled to bottom
-  const handleScrollToBottom = () => {
-    const element = document.documentElement;
-    const { clientHeight, scrollHeight } = element;
-    element.scrollTop = scrollHeight - clientHeight;
-  };
-
-  useEffect(
-    () => {
-      if (scrollContext && scrollContext.scrollToBottom) {
-        const lastParagraph = document.querySelector(
-          `[name=content_${lastParagraphId}]`,
-        );
-        if (lastParagraph === null) {
-          handleScrollToBottom();
-        } else {
-          lastParagraph.scrollIntoView(true);
-          scrollContext.setScrollToBottom(false);
-        }
-      }
-    },
-    [document.documentElement.scrollHeight, lastParagraphId],
-  );
-
-  const getLastParagraphInfor = () => {
-    if (lastParagraphId === -1) {
-      const paragraph = content.filter((p) => p.sort === node_paragraphs_count);
-      if (paragraph.length && paragraph[0].id) {
-        setParagraphId(paragraph[0].id);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (scrollContext && scrollContext.scrollToBottom) {
-      getLastParagraphInfor();
-      handleScrollToBottom();
-    }
-  });
-
-  const updateHref = (bundle_id, node_id) => ({
-    href: {
-      pathname: '/dimzou-edit',
-      query: {
-        bundleId: bundle_id,
-        nodeId: node_id,
-      },
-    },
-    as: getAsPath({
-      query: {
-        bundleId: bundle_id,
-        nodeId: node_id,
-      },
-    }),
-  });
-
-  // direct to previous bundle
-  const toPreviousBundle = () => {
-    const bundleIndex = findIndex(
-      drafts,
-      (draft) => draft.id === bundleState.data.id,
-    );
-    // check if previous bundle exist
-    const hasPreviousBundle = drafts.length > 1 && bundleIndex > 0;
-    if (hasPreviousBundle) {
-      // get previous bundle infor
-      const previousBundleIndex = bundleIndex - 1;
-      const previousBundleId = drafts[previousBundleIndex].id;
-      const nodeLength = drafts[previousBundleIndex].nodes
-        ? drafts[previousBundleIndex].nodes.length
-        : 0;
-      const previousBundleNodeId = drafts[previousBundleIndex].nodes
-        ? drafts[previousBundleIndex].nodes[nodeLength - 1].id
-        : undefined;
-
-      // update href
-      const newHref = updateHref(previousBundleId, previousBundleNodeId);
-
-      // to previous Bundle
-      scrollContext.setScrollToBottom(true);
-      router.push(newHref.href, newHref.as);
-    }
-  };
-
-  // direct to next bundle
-  const toNextBundle = () => {
-    const bundleIndex = findIndex(
-      drafts,
-      (draft) => draft.id === bundleState.data.id,
-    );
-    // check if next bundle exist
-    const hasNextBundle = drafts.length > 1 && bundleIndex < drafts.length - 1;
-    if (hasNextBundle) {
-      // get next bundle infor
-      const nextBundleId = drafts[bundleIndex + 1].id;
-      const nextBundleNodeId = drafts[bundleIndex + 1].nodes
-        ? drafts[bundleIndex + 1].nodes[0].id
-        : undefined;
-
-      // update href
-      const newHref = updateHref(nextBundleId, nextBundleNodeId);
-
-      // to next Bundle
-      window.scrollTo(0, 0);
-      router.push(newHref.href, newHref.as);
-    }
-  };
-
-  const resetScrollTime = () => setScrollTime(10);
-
-  useEffect(
-    () => {
-      if (
-        scrollDirection < 0 &&
-        scrollDirection === scrollDirectionRef.current
-      ) {
-        // scrolled up
-        if (scrollTime === 0) {
-          resetScrollTime();
-          toPreviousBundle();
-        }
-      }
-      if (
-        scrollDirection > 0 &&
-        scrollDirection === scrollDirectionRef.current
-      ) {
-        // scroll down
-        if (scrollTime === 0) {
-          resetScrollTime();
-          toNextBundle();
-        }
-      }
-      scrollDirectionRef.current = scrollDirection;
-    },
-    [scrollTime, scrollDirection],
-  );
-
-  // function that works for the scroll listerner
-  const listernToScroll = (event) => {
-    if (scrollContext && scrollContext.scrollToBottom) {
-      scrollContext.setScrollToBottom(false);
-    }
-    const winScroll =
-      document.body.scrollTop || document.documentElement.scrollTop;
-    const height =
+  // 在渲染前强行将页面定位到底部
+  if (scrollContext.scrollHash === '#tailing') {
+    document.documentElement.scrollTop =
       document.documentElement.scrollHeight -
       document.documentElement.clientHeight;
-    const scrolled = winScroll / height;
-    if (scrolled === 0 && event.deltaY < 0) {
-      setDirection(event.deltaY);
-      setScrollTime((preScrollTime) => preScrollTime - 1);
-    } else if (scrolled > 0.999 && event.deltaY > 0) {
-      setDirection(event.deltaY);
-      setScrollTime((preScrollTime) => preScrollTime - 1);
-    } else {
-      resetScrollTime();
-    }
+  }
+
+  // blockLoaded
+  const isBlockLoaded = ({ index }) => {
+    const blockId = blockList[index];
+    return isInternalBlock(blockId) || blocks[blockId];
   };
 
-  useEffect(() => {
-    const mainContainer = document.querySelector(`[class*="__mainContainer"]`);
-    if (mainContainer !== null) {
-      mainContainer.addEventListener('wheel', listernToScroll);
+  // getBlockData
+  const getBlockKey = (index) => blockList[index];
+  const getBlockData = (index) => {
+    const key = blockList[index];
+    if (key === BEGINNING_PIVOT) {
+      return {
+        component: BlockTailingWidget,
+        props: {
+          disabled:
+            !!appendings[BEGINNING_PIVOT] || !userCapabilities.canAppendContent,
+          blockId: BEGINNING_PIVOT,
+          bundleId: nodeBasic.bundle_id,
+          nodeId: nodeBasic.id,
+          style: {
+            counterIncrement: 'para',
+          },
+        },
+      };
     }
-    return () => {
-      if (mainContainer !== null) {
-        mainContainer.removeEventListener('wheel', listernToScroll);
-      }
-      resetScrollTime();
+    if (!key) {
+      // loading...
+      return {
+        component: BlockSectionPlaceholder,
+        props: {
+          dataIndex: index,
+        },
+      };
+    }
+    // is appending;
+    if (key[0] === 'a') {
+      const [, pivotId] = key.split('.');
+      return {
+        component: AppendingBlock,
+        props: {
+          bundleId: nodeBasic.bundle_id,
+          nodeId: nodeBasic.id,
+          pivotId,
+          userCapabilities,
+          key,
+          placeholder:
+            key === `a.${TAILING_PIVOT}`
+              ? formatMessage(intlMessages.tailingEditorPlaceholder)
+              : formatMessage(intlMessages.insertEditorPlaceholder),
+          currentUser,
+        },
+      };
+    }
+    const block = blocks[key];
+    if (block) {
+      const name = `content-${block.id}`;
+      return {
+        component: RewordableSection,
+        props: {
+          key: block.id,
+          mode,
+          structure: 'content',
+          bundleId: nodeBasic.bundle_id,
+          nodeId: nodeBasic.id,
+          blockId: block.id,
+          info: block.info,
+          rewordings: block.rewordings,
+          status: block.status,
+          sort: block.sort,
+          isLastBlock: index + 1 === contentList.length,
+          currentUser,
+          userCapabilities,
+          render: ContentBlockRender,
+          name,
+          shouldHighlighted: scrollContext.scrollHash === `#${name}`,
+          hasAppendingBlock: appendings[key],
+        },
+      };
+    }
+    return {
+      component: BlockSectionPlaceholder,
+      props: {
+        dataIndex: index,
+      },
     };
-  }, []);
+  };
 
-  // react-virtualized related
-  const cacheRef = useRef(
-    new CellMeasurerCache({
-      fixedWidth: true,
-      defaultHeight: ELEMENT_DEFAULT_HEIGHT,
-    }),
-  );
+  // eslint-disable-next-line arrow-body-style
+  const tryToLoadBlocks = ({ startIndex, stopIndex }) => {
+    // console.log(startIndex, stopIndex);
+    const ids = blockList.filter(
+      (v, i) => i >= startIndex && i <= stopIndex && !isBlockLoaded(i),
+    );
+
+    return rControl.current.batch(dispatch, ids);
+  };
+
+  const handleRowsRendered = (info) => {
+    setBeginIndex(info.overscanStartIndex);
+    const activeSection = getActiveHash(outline, info);
+    if (activeSection !== scrollContext.activeSection) {
+      logging.debug(
+        'updateActiveSection tirgger by handleRowsRendered',
+        activeSection,
+      );
+      scrollContext.setActiveSection(activeSection);
+    }
+    // TO_ENHANCE: if hasInitScroll then restore.
+    // if (hasInitScrolled.current) {
+    //   console.log('update Cache');
+    //   const cache = getNodeCache(nodeBasic.id);
+    //   cache &&
+    //     cache.set('contentScroll', {
+    //       activeSection,
+    //       startIndex: info.startIndex,
+    //       blockId: blockList[info.startIndex],
+    //     });
+    // }
+  };
+
   // update width --- start
   // ------
   const [width, setWidth] = useState(CONTENT_WIDTH);
@@ -490,480 +300,139 @@ function NodeContent(props) {
     };
   }, []);
   // update width -- end
-  // image upload feature -- start
-  // ------
-  const [dropPivotIndex, setDropPivotIndex] = useState(null);
-  const [inDropzone, setInDropZone] = useState(false);
-  const pointerY = useRef(null);
-  const getTop = useCallback(
-    () => {
-      const offset = dropPivotIndex - beginIndex;
-      if (offset === -1) {
-        return 0;
-      }
-      const block = domRef.current.querySelectorAll('.dz-BlockSectionWrap')[
-        offset
-      ];
-      if (!block) {
-        return 0;
-      }
-      return block.offsetTop + block.clientHeight;
-    },
-    [dropPivotIndex, beginIndex],
-  );
-  useEffect(
-    () => {
-      const dom = domRef.current;
-      const handleDropOver = (e) => {
-        if (!inDropzone) {
-          return;
-        }
-        const isInRewordingDropzone = !!e.target.closest(
-          '.dz-RewordingDropzone',
-        );
-        if (isInRewordingDropzone) {
-          if (inDropzone) {
-            setInDropZone(false);
-          }
-          return;
-        }
-        e.preventDefault();
-        e.stopPropagation();
-        // if (e.dataTransfer.files && e.dataTransfer.files.length) {
-        //   setInDropZone(true)
-        // }
-        const { clientY } = e;
-        if (clientY !== pointerY.current) {
-          pointerY.current = clientY;
-          const blocks = domRef.current.querySelectorAll('.dz-BlockSection');
-          let blockIndex;
-          for (let i = 0; i < blocks.length; i += 1) {
-            const block = blocks[i];
-            if (!block) {
-              continue;
-            }
-            const box = block.getBoundingClientRect();
-            const { top, height } = box;
-            // logging.debug(top, height, clientY)
-            if (top + height / 2 > clientY) {
-              blockIndex = i - 1;
-              break;
-            }
-            if (top + height > clientY) {
-              blockIndex = i;
-              break;
-            }
-          }
-          // logging.debug(blockIndex);
-          if (blockIndex !== undefined) {
-            setDropPivotIndex(beginIndex + blockIndex);
-          }
-        }
-      };
-      const handleDragEnter = (e) => {
-        const { dataTransfer } = e;
-        logging.debug('enter');
-        e.stopPropagation();
-        e.preventDefault();
-        if (dataTransfer.types && dataTransfer.types[0] === 'Files') {
-          logging.debug('active');
-          setInDropZone(true);
-          // setFileDropActive(true)
-        }
-      };
-      const handleDragLeave = (e) => {
-        logging.debug('leave');
-        if (!inDropzone) {
-          return;
-        }
-        e.stopPropagation();
-        e.preventDefault();
-        // logging.debug(e.target, e.relatedTarget)
-        if (
-          e.target.contains(e.relatedTarget) ||
-          dom.contains(e.relatedTarget)
-        ) {
-          return;
-        }
-        setInDropZone(false);
-      };
-      const handleDragEnd = (e) => {
-        logging.debug('end');
-        if (!inDropzone) {
-          return;
-        }
-        e.stopPropagation();
-        e.preventDefault();
-        // setFileDropActive(false)
-      };
-      const handleDrop = (e) => {
-        logging.debug('drop');
-        if (!inDropzone) {
-          return;
-        }
-        e.preventDefault();
-        e.stopPropagation();
-        const file = e.dataTransfer.files[0];
-        if (/^image\/.*/.test(file.type)) {
-          const creator = userCapabilities.canElect
-            ? commitMediaBlock
-            : submitMediaBlock;
-          // create media block;
-          if (!blockSections) {
-            return;
-          }
-          dispatch(
-            creator({
-              bundleId: node.bundle_id,
-              nodeId: node.id,
-              pivotId:
-                dropPivotIndex === -1
-                  ? BEGINNING_PIVOT
-                  : blockSections[dropPivotIndex].props.blockId,
-              file,
-            }),
-          );
-        } else {
-          message.error(formatMessage(intlMessages.fileTypeNotSupported));
-          logging.warn(`DIMZOU_UPLOAD_TYPE_RECEIVED: ${file.type}`);
-        }
-        setInDropZone(false);
-      };
-      dom.addEventListener('dragenter', handleDragEnter);
-      dom.addEventListener('dragend', handleDragEnd);
-      dom.addEventListener('dragover', handleDropOver);
-      dom.addEventListener('dragleave', handleDragLeave);
-      dom.addEventListener('drop', handleDrop);
-      // window.addEventListener('drop', (e) => {
-      //   e.preventDefault()
-      // })
-      // window.addEventListener('dragover', (e) => {
-      //   e.preventDefault()
-      // })
-      return () => {
-        dom.removeEventListener('dragenter', handleDragEnter);
-        dom.removeEventListener('dragend', handleDragEnd);
-        dom.removeEventListener('dragover', handleDropOver);
-        dom.removeEventListener('dragleave', handleDragLeave);
-        dom.removeEventListener('drop', handleDrop);
-      };
-    },
-    [beginIndex, inDropzone, blockSections, dropPivotIndex],
-  );
-  // const [hash, setHash] = useState(workspace.hash);
-  const renderInfoRef = useRef(null);
-  function scrollToHash(hash, renderInfo) {
-    const index = nameIndexMap[hash.replace('#', '')];
-    if (index === undefined || !renderInfo) {
-      return;
-    }
-    scrollContext.onScrollStarted();
-    // if (
-    //   renderInfo.overscanStartIndex <= index &&
-    //   renderInfo.overscanStopIndex >= index
-    // ) {
-    //   const dom = document.querySelector(hash);
-    //   if (dom) {
-    //     dom.scrollIntoView(true);
-    //     setTimeout(() => {
-    //       scrollContext.onScrollFinished();
-    //     }, 500);
-    //     // window.scrollTo(0, window.scrollY - 120);
-    //   } else {
-    //     scrollContext.onScrollFinished();
-    //   }
-    // } else {
-    //   const delta = index - renderInfo.startIndex;
-    //   const deltaY = delta * ELEMENT_DEFAULT_HEIGHT;
-    //   window.scrollTo(0, window.scrollY + deltaY);
-    // }
-  }
-  // 清理 location.hash
-  useEffect(() => {
-    const removeHash = () => {
-      if (window.location.hash) {
-        Router.replace(
-          {
-            pathname: Router.pathname,
-            query: Router.query,
-          },
-          window.location.pathname,
-        );
-      }
-    };
-    window.addEventListener('mousewheel', removeHash);
-    return () => {
-      window.removeEventListener('mousewheel', removeHash);
-    };
+
+  const shouldHandle = useCallback((e) => {
+    const isInRewordingDropzone = !!e.target.closest('.dz-RewordingDropzone');
+    return !isInRewordingDropzone;
   }, []);
-  const handleRowsRendered = (info) => {
-    setBeginIndex(info.overscanStartIndex);
-    renderInfoRef.current = info;
-    // logging.debug('handleRowsRendered', scrollContext, info);
-    if (
-      scrollContext.scrollHash &&
-      /^#content-/.test(scrollContext.scrollHash)
-    ) {
-      scrollToHash(scrollContext.scrollHash, info);
-    } else {
-      // scrollContext.updateRenderInfo(info);
-      const activeHash = getActiveHash(outline, info);
-      scrollContext.setActiveHash(activeHash);
-      if (hasInitScrolled.current) {
-        const cache = getNodeCache(node.id);
-        cache &&
-          cache.set('contentScroll', {
-            activeHash,
-            startIndex: info.startIndex,
-            blockId:
-              blockSections[info.startIndex].props.blockId ||
-              blockSections[info.startIndex].props.pivotId,
-          });
-      }
-    }
-    if (
-      scrollContext &&
-      scrollContext.scrollToBottom &&
-      info.stopIndex === node_paragraphs_count
-    ) {
-      scrollContext.setScrollToBottom(false);
-    }
-  };
-  // 当切换其他章节时，这个方法可以确保页面不会跳动，但是在上下滚动时会出现跳动。需要检测滚动方向，确定优先渲染当组件
-  if (!props.isActive) {
-    const height = domRef.current ? domRef.current.clientHeight : '100%';
-    const style = { height };
-    return (
-      <div
-        className="dz-BlockSectionContainer dz-BlockSectionContainer_placeholder"
-        style={style}
-        ref={domRef}
-      />
-    );
-  }
 
-  useEffect(
-    () => {
-      scrollContext.sort && setScrollToIndex(scrollContext.sort);
-      scrollContext.setActiveHash(scrollContext.scrollHash);
-      scrollContext.setSort(undefined);
-      const index = nameIndexMap[scrollContext.scrollHash.replace('#', '')];
-      if (!index && scrollContext.paragraphId) {
-        dispatch(
-          asyncUpdateNodeInfo({
-            nodeId: node.id,
-            paragraphId: scrollContext.paragraphId,
-          }),
-        ).then(() => {
-          scrollToParagraph(scrollContext.scrollHash);
-        });
-        dispatch(
-          asyncUpdateNodeInfo({
-            nodeId: node.id,
-            paragraphId: scrollContext.paragraphId,
-            forward: 1,
-          }),
-        );
+  const handleDrop = useCallback(
+    ({ pivotIndex, file }) => {
+      const creator = userCapabilities.canElect
+        ? commitMediaBlock
+        : submitMediaBlock;
+      const dropPivotIndex = beginIndex + pivotIndex;
+      const pivotId =
+        dropPivotIndex === -1 ? BEGINNING_PIVOT : blockList[dropPivotIndex];
+      if (!pivotId) {
+        return;
       }
+      dispatch(
+        creator({
+          bundleId: nodeBasic.bundle_id,
+          nodeId: nodeBasic.id,
+          pivotId,
+          file,
+        }),
+      );
     },
-    [scrollContext.sort],
+    [blockList, beginIndex, nodeBasic],
   );
 
-  const scrollToParagraph = (hash) => {
-    setTimeout(() => {
-      // const dom = document.querySelector(hash);
-      const dom = document.getElementById(hash.replace('#', ''));
-      if (dom) {
-        dom.scrollIntoView(true);
-        setTimeout(() => {
-          scrollContext.onScrollFinished();
-        }, 500);
-        // window.scrollTo(0, window.scrollY - 120);
-      } else {
-        scrollContext.onScrollFinished();
-      }
-    }, 1000);
-  };
-
-  const clearScrollToIndex = () => {
-    setScrollToIndex(-1);
-  };
-
-  // 判断是否加载更多数据
-  const isRowLoaded = ({ index }) => !!data[index];
-
-  // eslint-disable-next-line arrow-body-style
-  const loadMoreRows = ({ startIndex, stopIndex }) => {
-    // 加载更多数据
-    const tempStartNode = content.find((item) => item.sort === startIndex);
-    const tempStopNode = content.find((item) => item.sort === stopIndex + 3);
-    if (tempStartNode) {
-      setLoading(true);
-      return dispatch(
-        asyncUpdateNodeInfo({
-          nodeId: node.id,
-          paragraphId: tempStartNode.id,
-        }),
-      ).then(() => {
-        setLoading(false);
-      });
-    }
-    if (tempStopNode) {
-      setLoading(true);
-      return dispatch(
-        asyncUpdateNodeInfo({
-          nodeId: node.id,
-          paragraphId: tempStopNode.id,
-          forward: 1,
-        }),
-      ).then(() => {
-        setLoading(false);
-      });
-    }
-    return Promise.resolve();
-  };
-  // eslint-disable-next-line arrow-body-style
-  const loadNextRows = isLoading ? () => Promise.resolve() : loadMoreRows;
-  const toIndex = scrollToIndex;
-  const nodeLength = blockSections ? blockSections.length : 0;
   return (
     <InfiniteLoader
-      isRowLoaded={isRowLoaded}
-      loadMoreRows={loadNextRows}
-      rowCount={
-        node_paragraphs_count - 2 > nodeLength
-          ? node_paragraphs_count - 2
-          : nodeLength
-      }
-      threshold={20}
+      isRowLoaded={isBlockLoaded}
+      loadMoreRows={tryToLoadBlocks}
+      rowCount={blockList.length}
+      threshold={DEFAULT_CHUNK_SIZE}
     >
       {({ onRowsRendered, registerChild }) => (
-        <WindowScroller key={node.id} onScroll={clearScrollToIndex}>
+        <WindowScroller key={nodeBasic.id}>
           {({ height, isScrolling, onChildScroll, scrollTop }) => (
-            <div
-              ref={(el) => {
-                domRef.current = el;
-                // registerChild(el);
-              }}
-              className={classNames(
-                'dz-BlockSectionContainer',
-                props.className,
-              )}
-              style={{ left: -1 * PARA_NUM_OFFSET, position: 'relative' }}
-            >
-              <List
-                autoHeight
-                height={height}
-                ref={registerChild}
-                isScrolling={isScrolling}
-                onScroll={onChildScroll}
-                rowCount={
-                  node_paragraphs_count - 2 > nodeLength
-                    ? node_paragraphs_count - 2
-                    : nodeLength
+            <ContentDropzone
+              itemSelector=".dz-BlockSectionWrap"
+              shouldHandle={shouldHandle}
+              isValidPivot={(index) => {
+                const blockIndex = beginIndex + index;
+                if (blockIndex === -1) {
+                  return false;
                 }
-                rowHeight={cacheRef.current.rowHeight}
-                scrollTop={scrollTop}
-                deferredMeasurementCache={cacheRef.current}
-                scrollToIndex={toIndex}
-                width={width + PARA_NUM_OFFSET}
-                onRowsRendered={(info) => {
-                  handleRowsRendered(info);
-                  onRowsRendered(info);
-                }}
-                // tabIndex={-1}
-                // overscanRowCount={8}
-                style={{ counterReset: `para ${Math.max(beginIndex)}` }}
-                rowRenderer={({ index, key, parent, style }) => {
-                  let blockStyle;
-                  if (inDropzone) {
-                    if (
-                      dropPivotIndex !== undefined &&
-                      index > dropPivotIndex
-                    ) {
-                      blockStyle = {
+                const key = blockList[blockIndex];
+                return !isAppendingBlock(key);
+              }}
+              onDrop={handleDrop}
+              fileTypeNotSupportedHint={formatMessage(
+                intlMessages.fileTypeNotSupported,
+              )}
+            >
+              {({ domRef: zoomRef, active, getOffsetStyle, hintOffset }) => (
+                <div
+                  ref={composeRefs(domRef, zoomRef)}
+                  className={classNames(
+                    'dz-BlockSectionContainer',
+                    props.className,
+                  )}
+                  style={{
+                    left: -1 * PARA_NUM_OFFSET,
+                    position: 'relative',
+                  }}
+                >
+                  <List
+                    autoHeight
+                    height={height}
+                    ref={registerChild}
+                    isScrolling={isScrolling}
+                    onScroll={onChildScroll}
+                    rowCount={blockList.length}
+                    rowHeight={measureCache.rowHeight}
+                    scrollTop={scrollTop}
+                    deferredMeasurementCache={measureCache}
+                    scrollToIndex={scrollToIndex}
+                    width={width + PARA_NUM_OFFSET}
+                    onRowsRendered={(info) => {
+                      handleRowsRendered(info);
+                      onRowsRendered(info);
+                    }}
+                    tabIndex={-1}
+                    // overscanRowCount={8}
+                    style={{
+                      counterReset: `para ${beginIndex - 1}`,
+                    }}
+                    rowRenderer={({ index, key, parent, style }) => {
+                      const dropzoneStyle = getOffsetStyle(index - beginIndex);
+                      const blockStyle = {
                         ...style,
-                        transition: `transform ${TRANSITION_DURATION}ms ease`,
-                        transform: `translate3d(0px, ${DROP_REGION_HEIGHT}px, 0px)`,
+                        ...dropzoneStyle,
                         paddingLeft: PARA_NUM_OFFSET,
                       };
-                    } else {
-                      blockStyle = {
-                        ...style,
-                        transition: `transform ${TRANSITION_DURATION}ms ease`,
-                        paddingLeft: PARA_NUM_OFFSET,
-                      };
-                    }
-                  } else {
-                    blockStyle = {
-                      ...style,
-                      paddingLeft: PARA_NUM_OFFSET,
-                    };
-                  }
-
-                  // const blockSection = blockSections && blockSections[index];
-                  const blockSection = data && data[index];
-
-                  if (blockSection) {
-                    const {
-                      component: Compo,
-                      props: compoProps,
-                    } = blockSection;
-                    return (
-                      <CellMeasurer
-                        key={key}
-                        cache={cacheRef.current}
-                        parent={parent}
-                        columnIndex={0}
-                        rowIndex={index}
-                      >
-                        {(cellMeasure) => (
-                          <MeasureProvider {...cellMeasure}>
-                            <div
+                      const blockKey = getBlockKey(index);
+                      const blockSection = getBlockData(index, isScrolling);
+                      const {
+                        component: Compo,
+                        props: compoProps,
+                      } = blockSection;
+                      return (
+                        <CellMeasurer
+                          key={key}
+                          cache={measureCache}
+                          parent={parent}
+                          columnIndex={0}
+                          rowIndex={index}
+                        >
+                          {(cellMeasure) => (
+                            <MeasureObserver
+                              customKey={blockKey}
+                              {...cellMeasure}
                               className="dz-BlockSectionWrap"
                               style={blockStyle}
                             >
                               <Compo {...compoProps} />
-                            </div>
-                          </MeasureProvider>
-                        )}
-                      </CellMeasurer>
-                    );
-                  }
-
-                  return (
-                    <CellMeasurer
-                      cache={cacheRef.current}
-                      columnIndex={0}
-                      key={key}
-                      parent={parent}
-                      rowIndex={index}
-                    >
-                      {(cellMeasure) => (
-                        <MeasureProvider {...cellMeasure}>
-                          <div
-                            className="dz-BlockSectionWrap"
-                            style={blockStyle}
-                          >
-                            <div className="dz-BlockSectionLoading">
-                              {formatMessage(commonMessages.loading)}
-                            </div>
-                          </div>
-                        </MeasureProvider>
-                      )}
-                    </CellMeasurer>
-                  );
-                }}
-              />
-              {inDropzone && (
-                <DropHint left={PARA_NUM_OFFSET} top={getTop()} height={2} />
-              )}
-              {isLoading && (
-                <div className="dz-BlockSectionLoading">
-                  {formatMessage(commonMessages.loading)}
+                            </MeasureObserver>
+                          )}
+                        </CellMeasurer>
+                      );
+                    }}
+                  />
+                  {active && (
+                    <DropHint
+                      left={PARA_NUM_OFFSET}
+                      top={hintOffset + 8}
+                      height={2}
+                    />
+                  )}
                 </div>
               )}
-            </div>
+            </ContentDropzone>
           )}
         </WindowScroller>
       )}

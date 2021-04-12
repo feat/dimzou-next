@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic';
 
 import SiteLayout, { Content } from '@feat/feat-ui/lib/layout';
 import Layout from '@/components/Layout';
@@ -10,16 +10,15 @@ import Footer from '@/containers/Footer';
 import commonMessages from '@/messages/common';
 
 import SvgIcon from '@feat/feat-ui/lib/svg-icon';
-import '../style.scss'
+import '../style.scss';
 
 const DynamicForm = dynamic(
   () => import('@/routes/Auth/RegisterPage/PhoneRegisterForm'),
-  { ssr: false }
-)
+  { ssr: false },
+);
 
 // eslint-disable-next-line
 class LoginPage extends Component {
-
   renderMain() {
     return (
       <div className="p-AuthTemplate">
@@ -57,7 +56,7 @@ class LoginPage extends Component {
           </Layout>
         </Content>
       </SiteLayout>
-    )
+    );
   }
 }
 

@@ -1,38 +1,51 @@
 import React from 'react';
 import { Provider } from 'react-redux';
+import { compose } from 'redux';
 import App from 'next/app';
-import getConfig from 'next/config';
+
 import withRedux from 'next-redux-wrapper';
 
 import '@/styles/main.scss';
-// import HTML5Backend from 'react-dnd-html5-backend'
-// import { DndProvider } from 'react-dnd'
+
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+
 import { normalize } from 'normalizr';
-import { addLocaleData } from 'react-intl';
 import NProgress from 'nprogress';
 import Router from 'next/router';
 
 import get from 'lodash/get';
 
 import { user as userSchema, category as categorySchema } from '@/schema';
-
 import { configureStore } from '@/store';
+
+import message from '@feat/feat-ui/lib/message';
 import LanguageProvider from '@/modules/language/containers/LanguageProvider';
-import { withDragDropContext } from '@/services/dnd';
 import DeviceInfoProvider from '@/modules/device-info';
 
-import InitProvider from '@/containers/InitProvider';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import AppDndService from '@/services/dnd/AppDndService';
+
+import LanguageServiceProvider from '@/modules/language/providers/LanguageServiceProvider';
+import LikeServiceProvider from '@/modules/like/providers/LikeServiceProvider';
+import CommentServiceProvider from '@/modules/comment/providers/CommentServiceProvider';
+
+import CurrentUserProvider from '@/modules/auth/providers/CurrentUserProvider';
 
 import { fetchUserCategories } from '@/modules/category/actions';
 
 import { setCurrentUser } from '@/modules/auth/actions';
 import { hasAuthedUser } from '@/modules/auth/selectors';
 import { setLocale, fetchTranslations } from '@/modules/language/actions';
-import SubscriptionProvider from '@/modules/subscription/SubscriptionProvider';
 
-import { setLanguageLocale } from '@/utils/request';
+import request from '@/utils/request';
+import withApiClient from '../next/withApiClient';
 
 import '@/services/logging';
+
+message.config({
+  top: 70,
+});
 
 NProgress.configure({ showSpinner: false });
 
@@ -43,9 +56,18 @@ Router.events.on('routeChangeStart', (url) => {
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
-const makeStore = (initialState, { req }) => {
-  const store = configureStore(initialState);
-  // server initialize
+const makeStore = (initialState, { req, api }) => {
+  let store;
+  if (typeof window === 'object') {
+    store = configureStore(initialState, {
+      request,
+    });
+  } else {
+    store = configureStore(initialState, {
+      request: api,
+    });
+  }
+
   if (req) {
     if (req.user) {
       const normalized = normalize(req.user, userSchema);
@@ -88,68 +110,71 @@ const makeStore = (initialState, { req }) => {
     );
   }
 
-  // initialize language locale
+  // initialize language locale for ssr
   const locale = get(store.getState(), 'language.locale');
   if (locale) {
-    setLanguageLocale(locale);
+    request.defaults.headers.common['X-Language-Locale'] = locale;
   }
 
   return store;
 };
 
-// Add Locale Data
-if (typeof window !== 'undefined' && window.ReactIntlLocaleData) {
-  Object.keys(window.ReactIntlLocaleData).forEach((lang) => {
-    addLocaleData(window.ReactIntlLocaleData[lang]);
-  });
+// 根据配置一层一层渲染 Provider
+function makeServiceWrapper(services = []) {
+  function Wrapper(props) {
+    return [...services].reverse().reduce((children, service) => {
+      if (Array.isArray(service)) {
+        return React.createElement(service[0], service[1], children);
+      }
+      return React.createElement(service, undefined, children);
+    }, props.children);
+  }
+  return Wrapper;
 }
+class MyApp extends React.Component {
+  constructor(props) {
+    super(props);
+    logging.debug('app construct');
+    this.services = [
+      DeviceInfoProvider,
+      AppDndService,
+      LanguageServiceProvider,
+      CurrentUserProvider,
+      LikeServiceProvider,
+      CommentServiceProvider,
+      LanguageProvider,
+    ];
 
-const { publicRuntimeConfig } = getConfig();
+    this.Wrapper = makeServiceWrapper(this.services);
+  }
 
-// initialize sentry
-if (typeof window === 'object' && publicRuntimeConfig.sentryDsn) {
-  import('@sentry/browser').then((Sentry) => {
-    Sentry.init({
-      dsn: publicRuntimeConfig.sentryDsn,
-      release: process.env.RELEASE_TAG,
-    });
-    window.addEventListener('error', (evt) => {
-      Sentry.captureException(evt.error);
-    });
-  });
-}
-
-class MyApp extends App {
-  static async getInitialProps({ Component, ctx }) {
-    let pageProps = {};
-    if (Component.getInitialProps) {
-      pageProps = await Component.getInitialProps(ctx);
-    }
-
-    return { pageProps };
+  static async getInitialProps(appContext) {
+    const appProps = await App.getInitialProps(appContext);
+    const hasAuthed = hasAuthedUser(appContext.ctx.store.getState());
+    return {
+      ...appProps,
+      hasAuthed,
+    };
   }
 
   render() {
     const { Component, pageProps, store } = this.props;
-    const state = store.getState();
-    const locale = get(state, 'language.locale');
-    const authed = hasAuthedUser(state);
+    const { Wrapper } = this;
     return (
       <Provider store={store}>
-        <InitProvider locale={locale}>
-          <DeviceInfoProvider>
-            <LanguageProvider>
-              <SubscriptionProvider hasAuthedUser={authed}>
-                  <>
-                    <Component {...pageProps} />
-                  </>
-              </SubscriptionProvider>
-            </LanguageProvider>
-          </DeviceInfoProvider>
-        </InitProvider>
+        <ErrorBoundary>
+          <DndProvider backend={HTML5Backend}>
+            <Wrapper>
+              <Component {...pageProps} />
+            </Wrapper>
+          </DndProvider>
+        </ErrorBoundary>
       </Provider>
     );
   }
 }
 
-export default withDragDropContext(withRedux(makeStore)(MyApp));
+export default compose(
+  withApiClient,
+  withRedux(makeStore),
+)(MyApp);

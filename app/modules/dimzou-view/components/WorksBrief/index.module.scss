@@ -1,0 +1,91 @@
+
+@import 'base.scss';
+
+@include block(ViewWorkBrief) {
+    padding-top: 24px;
+    padding-bottom: 36px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-top: 4px solid $gray-10;
+  
+    @include element(header) {
+      display: flex;
+    }
+    @include element(content) {
+      flex-basis: 55%;
+    }
+    @include element(title) {
+      // font-size: px-to-rem(48);
+      padding-right: px-to-rem(12);
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; //限制行数
+      -webkit-box-orient: vertical;
+      text-overflow: ellipsis;
+      font-size: 20px;
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+    @include element(summary) {
+      padding-right: px-to-rem(12);
+      position: relative;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3; //限制行数
+      -webkit-box-orient: vertical;
+      text-overflow: ellipsis;
+    }
+    @include element(coverWrap) {
+      flex-basis: 45%;
+    }
+    @include element(cover) {
+      background-size: cover;
+      padding-top: percentage(9 / 16);
+    }
+    @include element(readMore) {
+      color: #c1272d;
+      font-family: $serif-title-font;
+      cursor: pointer;
+      text-align: right;
+      padding-right: px-to-rem(12);
+    }
+  
+    @include element(pointer) {
+      cursor: pointer;
+    }
+
+    @include element(footer) {
+      padding-top: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  
+
+    :global {
+        @include block(ns(Article, typo)) {
+            margin-top: px-to-rem(12);
+            @include element(info) {
+              display: flex;
+              align-items: flex-end;
+              justify-content: space-between;
+            }
+            @include element(avatar) {
+              margin: 0;
+              width: 35%;
+            }
+            @include element(meta) {
+              margin: 0;
+              flex-basis: 45%;
+              display: flex;
+            }
+            @include element(summary) {
+              margin-bottom: 0;
+              p {
+                margin-bottom: px-to-rem(6);
+              }
+            }
+          }
+    }
+  }
+  

@@ -4,7 +4,6 @@ import {
   updateRewordingEditor,
   openCommentPanel,
   closeCommentPanel,
-
   submitRewording,
   updateRewording,
   commitRewording,

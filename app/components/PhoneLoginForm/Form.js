@@ -10,8 +10,8 @@ import classNames from 'classnames';
 
 import { FormattedMessage } from 'react-intl';
 import { Field, Formik } from 'formik';
-import Link from 'next/link'
-import { withRouter } from 'next/router'
+import Link from 'next/link';
+import { withRouter } from 'next/router';
 
 import { formatMessage } from '@/services/intl';
 import formMessages from '@/messages/form';
@@ -63,7 +63,7 @@ const MAX_TRIES_COUNT = 3;
 class LoginForm extends Component {
   componentWillUnmount() {
     if (this.formProps && this.formProps.values && this.props.onUnmount) {
-      this.props.onUnmount(this.formProps.values)
+      this.props.onUnmount(this.formProps.values);
     }
   }
 
@@ -99,7 +99,7 @@ class LoginForm extends Component {
             this.props.router.push({
               pathname: '/auth/account-recovery',
               query: this.props.router.query,
-            })
+            });
             return null;
           }
 
@@ -142,12 +142,12 @@ class LoginForm extends Component {
                       values.calling_code &&
                       !values.country &&
                       errors.country ? (
-                          errors.country
-                        ) : (
-                          <FormattedMessage
-                            {...intlMessages.registerCountryPlaceholder}
-                          />
-                        )
+                        errors.country
+                      ) : (
+                        <FormattedMessage
+                          {...intlMessages.registerCountryPlaceholder}
+                        />
+                      )
                     }
                   />
                 )}
@@ -231,9 +231,7 @@ class LoginForm extends Component {
                   }}
                 >
                   <a className="LoginForm__forget">
-                    <FormattedMessage
-                      {...intlMessages.forgetPasswordLabel}
-                    />
+                    <FormattedMessage {...intlMessages.forgetPasswordLabel} />
                   </a>
                 </Link>
               </div>

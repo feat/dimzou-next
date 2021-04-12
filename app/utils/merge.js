@@ -3,10 +3,8 @@ import deepmerge from 'deepmerge';
 
 const merge = (origin, received) =>
   deepmerge(origin, received, {
-    arrayMerge: (_, source) =>
-      source
-      // return uniq([...destination, ...source]);
-    ,
+    arrayMerge: (_, source) => source,
+    // return uniq([...destination, ...source]);
   });
 
 export default merge;

@@ -1,24 +1,48 @@
 import get from 'lodash/get';
 import { createSelector } from 'reselect';
+
 import { denormalize } from 'normalizr';
-import { dimzouBundle as dimzouBundleSchema, dimzouPublication as publicationSchema } from '@/schema';
+import { dimzouPublication as publicationSchema } from '@/schema';
 import { selectEntities } from '@/modules/entity/selectors';
 import { selectCategories } from '@/modules/category/selectors';
-import { REDUCER_KEY, initialListState, initialDimzouViewState } from './reducer';
+import { REDUCER_KEY, initialMetaState, initialContentState } from './config';
 
-export const selectUserListState = (state, props) => get(state, [REDUCER_KEY, 'users', props.userId], initialListState);
-export const makeSelectUserListState = () => createSelector(
-  selectUserListState,
+export const selectPublicationMetaState = (state, props) =>
+  get(state, [REDUCER_KEY, 'meta', props.bundleId], initialMetaState);
+
+export const selectContentState = createSelector(
+  (state, props) =>
+    get(state, [REDUCER_KEY, 'content', props.nodeId], initialContentState),
   selectEntities,
-  (listState, entities) => {
-    if (listState.list) {
-      return denormalize(listState, { list: [dimzouBundleSchema]}, entities)
+  (blockState, entities) => {
+    const publicationId = blockState?.data?.publication;
+    if (!publicationId) {
+      return blockState;
     }
-    return listState;
-  }
-)
+    const mapped = {
+      ...blockState,
+      data: { ...blockState.data },
+    };
+    mapped.data.publication = denormalize(
+      publicationId,
+      publicationSchema,
+      entities,
+    );
 
-export const selectDimzouViewState = (state, props) => get(state, [REDUCER_KEY, 'bundles', props.bundleId], initialDimzouViewState);
+    if (mapped.data.publication.category) {
+      let { category } = mapped.data.publication;
+      const categoryMap = selectCategories({ entities });
+      const categories = [];
+      while (category) {
+        categories.push(category);
+        category = categoryMap[category.parent_id];
+      }
+      mapped.data.categories = categories.reverse();
+    }
+
+    return mapped;
+  },
+);
 
 export const makeSelectPublicationCategories = (publicationSelector) =>
   createSelector(
@@ -37,17 +61,3 @@ export const makeSelectPublicationCategories = (publicationSelector) =>
       return categories.reverse();
     },
   );
-
-const selectPublicationId = (_, props) => props.publicationId;
-
-export const selectPublication = createSelector(
-  selectPublicationId,
-  selectEntities,
-  (id, entityMap) => denormalize(id, publicationSchema, entityMap),
-);
-  
-export const mapSelectPublication = () =>
-  createSelector(selectPublicationId, selectEntities, (id, entityMap) =>
-    denormalize(id, publicationSchema, entityMap),
-  );
-  

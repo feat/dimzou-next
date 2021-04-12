@@ -1,19 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import update from 'immutability-helper';
 import Dropzone from 'react-dropzone';
+import { useIntl } from 'react-intl';
+
 import readFileAsURL from '@/utils/readFileAsURL';
-
 import LazyImage from '@feat/feat-ui/lib/lazy-image';
-import {
-  EditorState,
-  Modifier,
-} from '@feat/draft-js';
+import { EditorState, Modifier } from '@feat/draft-js';
 
-import { formatMessage } from '@/services/intl';
-
-import { selectCurrentUser } from '@/modules/auth/selectors'
+import { selectCurrentUser } from '@/modules/auth/selectors';
 import DimzouEditor, {
   createFromRawData,
   createFromHTML,
@@ -21,9 +17,7 @@ import DimzouEditor, {
   getHTML,
 } from '../DimzouEditor';
 
-import {
-  createPlaceholders,
-} from '../../messages';
+import { createPlaceholders } from '../../messages';
 
 const initTitleRaw = {
   blocks: [{ type: 'header-one', text: '' }],
@@ -34,7 +28,7 @@ const preparePreview = (file) => {
   if (file.preview) {
     return Promise.resolve();
   }
-  
+
   return readFileAsURL(file).then((url) => {
     // eslint-disable-next-line
       file.preview = url;
@@ -42,29 +36,41 @@ const preparePreview = (file) => {
 };
 
 function SectionReleaseCard(props) {
+  const { formatMessage } = useIntl();
   const currentUser = useSelector(selectCurrentUser);
   const titleEditorRef = useRef(null);
   const summaryEditorRef = useRef(null);
   const [state, setState] = useState({
-    titleEditorState: props.initialValues.title ? createFromHTML(props.initialValues.title) : createFromRawData(initTitleRaw),
-    summaryEditorState: props.initialValues.summary ? createFromHTML(props.initialValues.summary) : createEmptyWithFocus(),
+    titleEditorState: props.initialValues.title
+      ? createFromHTML(props.initialValues.title)
+      : createFromRawData(initTitleRaw),
+    summaryEditorState: props.initialValues.summary
+      ? createFromHTML(props.initialValues.summary)
+      : createEmptyWithFocus(),
     cover: props.initialValues.cover,
-  })
+  });
 
-  useEffect(() => {
-    const titleContentState = state.titleEditorState.getCurrentContent();
-    const summaryContentState = state.summaryEditorState.getCurrentContent();
-    const title = titleContentState.hasText() ?  getHTML(titleContentState) : '';
-    const summary = summaryContentState.hasText() ? getHTML(summaryContentState) : '';
-    props.onChange({
-      title,
-      summary,
-      cover: state.cover,
-    })
-  }, [state])
+  useEffect(
+    () => {
+      const titleContentState = state.titleEditorState.getCurrentContent();
+      const summaryContentState = state.summaryEditorState.getCurrentContent();
+      const title = titleContentState.hasText()
+        ? getHTML(titleContentState)
+        : '';
+      const summary = summaryContentState.hasText()
+        ? getHTML(summaryContentState)
+        : '';
+      props.onChange({
+        title,
+        summary,
+        cover: state.cover,
+      });
+    },
+    [state],
+  );
 
   return (
-    <div className='dz-ReleaseCard'>
+    <div className="dz-ReleaseCard">
       <Dropzone
         onDrop={(files) => {
           logging.debug('drop');
@@ -73,8 +79,8 @@ function SectionReleaseCard(props) {
             setState({
               ...state,
               cover: file,
-            })
-          }) 
+            });
+          });
         }}
         onDragOver={(e) => {
           e.stopPropagation();
@@ -86,10 +92,8 @@ function SectionReleaseCard(props) {
             {state.cover ? (
               <LazyImage ratio={16 / 9} src={state.cover.preview} />
             ) : (
-              <div 
-                className='dz-ReleaseCard__coverContainer'
-              >
-                <span className='dz-ReleaseCard__coverPlaceholder'>
+              <div className="dz-ReleaseCard__coverContainer">
+                <span className="dz-ReleaseCard__coverPlaceholder">
                   {formatMessage(createPlaceholders.cover)}
                 </span>
               </div>
@@ -97,12 +101,12 @@ function SectionReleaseCard(props) {
           </div>
         )}
       </Dropzone>
-      <div className='typo-Article'>
+      <div className="dz-Typo">
         <DimzouEditor
           mode="create"
           ref={titleEditorRef}
           placeholder={
-            <div className="typo-Article__titlePlaceholder">
+            <div className="dz-Typo__titlePlaceholder">
               {formatMessage(createPlaceholders.title)}
             </div>
           }
@@ -111,7 +115,7 @@ function SectionReleaseCard(props) {
               const content = editorState.getCurrentContent();
               if (
                 content.getBlockMap().size === 1 &&
-                  content.getFirstBlock().getText().length === 0
+                content.getFirstBlock().getText().length === 0
               ) {
                 return 'handled';
               }
@@ -128,11 +132,13 @@ function SectionReleaseCard(props) {
           }}
           editorState={state.titleEditorState}
           onChange={(titleEditorState) => {
-            setState(update(state, {
-              titleEditorState: {
-                $set: titleEditorState,
-              },
-            }))
+            setState(
+              update(state, {
+                titleEditorState: {
+                  $set: titleEditorState,
+                },
+              }),
+            );
           }}
           currentUser={currentUser}
         />
@@ -146,22 +152,35 @@ function SectionReleaseCard(props) {
               const content = editorState.getCurrentContent();
               if (
                 content.getBlockMap().size === 1 &&
-                    content.getFirstBlock().getText().length === 0
+                content.getFirstBlock().getText().length === 0
               ) {
                 if (content.getFirstBlock().getType() !== 'unstyled') {
-                  const summaryEditorState =  EditorState.push(editorState, Modifier.setBlockType(content, editorState.getSelection(), 'unstyled'));
-                  setState(update(state, {
-                    summaryEditorState: {
-                      $set: summaryEditorState,
-                    },
-                  }))
+                  const summaryEditorState = EditorState.push(
+                    editorState,
+                    Modifier.setBlockType(
+                      content,
+                      editorState.getSelection(),
+                      'unstyled',
+                    ),
+                  );
+                  setState(
+                    update(state, {
+                      summaryEditorState: {
+                        $set: summaryEditorState,
+                      },
+                    }),
+                  );
                 } else {
-                  const titleEditorState = EditorState.moveFocusToEnd(state.titleEditorState);
-                  setState(update(state, {
-                    titleEditorState: {
-                      $set: titleEditorState,
-                    },
-                  }))
+                  const titleEditorState = EditorState.moveFocusToEnd(
+                    state.titleEditorState,
+                  );
+                  setState(
+                    update(state, {
+                      titleEditorState: {
+                        $set: titleEditorState,
+                      },
+                    }),
+                  );
                 }
                 return 'handled';
               }
@@ -170,22 +189,24 @@ function SectionReleaseCard(props) {
           }}
           handleReturn={() => 'handled'}
           onChange={(summaryEditorState) => {
-            setState(update(state, {
-              summaryEditorState: {
-                $set: summaryEditorState,
-              },
-            }))
+            setState(
+              update(state, {
+                summaryEditorState: {
+                  $set: summaryEditorState,
+                },
+              }),
+            );
           }}
           currentUser={currentUser}
         />
       </div>
     </div>
-  )
+  );
 }
 
 SectionReleaseCard.propTypes = {
   onChange: PropTypes.func,
   initialTitle: PropTypes.string,
-}
+};
 
 export default SectionReleaseCard;

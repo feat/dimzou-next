@@ -103,10 +103,11 @@ export const deleteCareer = (id) =>
     url: `/api/user/career/${id}/`,
     method: 'DELETE',
   });
-  
-export const getHonors = () => request({
-  url: '/api/user/honors-awards/',
-});
+
+export const getHonors = () =>
+  request({
+    url: '/api/user/honors-awards/',
+  });
 
 export const addHonor = (data) =>
   request({
@@ -410,11 +411,11 @@ export const getUserInfoByUserId = (id, params) =>
     params,
   });
 
-export const getApplicationAvailableInfo = (userId) => 
+export const getApplicationAvailableInfo = (userId) =>
   request({
     url: `/api/user/user-application-available/`,
     params: { uid: userId },
-  })
+  });
 
 export const getProfileByUserId = (id) =>
   request({ url: `/api/user/profile/${id}/` });
@@ -513,12 +514,12 @@ export const deleteUserAddress = (id) =>
     method: 'DELETE',
   });
 
-export const setDefaultAddress = (id) => 
+export const setDefaultAddress = (id) =>
   request({
     url: '/api/geo/user-address/default-address/',
     method: 'POST',
     data: { address_id: id },
-  })
+  });
 
 // Security
 
@@ -542,12 +543,14 @@ export const verifyUserSecurityInfo = (data) =>
 
 // wechat
 
-export const fetchWechatInfo = () => request({
-  url: '/api/user/profile/wechat-info/',
-  method: 'GET',
-})
+export const fetchWechatInfo = () =>
+  request({
+    url: '/api/user/profile/wechat-info/',
+    method: 'GET',
+  });
 
-export const fetchWechatUnbindingInfo = () => request({
-  url: '/api/user/profile/wechat-unbinding/',
-  method: 'GET',
-})
+export const fetchWechatUnbindingInfo = () =>
+  request({
+    url: '/api/user/profile/wechat-unbinding/',
+    method: 'GET',
+  });

@@ -7,10 +7,13 @@ function PublicationSummary() {
   const summary = get(publicationState, 'data.summary');
 
   return (
-    <div className="typo-Article">
-      <div className="typo-Article__summary" dangerouslySetInnerHTML={{ __html: summary }} />
+    <div className="dz-Typo">
+      <div
+        className="dz-Typo__summary"
+        dangerouslySetInnerHTML={{ __html: summary }}
+      />
     </div>
-  )
+  );
 }
 
 export default PublicationSummary;

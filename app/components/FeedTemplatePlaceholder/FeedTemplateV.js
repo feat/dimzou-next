@@ -7,12 +7,7 @@ class FeedTemplateV extends Base {
   static displayName = 'FeedTemplateV';
 
   renderI() {
-    return (
-      <DimzouCardIII
-        titleLines={2}
-        bodyLines={5}
-      />
-    );
+    return <DimzouCardIII titleLines={2} bodyLines={5} />;
   }
 }
 

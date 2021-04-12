@@ -27,11 +27,12 @@ export const initialBundleState = {
 const getBundleFeatures = (data) => {
   if (data.type === CONTENT_TYPE_TRANSLATE) {
     return FEATURES_TB;
-  } if (data.is_multi_chapter) {
-    return FEATURES_OMCB
   }
-  return FEATURES_OSCB
-}
+  if (data.is_multi_chapter) {
+    return FEATURES_OMCB;
+  }
+  return FEATURES_OSCB;
+};
 
 const bundleEditReducer = mapHandleActions(
   {
@@ -69,8 +70,10 @@ const bundleEditReducer = mapHandleActions(
         isReady: true,
         fetchError: null,
         data: data.id,
-        mode: data.type === CONTENT_TYPE_TRANSLATE ? 
-          EDIT_MODE_TRANSLATION : EDIT_MODE_ORIGIN,
+        mode:
+          data.type === CONTENT_TYPE_TRANSLATE
+            ? EDIT_MODE_TRANSLATION
+            : EDIT_MODE_ORIGIN,
         features: getBundleFeatures(data),
       };
     },

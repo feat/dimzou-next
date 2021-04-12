@@ -47,7 +47,7 @@ class ImagesDropzone extends React.Component {
     const count = [...new Array(this.props.maxCount)];
     const { isDragActive, isDragAccept } = props;
     return (
-      <React.Fragment>
+      <>
         {count.map((_, index) => {
           if (this.props.value[index]) {
             return (
@@ -91,7 +91,7 @@ class ImagesDropzone extends React.Component {
             />
           );
         })}
-      </React.Fragment>
+      </>
     );
   }
 

@@ -81,6 +81,10 @@ const messages = defineMessages({
     id: 'dz.dashboard.delete-confirm-content',
     defaultMessage: 'Are you sure to delete the whole dimzou?',
   },
-})
+  resourceReportTitle: {
+    id: 'dz.dashboard.resource-report-title',
+    defaultMessage: 'Your Works',
+  },
+});
 
-export default messages
+export default messages;

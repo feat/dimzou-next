@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Router from 'next/router';
+import { injectIntl } from 'react-intl';
 
 import {
   convertToRaw,
@@ -10,14 +12,16 @@ import {
   EditorState,
 } from '@feat/draft-js';
 import DraftPasteProcessor from '@feat/draft-js/lib/DraftPasteProcessor';
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
+
 import notification from '@feat/feat-ui/lib/notification';
 import message from '@feat/feat-ui/lib/message';
+
 import TranslatableMessage from '@/modules/language/containers/TranslatableMessage';
+import ActionButton from '@/components/ActionButton';
 
 import SimpleCache from '@/services/cache';
-import { formatMessage } from '@/services/intl';
 import { getText } from '@/utils/content';
+import { getAsPath } from '../../utils/router';
 
 import DimzouEditor, {
   createFromRawData,
@@ -25,11 +29,14 @@ import DimzouEditor, {
   getHTML,
   clearHTML,
 } from '../DimzouEditor';
-import { copyright as cpMessages, validation as vMessages } from '../../messages';
+import {
+  copyright as cpMessages,
+  validation as vMessages,
+} from '../../messages';
 import './style.scss';
 import CoverTemplate from '../CoverTemplate';
 import ImageDropzone from '../ImageDropzone';
-
+import DraftDocker from '../DraftDocker';
 
 const initTitleRaw = {
   blocks: [{ type: 'header-one', text: '' }],
@@ -49,17 +56,19 @@ class CoverCreate extends Component {
       userId: props.currentUser.uid,
     });
 
-    this.state = {
-      titleEditorState: this.cache.get('title')
-        ? createFromHTML(this.cache.get('title'))
-        : createFromRawData(initTitleRaw),
-      summaryEditorState: this.cache.get('summary')
-        ? createFromHTML(this.cache.get('summary'))
-        : createFromRawData(initSummaryRaw),
-      cover: null,
-      isSubmitting: false,
-    };
+    this.state = this.getInitState();
   }
+
+  getInitState = () => ({
+    titleEditorState: this.cache.get('title')
+      ? createFromHTML(this.cache.get('title'))
+      : createFromRawData(initTitleRaw),
+    summaryEditorState: this.cache.get('summary')
+      ? createFromHTML(this.cache.get('summary'))
+      : createFromRawData(initSummaryRaw),
+    cover: null,
+    isSubmitting: false,
+  });
 
   componentDidMount() {
     window.scrollTo(0, 0);
@@ -93,9 +102,13 @@ class CoverCreate extends Component {
         return 'handled';
       }
     }
+    if (command === 'tab') {
+      this.summaryEditor.focus();
+    }
     return 'not-handled';
   };
 
+  // TO_CLEAN_UP
   handleTitlePastedText = (editorState, onChange, text, html) => {
     if (html) {
       const htmlFragment = DraftPasteProcessor.processHTML(
@@ -171,7 +184,7 @@ class CoverCreate extends Component {
     return 'handled';
   };
 
-  handleSummaryReturn = () => 'handled'
+  handleSummaryReturn = () => 'handled';
 
   handleSummaryKeyCommand = (editorState, onChange, command) => {
     if (command === 'backspace') {
@@ -181,17 +194,29 @@ class CoverCreate extends Component {
         content.getFirstBlock().getText().length === 0
       ) {
         if (content.getFirstBlock().getType() !== 'unstyled') {
-          const summaryEditorState =  EditorState.push(editorState, Modifier.setBlockType(content, editorState.getSelection(), 'unstyled'));
+          const summaryEditorState = EditorState.push(
+            editorState,
+            Modifier.setBlockType(
+              content,
+              editorState.getSelection(),
+              'unstyled',
+            ),
+          );
           this.setState({
             summaryEditorState,
-          })
+          });
         } else {
-          const titleEditorState = EditorState.moveFocusToEnd(this.state.titleEditorState);
+          const titleEditorState = EditorState.moveFocusToEnd(
+            this.state.titleEditorState,
+          );
           this.setState({ titleEditorState });
         }
         // this.titleEditor.focus();
         return 'handled';
       }
+    }
+    if (command === 'shift-tab') {
+      this.titleEditor.focus();
     }
     return 'not-handled';
   };
@@ -199,22 +224,26 @@ class CoverCreate extends Component {
   handleImageDropzone = (data) => {
     this.setState({
       cover: data,
-    })
-  }
+    });
+  };
 
-  handleCancel = () => {
+  handleReset = () => {
     this.cache.flush();
-    this.props.onCancel();
+    this.setState(this.getInitState(), () => {
+      this.titleEditor.focus();
+    });
   };
 
   handleSubmit = () => {
+    const {
+      intl: { formatMessage },
+    } = this.props;
     const titleContentState = this.state.titleEditorState.getCurrentContent();
     const summaryContentState = this.state.summaryEditorState.getCurrentContent();
     const htmlTitle = getHTML(titleContentState);
     const title = convertToRaw(titleContentState);
     const htmlSummary = getHTML(summaryContentState);
     const summary = convertToRaw(summaryContentState);
-    
 
     const data = {
       title,
@@ -257,8 +286,24 @@ class CoverCreate extends Component {
   };
 
   render() {
-    const titleHasText = this.state.titleEditorState.getCurrentContent().getPlainText().trim();
-    const summaryHasText = this.state.summaryEditorState.getCurrentContent().getPlainText().trim();
+    const titleHasText = this.state.titleEditorState
+      .getCurrentContent()
+      .getPlainText()
+      .trim();
+    const summaryHasText = this.state.summaryEditorState
+      .getCurrentContent()
+      .getPlainText()
+      .trim();
+
+    let structure;
+    let currentEditor;
+    if (this.state.titleEditorState.getSelection().getHasFocus()) {
+      structure = 'title';
+      currentEditor = 'titleEditorState';
+    } else if (this.state.summaryEditorState.getSelection().getHasFocus()) {
+      structure = 'summary';
+      currentEditor = 'summaryEditorState';
+    }
 
     const isReady = titleHasText && summaryHasText;
 
@@ -266,15 +311,16 @@ class CoverCreate extends Component {
     const { isSubmitting } = this.state;
 
     return (
-      <CoverTemplate 
+      <CoverTemplate
         title={
           <DimzouEditor
             mode="create"
+            structure="title"
             ref={(c) => {
               this.titleEditor = c;
             }}
             placeholder={
-              <div className="typo-Article__titlePlaceholder">
+              <div className="dz-Typo__titlePlaceholder">
                 {titlePlaceholder}
               </div>
             }
@@ -283,18 +329,19 @@ class CoverCreate extends Component {
             editorState={this.state.titleEditorState}
             onChange={this.handleTitleEditor}
             currentUser={currentUser}
-            handlePastedText={this.handleTitlePastedText}
+            // handlePastedText={this.handleTitlePastedText}
           />
         }
         cover={
-          <ImageDropzone 
-            ratio={16/9} 
+          <ImageDropzone
+            ratio={16 / 9}
             data={this.state.cover}
             onConfirm={this.handleImageDropzone}
+            visibleByDefault
           />
         }
         summary={
-          <div className="typo-Article">
+          <div className="dz-Typo">
             <DimzouEditor
               mode="create"
               ref={(c) => {
@@ -310,48 +357,80 @@ class CoverCreate extends Component {
           </div>
         }
         copyright={
-          <TranslatableMessage 
-            message={cpMessages.year} 
+          <TranslatableMessage
+            message={cpMessages.year}
             values={{
               year: new Date().getFullYear(),
             }}
           />
         }
         extra={
-          <div
-            style={{ position: 'absolute', bottom: 36, right: 44 }}
-          >
-            <IconButton
-              svgIcon="no-btn"
-              size="md"
-              disabled={isSubmitting}
-              onClick={this.handleCancel}
+          <>
+            <div
+              style={{
+                position: 'absolute',
+                bottom: 36,
+                right: 44,
+                opacity: isReady ? 1 : 0,
+              }}
+            >
+              <ActionButton
+                type="no"
+                size="md"
+                disabled={isSubmitting}
+                onClick={this.handleReset}
+              />
+              <ActionButton
+                type="ok"
+                size="md"
+                className="margin_l_24"
+                onClick={this.handleSubmit}
+                disabled={!isReady || isSubmitting}
+              />
+            </div>
+            <DraftDocker
+              blockStructure={structure}
+              editorState={this.state[currentEditor]}
+              onEditorChange={(editorState) => {
+                this.setState({
+                  [currentEditor]: editorState,
+                });
+              }}
+              initialTemplate="I"
+              canChangeTemplate={false}
+              onPageCreateButtonClick={() => {
+                const route = {
+                  pathname: '/dimzou-edit',
+                  query: {
+                    pageName: 'create',
+                    type: 'page',
+                  },
+                };
+                Router.replace(route, getAsPath(route));
+              }}
+              isCoverCreateActive
+              onCoverCreateButtonClick={() => {
+                Router.back();
+              }}
             />
-            <IconButton
-              svgIcon="ok-btn"
-              size="md"
-              className="margin_l_24"
-              onClick={this.handleSubmit}
-              disabled={!isReady || isSubmitting}
-            />
-          </div>
+          </>
         }
       />
-    )
+    );
   }
 }
 
 CoverCreate.propTypes = {
   onSubmit: PropTypes.func.isRequired, // Promise
-  onCancel: PropTypes.func,
   titlePlaceholder: PropTypes.node,
   summaryPlaceholder: PropTypes.node,
   currentUser: PropTypes.object.isRequired,
   cacheKey: PropTypes.string,
+  intl: PropTypes.object,
 };
 
 CoverCreate.defaultProps = {
   cacheKey: 'dimzou-create',
 };
 
-export default CoverCreate;
+export default injectIntl(CoverCreate, { forwardRef: true });

@@ -6,8 +6,12 @@ import {
   likeRewording,
   unlikeRewording,
   updateRewordingLikesCount,
-  loadNodeEditInfo,
-  patchContent,
+  initNodeEdit,
+  loadBlockRange,
+  commitBlock,
+  submitBlock,
+  submitMediaBlock,
+  commitMediaBlock,
 } from '../actions';
 
 const baseWidgetReducer = mapHandleActions(
@@ -66,85 +70,78 @@ const rewordingLikesCountReducer = (state = {}, action) => {
   return newState;
 };
 
-const initLikeWidgetWithNodeInfo = (state = {}, action) => {
+const initWithNodeInit = (state = {}, action) => {
   const newState = { ...state };
-  const { data } = action.payload;
+  const { basic, title, summary, cover, blocks } = action.payload;
   let hasUpdate = false;
-  if (data.title && data.title.rewordings) {
-    data.title.rewordings.forEach((r) => {
+  Object.values(blocks).forEach((block) => {
+    block.rewordings.forEach((r) => {
       if (!newState[r.id]) {
         hasUpdate = true;
+        let structure;
+        switch (block.id) {
+          case title:
+            structure = 'title';
+            break;
+          case summary:
+            structure = 'summary';
+            break;
+          case cover:
+            structure = 'cover';
+            break;
+          default:
+            structure = 'content';
+        }
         newState[r.id] = {
-          nodeId: data.id,
-          structure: 'title',
-          blockId: data.title.id,
+          nodeId: basic.id,
+          structure,
+          blockId: block.id,
           rewordingId: r.id,
           rewordingLikesCount: r.likes_count,
           isInitialized: true,
-        }
+        };
       }
-    })
-  }
-  if (data.summary && data.summary.rewordings) {
-    data.summary.rewordings.forEach((r) => {
-      if (!newState[r.id]) {
-        hasUpdate = true;
-        newState[r.id] = {
-          nodeId: data.id,
-          structure: 'summary',
-          blockId: data.summary.id,
-          rewordingId: r.id,
-          rewordingLikesCount: r.likes_count,
-          isInitialized: true,
-        }
-      }
-    })
-  }
-  if (data.cover && data.cover.rewordings) {
-    data.cover.rewordings.forEach((r) => {
-      if (!newState[r.id]) {
-        hasUpdate = true;
-        newState[r.id] = {
-          nodeId: data.id,
-          structure: 'cover',
-          blockId: data.cover.id,
-          rewordingId: r.id,
-          rewordingLikesCount: r.likes_count,
-          isInitialized: true,
-        }
-      }
-    })
-  }
-  if (data.content) {
-    data.content.forEach((block) => {
-      block.rewordings && block.rewordings.forEach((r) => {
-        if (!newState[r.id]) {
-          hasUpdate = true;
-          newState[r.id] = {
-            nodeId: data.id,
-            structure: 'content',
-            blockId: block.id,
-            rewordingId: r.id,
-            rewordingLikesCount: r.likes_count,
-            isInitialized: true,
-          }
-        }
-      })
-    })
-  }
-
+    });
+  });
   if (hasUpdate) {
     return newState;
   }
   return state;
-}
+};
+
+const initWithChunk = (state, action) => {
+  const newState = { ...state };
+  const { nodeId, blocks } = action.payload;
+  Object.values(blocks).forEach((block) => {
+    block.rewordings.forEach((r) => {
+      newState[r.id] = {
+        nodeId,
+        structure: 'content',
+        blockId: block.id,
+        rewordingId: r.id,
+        rewordingLikesCount: r.likes_count,
+        isInitialized: true,
+      };
+    });
+  });
+  return newState;
+};
 
 const reducer = (state, action) => {
+  // TODO: 分开这两个方法进行数据初始化
+  if (action.type === initNodeEdit.SUCCESS) {
+    return initWithNodeInit(state, action);
+  }
+  // TODO: 检查 submitRewording 等数据
   if (
-    action.type === loadNodeEditInfo.toString() ||
-    action.type === patchContent.toString()
+    action.type === loadBlockRange.toString() ||
+    action.type === commitBlock.SUCCESS ||
+    action.type === submitBlock.SUCCESS ||
+    action.type === commitBlock.SUCCESS ||
+    action.type === submitMediaBlock.SUCCESS ||
+    action.type === commitMediaBlock.SUCCESS
   ) {
-    return initLikeWidgetWithNodeInfo(state, action);
+    return initWithChunk(state, action);
   }
   if (
     action.type === likeRewording.SUCCESS ||

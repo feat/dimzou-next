@@ -1,16 +1,16 @@
 import { createRoutine } from 'redux-saga-routines';
-import request from '@/utils/request';
+import { createAction } from 'redux-actions';
+
+import { provider } from './helpers';
 
 import {
-  getRandomTemplate,
-  getTemplateByCount,
-} from '@/components/FeedTemplate/configTemplates';
-
-import {
+  // fetchCategories as fetchCategoriesRequest,
+  fetchCategoryFeed as fetchCategoryFeedRequest,
   fetchMostReadList as fetchMostReadListRequest,
   fetchMostCommentedList as fetchMostCommentedListRequest,
   fetchMostModifiedList as fetchMostModifiedListRequest,
   fetchMostTrackList as fetchMostTrackListRequest,
+  getDimzouExtraInfo as getDimzouExtraInfoRequest,
 } from './requests';
 
 // import {
@@ -19,7 +19,6 @@ import {
 // } from './selectors';
 
 const NS = 'DIMZOU_INDEX';
-const FEED_TYPE = 'publication';
 
 export const fetchCategories = createRoutine(`${NS}/FETCH_CATEGORIES`);
 export const fetchCategoryFeed = createRoutine(`${NS}/FETCH_CATEGORY_FEED`);
@@ -34,15 +33,23 @@ export const fetchMostModifiedList = createRoutine(
 export const fetchMostTrackList = createRoutine(`${NS}/FETCH_MOST_TRACK_LIST`);
 
 export const fetchTopScoredList = createRoutine(`${NS}/FETCH_TOP_SCORED_LIST`);
+export const updateCategoryFilter = createAction(
+  `${NS}/UPDATE_CATEGORY_FILTER`,
+);
+export const setSectionTemplates = createAction(`${NS}/SET_SECTION_TEMPLATES`);
 
-export const asyncFetchCategories = () => async (dispatch) => {
+export const asyncFetchCategories = () => async (
+  dispatch,
+  getState,
+  { request },
+) => {
   dispatch(fetchCategories.request());
   try {
     const res = await request({
       url: '/api/feed/categories/',
       method: 'GET',
       params: {
-        type: FEED_TYPE,
+        type: 'publication',
       },
     });
     dispatch(fetchCategories.success(res.data));
@@ -60,40 +67,52 @@ export const asyncFetchCategoryFeed = (payload) => async (dispatch) => {
   // if (isLoading) {
   //   // return
   // }
-  let template = getRandomTemplate(0, maxItemCount);
+
+  // 1. get count based on maxItemCount
+  const count = maxItemCount ? Math.min(7, maxItemCount) : 7;
+  // 2. get template array and store templates
+  let templates = payload.templates || provider.getTemplates(count);
   dispatch(fetchCategoryFeed.trigger(payload));
   try {
     dispatch(
       fetchCategoryFeed.request({
         categoryId,
-        data: { template: template.displayName },
+        templates,
       }),
     );
-    const res = await request({
-      url: `/api/feed/items/${categoryId}/`,
-      method: 'GET',
-      params: {
-        type: FEED_TYPE,
-        page_size: template.maxItemCount,
-      },
+    const { data } = await fetchCategoryFeedRequest(categoryId, {
+      page_size: count,
     });
-    if (!res.data.length) {
-      template = {};
-    } else if (res.data.length < template.maxItemCount) {
-      template = getTemplateByCount(res.data.length, true);
+    if (!data.length) {
+      templates = null;
+    } else if (data.length < count) {
+      templates = provider.getTemplates(data.length);
+    }
+    if (data.length) {
+      const { data: extraInfo } = await getDimzouExtraInfoRequest({
+        ids: data.map((item) => item.bundle_id),
+        types: ['cards'],
+      });
+      const extraInfoMap = {};
+      extraInfo.forEach((info) => {
+        extraInfoMap[info.bundle] = info.data;
+      });
+      data.forEach((item) => {
+        if (extraInfoMap[item.bundle_id]) {
+          // eslint-disable-next-line no-param-reassign
+          item.cardsInfo = extraInfoMap[item.bundle_id];
+        }
+      });
     }
     dispatch(
       fetchCategoryFeed.success({
         categoryId,
-        data: {
-          items: res.data,
-          template: template.displayName,
-        },
+        data,
+        templates,
       }),
     );
   } catch (err) {
     dispatch(fetchCategoryFeed.failure({ categoryId, data: err }));
-    throw err;
   } finally {
     dispatch(fetchCategoryFeed.fulfill({ categoryId }));
   }

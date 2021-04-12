@@ -2,21 +2,27 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { compose } from 'redux';
+import { injectIntl } from 'react-intl';
 
 import { DropTarget, DragSource } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 
-import { formatMessage } from '@/services/intl';
 import Modal from '@feat/feat-ui/lib/modal';
 
 import message from '@feat/feat-ui/lib/message';
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
-import { REWORDING_STATUS_PENDING, DRAGGABLE_TYPE_REWORDING } from '../../constants';
+import ActionButton from '@/components/ActionButton';
+import Lightbox from '@/components/Lightbox';
+import {
+  REWORDING_STATUS_PENDING,
+  DRAGGABLE_TYPE_REWORDING,
+  DRAG_TO_DELETE_DELTA,
+} from '../../constants';
 import intlMessages, { alert as alertMessages } from '../../messages';
 
 class ImageRewording extends React.PureComponent {
   state = {
     shouldDisplayElectButton: false,
+    showLightBox: false,
   };
 
   blockRef = (n) => {
@@ -48,9 +54,12 @@ class ImageRewording extends React.PureComponent {
       data.is_selected ||
       data.status === REWORDING_STATUS_PENDING
     ) {
-      message.info({
-        content: formatMessage(intlMessages.imageRewordMethodHint),
+      this.setState({
+        showLightBox: true,
       });
+      // message.info({
+      //   content: formatMessage(intlMessages.imageRewordMethodHint),
+      // });
     } else {
       this.initReselect();
     }
@@ -63,21 +72,28 @@ class ImageRewording extends React.PureComponent {
       isSubmittingFile,
       fileSubmitting,
       isOver,
+      intl: { formatMessage },
     } = this.props;
     let contentProps;
     if (isSubmittingFile && fileSubmitting) {
-      contentProps =  {
+      contentProps = {
         children: (
-          <figure>
-            <img src={fileSubmitting.preview} alt="preview" />
+          <figure style={{ margin: 0 }}>
+            <img key="preview" src={fileSubmitting.preview} alt="preview" />
           </figure>
         ),
-      }
+      };
     } else if (data.img) {
       contentProps = {
         children: (
-          <figure>
-            <img src={data.img} width={data.img_width} height={data.img_height} alt={data.id} />
+          <figure style={{ margin: 0 }}>
+            <img
+              key={data.id}
+              src={data.img}
+              width={data.img_width}
+              height={data.img_height}
+              alt={data.id}
+            />
           </figure>
         ),
       };
@@ -86,9 +102,9 @@ class ImageRewording extends React.PureComponent {
         dangerouslySetInnerHTML: {
           __html: data.html_content,
         },
-      }
+      };
     }
-    
+
     return (
       <div
         ref={this.blockRef}
@@ -101,11 +117,7 @@ class ImageRewording extends React.PureComponent {
           },
         )}
       >
-        <div
-          className="typo-Article"
-          {...contentProps}
-          onClick={this.handleClick}
-        />
+        <div className="dz-Typo" {...contentProps} onClick={this.handleClick} />
         {this.state.shouldDisplayElectButton && (
           <div className="dz-RewordingWidgetOverlay">
             <div className="dz-RewordingWidgetOverlay__inner">
@@ -113,15 +125,25 @@ class ImageRewording extends React.PureComponent {
                 {formatMessage(alertMessages.reselectConfirm)}
               </div>
               <div className="dz-RewordingWidgetOverlay__footer">
-                <IconButton svgIcon="no-btn" onClick={this.cancelReselect} />
-                <IconButton
+                <ActionButton type="no" onClick={this.cancelReselect} />
+                <ActionButton
                   className="margin_l_12"
-                  svgIcon="ok-btn"
+                  type="ok"
                   onClick={this.props.onElect}
                 />
               </div>
             </div>
           </div>
+        )}
+        {this.state.showLightBox && (
+          <Lightbox
+            mainSrc={fileSubmitting ? fileSubmitting.preivew : data.img}
+            onCloseRequest={() => {
+              this.setState({
+                showLightBox: false,
+              });
+            }}
+          />
         )}
       </div>
     );
@@ -139,11 +161,13 @@ ImageRewording.propTypes = {
   onElect: PropTypes.func,
   isOver: PropTypes.bool,
   canDrag: PropTypes.bool,
+
+  intl: PropTypes.object,
 };
 
 ImageRewording.defaultProps = {
   canDrag: true,
-}
+};
 
 const mediaTarget = {
   canDrop(props) {
@@ -151,6 +175,9 @@ const mediaTarget = {
   },
   drop(props, monitor) {
     const { files } = monitor.getItem();
+    const {
+      intl: { formatMessage },
+    } = props;
     if (files.length) {
       props.onDrop({
         files,
@@ -178,7 +205,7 @@ const rewordingSource = {
       payload: {
         rewording: props.data,
       },
-    }
+    };
   },
   canDrag(props) {
     if (props.isSubmittingFile) {
@@ -188,37 +215,44 @@ const rewordingSource = {
       !props.data.version_lock && props.data.user.uid === props.currentUser.uid
     );
   },
-  endDrag(props, monitor, component) {
+  endDrag(props, monitor) {
     if (monitor.didDrop()) {
       return;
     }
-    const box = component.dom.getBoundingClientRect();
-    const sourceClientOffset = monitor.getSourceClientOffset();
+    const difference = monitor.getDifferenceFromInitialOffset();
     if (
-      sourceClientOffset && (
-        sourceClientOffset.x > box.right ||
-        sourceClientOffset.x < box.left - box.width ||
-        sourceClientOffset.y > box.bottom ||
-        sourceClientOffset.y < box.top - box.top
-      )
+      Math.abs(difference.x) < DRAG_TO_DELETE_DELTA &&
+      Math.abs(difference.y) < DRAG_TO_DELETE_DELTA
     ) {
-      Modal.confirm({
-        title: formatMessage(alertMessages.confirmLabel),
-        content: formatMessage(alertMessages.removeBlockConfirm),
-        onConfirm: () => {
-          props.onRemove(props.data);
-        },
-        onCancel: () => {},
-      });
+      return;
     }
+    const {
+      intl: { formatMessage },
+    } = props;
+    Modal.confirm({
+      title: formatMessage(alertMessages.confirmLabel),
+      content: formatMessage(alertMessages.removeBlockConfirm),
+      onConfirm: () => {
+        props.onRemove(props.data);
+      },
+      onCancel: () => {},
+    });
   },
-}
+};
 
 const sourceCollect = (collect, monitor) => ({
   connectDragSource: collect.dragSource(),
   isDragging: monitor.isDragging(),
 });
 
-const withDragSource = DragSource(DRAGGABLE_TYPE_REWORDING, rewordingSource, sourceCollect);
+const withDragSource = DragSource(
+  DRAGGABLE_TYPE_REWORDING,
+  rewordingSource,
+  sourceCollect,
+);
 
-export default compose(withDropTarget, withDragSource)(ImageRewording);
+export default compose(
+  injectIntl,
+  withDropTarget,
+  withDragSource,
+)(ImageRewording);

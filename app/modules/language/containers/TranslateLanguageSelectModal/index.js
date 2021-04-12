@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import LanguageSelectModal from '../../components/LanguageSelectModal';
@@ -20,6 +21,10 @@ const mapDispatchToProps = (dispatch) => ({
 function Wrap(props) {
   return props.isOpen && <LanguageSelectModal {...props} />;
 }
+
+Wrap.propTypes = {
+  isOpen: PropTypes.bool,
+};
 
 export default connect(
   selectTranslateLanguageSelect,

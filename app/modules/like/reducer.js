@@ -18,8 +18,6 @@ const intialWigetState = {
   userHasLiked: false,
 };
 
-export const REDUCER_KEY = 'like';
-
 export function getWidgetKey(payload = {}) {
   const { entityType, entityId } = payload;
   if (entityType === undefined) {

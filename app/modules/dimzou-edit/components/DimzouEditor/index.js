@@ -31,32 +31,27 @@ import { handlePastedText as _defaultHandlePastedText } from '@/utils/editor';
 
 import decorator from './decorator';
 import emptyRaw from './emptyRaw';
-
-function handleTitlePastedText(editorState, onChange, text) {
-  const newContentState = Modifier.replaceText(
-    editorState.getCurrentContent(),
-    editorState.getSelection(),
-    text.replace(/[\r\n]/, ' '),
-  );
-  onChange(EditorState.push(editorState, newContentState, 'insert-fragment'));
-  return 'handled';
-}
+import { MAX_TITLE_LENGTH } from '../../constants';
+import { getConfirmedText } from '../../utils/content';
 
 const dimzouStyleMap = {
   LIGHT: { fontWeight: 300, fontFamily: 'Garamond,serif' },
-  BOLD: { fontWeight: 'bold', fontSize: '1.1em', WebkitFontSmoothing: 'antialiased'},
-  CODE: { 
-    fontFamily: 'monospace', 
-    overflowWrap: 'break-word', 
-    backgroundColor: 'rgba(237, 237, 237, 0.5)', 
-    display: 'inline-block', 
-    lineHeight: 1.3, 
-    borderRadius: 4, 
-    paddingLeft: 3, 
-    paddingRight: 3, 
+  BOLD: {
+    fontWeight: 'bold',
+    fontSize: '1.1em',
+    WebkitFontSmoothing: 'antialiased',
   },
-}
-
+  CODE: {
+    fontFamily: 'monospace',
+    overflowWrap: 'break-word',
+    backgroundColor: 'rgba(237, 237, 237, 0.5)',
+    display: 'inline-block',
+    lineHeight: 1.3,
+    borderRadius: 4,
+    paddingLeft: 3,
+    paddingRight: 3,
+  },
+};
 class DimzouEditor extends Component {
   componentDidCatch(err) {
     // Fix: Failed to execute 'removeChild' on 'Node'
@@ -68,43 +63,87 @@ class DimzouEditor extends Component {
     this.editor.focus();
   };
 
+  handleTitleInsert = (editorState, onChange, text) => {
+    let textToInsert = text.replace(/[\r\n]/g, ' ');
+    const currentText = editorState.getCurrentContent().getPlainText();
+    if (currentText.length + textToInsert.length > MAX_TITLE_LENGTH) {
+      textToInsert = textToInsert.slice(
+        0,
+        MAX_TITLE_LENGTH - currentText.length,
+      );
+      // MAY pop message here
+    }
+
+    const newContentState = Modifier.replaceText(
+      editorState.getCurrentContent(),
+      editorState.getSelection(),
+      textToInsert,
+    );
+    onChange(EditorState.push(editorState, newContentState, 'insert-fragment'));
+    return 'handled';
+  };
+
+  handleTitleUpdateInsert = (editorState, onChange, text) => {
+    let textToInsert = text.replace(/[\r\n]/g, ' ');
+    const currentText = getConfirmedText(
+      getHTML(editorState.getCurrentContent()),
+    );
+    if (currentText.length + textToInsert.length > MAX_TITLE_LENGTH) {
+      textToInsert = textToInsert.slice(
+        0,
+        MAX_TITLE_LENGTH - currentText.length,
+      );
+      // MAY pop message here
+    }
+    return handleBeforeInput(editorState, onChange, textToInsert);
+  };
+
   handleBeforeCut = (...args) => {
     const { mode } = this.props;
     if (mode === 'update') {
       return handleBeforeCut(...args);
     }
-    return undefined;
+    return false;
   };
 
-  handleBeforeInput = (...args) => {
-    const { mode } = this.props;
+  handleBeforeInput = (editorState, onChange, text) => {
+    const { mode, structure } = this.props;
     if (mode === 'update') {
-      return handleBeforeInput(...args);
+      if (structure === 'title') {
+        return this.handleTitleUpdateInsert(editorState, onChange, text);
+      }
+      return handleBeforeInput(editorState, onChange, text);
     }
-    return undefined;
-  } 
+    if (structure === 'title') {
+      return this.handleTitleInsert(editorState, onChange, text);
+    }
+    return false;
+  };
 
   handlePastedText = (...args) => {
-    const { mode } = this.props;
-    if (mode === 'create') {
-      if (this.props.structure === 'title') {
-        return handleTitlePastedText(...args);
+    const { mode, structure } = this.props;
+    if (mode === 'update') {
+      if (structure === 'title') {
+        return this.handleTitleUpdateInsert(...args);
       }
-      return _defaultHandlePastedText(...args);
+      return handlePastedText(...args);
     }
-    return handlePastedText(...args);
+    if (this.props.structure === 'title') {
+      return this.handleTitleInsert(...args);
+    }
+    return _defaultHandlePastedText(...args);
   };
 
   handleReturn = (...args) => {
     const { structure, mode } = this.props;
     if (structure === 'title' || structure === 'summary') {
-      // TODO: may add message...
+      // TO_ENHANCE: may add message...
       return 'handled';
     }
     if (mode === 'update') {
       return handleReturn(...args);
     }
-    return undefined;
+    return false;
   };
 
   handleKeyCommand = (...args) => {
@@ -121,7 +160,7 @@ class DimzouEditor extends Component {
       return handleToggleBlockType(...args);
     }
     return undefined;
-  }
+  };
 
   handleToggleInlineStyle = (...args) => {
     const { mode } = this.props;
@@ -129,27 +168,53 @@ class DimzouEditor extends Component {
       return handleToggleInlineStyle(...args);
     }
     return undefined;
+  };
+
+  renderMaxLegthHint() {
+    const { editorState } = this.props;
+    const currentText = getConfirmedText(
+      getHTML(editorState.getCurrentContent()),
+    ).length;
+
+    if (MAX_TITLE_LENGTH - currentText < 10) {
+      return (
+        <div
+          style={{
+            position: 'absolute',
+            top: '100%',
+            color: MAX_TITLE_LENGTH === currentText ? '#cc0000' : '#da9d00',
+            paddingTop: 6,
+          }}
+        >
+          {currentText} / {MAX_TITLE_LENGTH}
+        </div>
+      );
+    }
+    return null;
   }
-    
 
   render() {
     const { mode, className, currentUser, structure, ...props } = this.props;
     return (
-      <Editor
-        className={classNames('DimzouEditor', className)}
-        ref={(n) => {
-          this.editor = n;
-        }}
-        handleBeforeCut={this.handleBeforeCut}
-        handleBeforeInput={this.handleBeforeInput}
-        handlePastedText={this.handlePastedText}
-        handleReturn={this.handleReturn}
-        handleKeyCommand={this.handleKeyCommand}
-        handleToggleBlockType={this.handleToggleBlockType}
-        handleToggleInlineStyle={this.handleToggleInlineStyle}
-        customStyleMap={dimzouStyleMap}
-        {...props}
-      />
+      <>
+        <Editor
+          className={classNames('DimzouEditor', className)}
+          ref={(n) => {
+            this.editor = n;
+          }}
+          handleBeforeCut={this.handleBeforeCut}
+          handleBeforeInput={this.handleBeforeInput}
+          handlePastedText={this.handlePastedText}
+          handleReturn={this.handleReturn}
+          handleKeyCommand={this.handleKeyCommand}
+          handleToggleBlockType={this.handleToggleBlockType}
+          handleToggleInlineStyle={this.handleToggleInlineStyle}
+          customStyleMap={dimzouStyleMap}
+          stripPastedStyles={structure !== 'content'}
+          {...props}
+        />
+        {structure === 'title' && this.renderMaxLegthHint()}
+      </>
     );
   }
 }
@@ -158,6 +223,7 @@ DimzouEditor.propTypes = {
   className: PropTypes.string,
   mode: PropTypes.oneOf(['create', 'update']),
   currentUser: PropTypes.object.isRequired,
+  structure: PropTypes.oneOf(['title', 'summary', 'content']),
 };
 
 export default DimzouEditor;

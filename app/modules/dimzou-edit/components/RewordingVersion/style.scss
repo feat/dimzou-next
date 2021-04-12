@@ -2,9 +2,7 @@
 
 @include block(ns(RewordingVersion, dz)) {
   display: inline-block;
-
-  .ft-IconButton {
-      margin-right: 8px;
-      padding: 1px;
+  .ft-ButtonBase {
+    padding: px-to-rem(1);
   }
 }

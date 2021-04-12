@@ -8,10 +8,6 @@
       font-weight: bold;
       border-bottom: 2px solid $gray-10;
       margin-bottom: px-to-rem(2);
-
-      .dz-ReportTable__cell_name {
-        font-size: px-to-rem(18);
-        }
   }
   @include element(row) {
       display: flex;
@@ -23,7 +19,7 @@
         flex: 1;
     }  
     @include modifier(val) {
-        flex-basis: 20%;
+        flex-basis: 22%;
         text-align: right;
     }
   }

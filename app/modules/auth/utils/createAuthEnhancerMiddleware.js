@@ -1,4 +1,4 @@
-import Router from 'next/router'
+import Router from 'next/router';
 import { authRequired, authRedirect } from '../actions';
 import { hasAuthedUser, selectNextAction } from '../selectors';
 
@@ -48,7 +48,7 @@ export default function createAuthEnhancerMiddleware(getActions) {
         return undefined;
         // return next(replace(sessionRedirect));
       }
-      Router.replace(action.payload); 
+      Router.replace(action.payload);
       return undefined;
       // return next(replace(action.payload));
     }

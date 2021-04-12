@@ -1,0 +1,12 @@
+@import 'base.scss';
+
+@include block(collaborators) {
+    @include element(grid) { 
+        display: grid;
+        grid-template-columns: repeat( auto-fill, minmax(300px, 1fr) );
+        grid-column-gap: 20px;
+    }
+    @include element(item) {
+      
+    }
+}

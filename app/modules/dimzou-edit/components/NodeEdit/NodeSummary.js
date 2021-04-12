@@ -17,23 +17,26 @@ function NodeSummary() {
   const bundleState = useContext(BundleContext);
   const nodeState = useContext(NodeContext);
   const userCapabilities = useContext(UserCapabilitiesContext);
-  const node = nodeState && nodeState.data;
+  const nodeBasic = nodeState && nodeState.basic;
   const currentUser = useSelector(selectCurrentUser);
+
+  const block = nodeState.blocks[nodeState.summary] || {};
 
   return (
     <RewordableSection
       mode={bundleState.mode}
-      bundleId={node.bundle_id}
-      nodeId={node.id}
-      blockId={node.summary ? node.summary.id : {}}
-      rewordings={node.summary ? node.summary.rewordings : {}}
-      info={node.summary ? node.summary.info : {}}
+      bundleId={nodeBasic.bundle_id}
+      nodeId={nodeBasic.id}
+      blockId={block.id}
+      rewordings={block.rewordings}
+      info={block.info}
       structure="summary"
       currentUser={currentUser}
       userCapabilities={userCapabilities}
       editorPlaceholder={
         <TranslatableMessage message={intlMessages.summaryPlaceholder} />
       }
+      shouldHighlighted={window.location.hash === `#summary-${block.id}`}
       render={ContentBlockRender}
     />
   );

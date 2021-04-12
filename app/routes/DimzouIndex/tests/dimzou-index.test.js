@@ -1,4 +1,5 @@
 import { fetchCategories, fetchCategoryFeed } from '../actions';
+import { provider } from '../helpers';
 import reducer from '../reducer';
 
 describe('Dimzou Index', () => {
@@ -90,6 +91,19 @@ describe('Dimzou Index', () => {
       const blockState = state.category;
       expect(blockState).toBeTruthy();
       expect(blockState.loading).toBeFalsy();
+    });
+  });
+
+  it('provider getTemplates', () => {
+    [1, 2, 3, 4, 5, 6, 7].forEach((count) => {
+      const items = provider.getTemplates(count);
+      expect(items).toBeTruthy();
+      expect(typeof items[0]).toEqual('string');
+      // for (let i = 0; i < 100; i += 1) {
+      //   const items = provider.getTemplates(count);
+      //   const resultCount = items.reduce((a, b) => a + b.count, 0);
+      //   expect(resultCount).toEqual(count);
+      // }
     });
   });
 });

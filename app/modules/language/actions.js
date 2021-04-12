@@ -4,7 +4,7 @@
  *
  */
 import { createAction } from 'redux-actions';
-import { createRoutine, promisifyRoutine } from 'redux-saga-routines';
+import { createRoutine } from 'redux-saga-routines';
 
 import {
   fetchLocales as fetchLocalesRequest,
@@ -12,9 +12,10 @@ import {
   // fetchLanguages as fetchLanguagesRequest,
   // fetchPublicTranslations as fetchPublicTranslationsRequest,
   // // fetchCustomTranslations as fetchCustomTranslationsRequest,
-  // submitTranslation as submitTranslationRequest,
+  submitTranslation as submitTranslationRequest,
+  deleteTranslation as deleteTranslationRequest,
   // setUserLocale as setUserLocaleRequest,
-} from '@/client/language';
+} from './requests';
 
 import { isFetchingLocales } from './selectors';
 
@@ -54,20 +55,19 @@ export const fetchTranslations = createRoutine(FETCH_TRANSLATIONS);
 export const fetchLanguages = createRoutine(FETCH_LANGUAGES);
 export const fetchLocales = createRoutine(FETCH_LOCALES);
 export const createLocale = createRoutine(CREATE_LOCALE);
-export const createLocalePromiseCreator = promisifyRoutine(createLocale);
 
 // translatable
 export const enableTranslationMode = createAction(ENABLE_TRANSLATION_MODE);
 export const disableTranslationMode = createAction(DISABLE_TRANSLATION_MODE);
 export const openTranslateLanguageSelect = createAction(
-  OPEN_TRANSLATE_LANGUAGE_SELECT
+  OPEN_TRANSLATE_LANGUAGE_SELECT,
 );
 export const closeTranslateLanguageSelect = createAction(
-  CLOSE_TRANSLATE_LANGUAGE_SELECT
+  CLOSE_TRANSLATE_LANGUAGE_SELECT,
 );
 export const submitTranslation = createRoutine(SUBMIT_TRANSLATION);
-export const submitTranslationPromiseCreator = promisifyRoutine(
-  submitTranslation
+export const deleteTranslation = createRoutine(
+  'TRANSLATABLE/DELETE_TRANSLATION',
 );
 
 // async actions
@@ -76,22 +76,47 @@ export const asyncFetchLocales = () => async (dispatch, getState) => {
   if (fetchingLocales) {
     return;
   }
-  dispatch(fetchLocales.request())
+  dispatch(fetchLocales.request());
   try {
-    const { data } = await fetchLocalesRequest()
+    const { data } = await fetchLocalesRequest();
     dispatch(fetchLocales.success(data));
   } catch (err) {
     dispatch(fetchLocales.failure(err));
     throw err;
   }
-}
+};
 
 export const asyncCreateLocale = (payload) => async (dispatch) => {
   try {
-    const res = await createLocaleRequest(payload)
+    const res = await createLocaleRequest(payload);
     dispatch(createLocale.success(res));
   } catch (err) {
     dispatch(createLocale.failure(err));
     throw err;
   }
-}
+};
+
+export const asyncSubmitTranslation = (payload) => async (dispatch) => {
+  dispatch(submitTranslation.request(payload));
+  const res = await submitTranslationRequest(payload);
+  dispatch(
+    submitTranslation.success({
+      ...res.data,
+      key: payload.key,
+      date: Date.now(),
+    }),
+  );
+};
+
+export const asyncDeleteTranslation = (payload) => async (dispatch) => {
+  await deleteTranslationRequest({
+    msgId: payload.key,
+    locale: payload.locale,
+  });
+  dispatch(
+    deleteTranslation.success({
+      ...payload,
+      date: Date.now(),
+    }),
+  );
+};

@@ -6,7 +6,7 @@ function get(key, fallback) {
   return new Promise((resolve, reject) => {
     redisClient.get(key, (err, result) => {
       if (err) {
-        reject(err)
+        reject(err);
       } else if (result) {
         resolve(JSON.parse(result));
       } else if (!fallback) {
@@ -17,18 +17,16 @@ function get(key, fallback) {
         resolve(fallback);
       }
     });
-  })
+  });
 }
 
 // ttl minute
 function put(key, data, ttl = CACHE_TTL) {
   return new Promise((resolve, reject) => {
-    const params = [
-      key, JSON.stringify(data),
-    ]
+    const params = [key, JSON.stringify(data)];
     if (ttl) {
       params.push('EX');
-      params.push(ttl * 60); 
+      params.push(ttl * 60);
     }
     redisClient.set(params, (err, result) => {
       if (err) {
@@ -36,8 +34,8 @@ function put(key, data, ttl = CACHE_TTL) {
       } else {
         resolve(result);
       }
-    })
-  })
+    });
+  });
 }
 
 function has(key) {
@@ -48,25 +46,28 @@ function has(key) {
       } else {
         resolve(result);
       }
-    })
-  })
+    });
+  });
 }
 
 function remember(key, ttl, query) {
   return new Promise((resolve, reject) => {
     redisClient.get(key, (err, result) => {
       if (err) {
-        reject(err)
+        reject(err);
       } else if (result) {
         resolve(JSON.parse(result));
       } else if (query) {
-        query().then((data) => {
-          put(key, data, ttl)
-          return data
-        }).then(resolve).catch(reject)
+        query()
+          .then((data) => {
+            put(key, data, ttl);
+            return data;
+          })
+          .then(resolve)
+          .catch(reject);
       }
     });
-  })
+  });
 }
 
 function forget(key) {
@@ -77,10 +78,9 @@ function forget(key) {
       } else {
         resolve(result);
       }
-    })
-  })
+    });
+  });
 }
-
 
 // function increment() { }
 // function decrement() { }
@@ -91,8 +91,8 @@ function forget(key) {
 
 module.exports = {
   get,
-  put, 
+  put,
   has,
   remember,
   forget,
-}
+};

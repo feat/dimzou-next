@@ -1,14 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { injectIntl } from 'react-intl'
+import { injectIntl } from 'react-intl';
 
 import Button from '@feat/feat-ui/lib/button';
 
 import intlMessages from '../messages';
 
 function TextBtn(props) {
-  const { intl: { formatMessage }} = props;
+  const {
+    intl: { formatMessage },
+  } = props;
   return (
     <Button
       type={props.userHasLiked ? 'danger' : 'merge'}

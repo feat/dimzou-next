@@ -12,20 +12,26 @@ function headerInRange(editorState) {
   const rangeBlock = blockMap
     .skipUntil((b) => b.getKey() === startKey)
     .takeUntil((b) => b.getKey() === endKey)
-    .toList().push(blockMap.get(endKey));
+    .toList()
+    .push(blockMap.get(endKey));
   return rangeBlock.some((block) => block.getType().indexOf('header') === 0);
 }
 
-function InlineToolbar (props) {
-  const currentStyle = props.editorState && props.editorState.getCurrentInlineStyle();
+function InlineToolbar(props) {
+  const currentStyle =
+    props.editorState && props.editorState.getCurrentInlineStyle();
   const hasHeader = props.editorState && headerInRange(props.editorState);
   return (
-    <div className="dz-EditorControls dz-EditorControls_inline">
+    <div className="dz-DockerButtonGroup">
       {props.buttons.map((button) => (
         <StyleButton
           key={button.style}
           {...button}
-          disabled={!props.editorState || button.disabled || (hasHeader && button.style === 'BOLD')}
+          disabled={
+            !props.editorState ||
+            button.disabled ||
+            (hasHeader && button.style === 'BOLD')
+          }
           isActive={currentStyle ? currentStyle.has(button.style) : false}
           onToggle={props.onToggle}
         />

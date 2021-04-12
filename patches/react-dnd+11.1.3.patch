@@ -1,0 +1,23 @@
+diff --git a/node_modules/react-dnd/dist/esm/hooks/internal/drop.js b/node_modules/react-dnd/dist/esm/hooks/internal/drop.js
+index ba81b13..9714851 100644
+--- a/node_modules/react-dnd/dist/esm/hooks/internal/drop.js
++++ b/node_modules/react-dnd/dist/esm/hooks/internal/drop.js
+@@ -59,5 +59,5 @@ export function useDropHandler(spec, monitor, connector) {
+     monitor.receiveHandlerId(handlerId);
+     connector.receiveHandlerId(handlerId);
+     return unregister;
+-  }, [monitor, connector]);
++  }, [monitor, connector, spec.current.accept]);
+ }
+\ No newline at end of file
+diff --git a/node_modules/react-dnd/lib/hooks/internal/drop.js b/node_modules/react-dnd/lib/hooks/internal/drop.js
+index cc4908d..d33e2e3 100644
+--- a/node_modules/react-dnd/lib/hooks/internal/drop.js
++++ b/node_modules/react-dnd/lib/hooks/internal/drop.js
+@@ -39,5 +39,5 @@ export function useDropHandler(spec, monitor, connector) {
+         monitor.receiveHandlerId(handlerId);
+         connector.receiveHandlerId(handlerId);
+         return unregister;
+-    }, [monitor, connector]);
++    }, [monitor, connector, spec.current.accept]);
+ }

@@ -1,0 +1,15 @@
+@import 'base.scss';
+
+@include block(ns(EditPermissionOption, dz)) {
+  padding: 3px;
+  border-radius: 50%;
+  &:hover,
+  &:focus  {
+      background-color: $gray-1;
+  }
+
+  @include state(selected) {
+    background-color: $gray-10;
+    color: white;
+  }
+}

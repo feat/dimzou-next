@@ -1,0 +1,33 @@
+@import 'base.scss';
+// TODO styles 
+
+@include block(ns(ok, icon)) {
+    @include element(circle) {
+      fill: $color-progress;
+      stroke: $gray-2;
+      stroke-alignment: inner;
+      stroke-width: 2;
+      &:hover {
+        fill: lighten($color-progress, 2%);
+      }
+  
+    }
+    @include element(char) {
+      fill: white;
+    }
+  }
+  
+  @include block(ns(no, icon)) {
+    @include element(circle) {
+      fill: $color-error;
+      stroke: $gray-2;
+      stroke-alignment: inner;
+      stroke-width: 2;
+      &:hover {
+        fill: lighten($color-error, 2%);
+      }
+    }
+    @include element(char) {
+      fill: white;
+    }
+  }

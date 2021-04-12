@@ -1,4 +1,4 @@
-const redis = require('redis')
+const redis = require('redis');
 const debug = require('./debug');
 
 const redisClient = redis.createClient({
@@ -7,10 +7,10 @@ const redisClient = redis.createClient({
   db: process.env.REDIS_DB || null,
   password: process.env.REDIS_PASSWORD || undefined,
   prefix: process.env.REDIS_PREFIX || null,
-})
+});
 
 redisClient.on('error', (err) => {
   debug.redis(`Error: ${err.message}`);
-})
+});
 
-module.exports = redisClient
+module.exports = redisClient;

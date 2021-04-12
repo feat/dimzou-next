@@ -5,12 +5,13 @@ export function getSpotImageUrl(location, options = {}) {
   const query = {
     center: `${lat},${lng}`,
     zoom: options.zoom || 14,
-    markers: `color:${options.markerColor||'red'}|${lat},${lng}`,
+    markers: `color:${options.markerColor || 'red'}|${lat},${lng}`,
     size: `${width}x${height}`,
     scale: options.scale || 2,
-  }
-  const search = Object.entries(query).map(([key, value]) => `${key}=${value}`).join('&');
-  
-  return `/api/geo/googleapis-staticmap/?${search}`
+  };
+  const search = Object.entries(query)
+    .map(([key, value]) => `${key}=${value}`)
+    .join('&');
 
+  return `/api/geo/googleapis-staticmap/?${search}`;
 }

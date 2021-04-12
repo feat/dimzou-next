@@ -8,10 +8,10 @@ function PublicationTitle() {
   const title = get(publicationState, 'data.title');
 
   return (
-    <div className="typo-Article">
+    <div className="dz-Typo">
       <h1>{maxTextContent(title)}</h1>
     </div>
-  )
+  );
 }
 
 export default PublicationTitle;

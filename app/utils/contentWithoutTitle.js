@@ -1,4 +1,4 @@
-export default function (html) {
+export default function(html) {
   if (!html) {
     return '';
   }

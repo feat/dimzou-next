@@ -1,10 +1,10 @@
-const common = require('debug')('feat-web:common');
-const request = require('debug')('feat-web:request');
-const auth = require('debug')('feat-web:auth');
-const server = require('debug')('feat-web:server');
-const redis = require('debug')('feat-web:redis');
-const apiProxy = require('debug')('proxy:api');
-const socketProxy = require('debug')('proxy:socket');
+const common = require('debug')('dimzou-next:common');
+const request = require('debug')('dimzou-next:request');
+const auth = require('debug')('dimzou-next:auth');
+const server = require('debug')('dimzou-next:server');
+const redis = require('debug')('dimzou-next:redis');
+const apiProxy = require('debug')('dimzou-next:api-proxy');
+const socketProxy = require('debug')('dimzou-next:socket-proxy');
 
 common.auth = auth;
 common.request = request;

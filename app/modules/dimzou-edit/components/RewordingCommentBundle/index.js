@@ -17,13 +17,9 @@ import {
   registerRewordingCommentBundle,
   initRewordingCommentBundle,
   fetchRewordingCommentTree,
-
-  toggleBlockExpanded,
-  closeCommentPanel,
 } from '../../actions';
 
 import { makeSelectRewordingCommentBundle } from '../../selectors';
-import { MeasureContext } from '../../context';
 
 class RewordingCommentBundle extends React.Component {
   constructor(props) {
@@ -41,7 +37,7 @@ class RewordingCommentBundle extends React.Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if (!this.props.bundleState) {
       this.props.registerRewordingCommentBundle({
         nodeId: this.props.nodeId,
@@ -52,7 +48,7 @@ class RewordingCommentBundle extends React.Component {
     }
   }
 
-  componentDidUpdate(preProps) {
+  componentDidUpdate() {
     const { shouldRender, bundleState } = this.props;
     if (shouldRender && bundleState && !bundleState.isInitialized) {
       this.props.initRewordingCommentBundle({
@@ -60,10 +56,6 @@ class RewordingCommentBundle extends React.Component {
         rewordingId: this.props.rewordingId,
       });
     }
-    if (preProps.bundleState !== bundleState && this.context) {
-      this.context();
-    }
-
   }
 
   getCache = () => getCache(this.cacheKey);
@@ -77,15 +69,8 @@ class RewordingCommentBundle extends React.Component {
       structure: this.props.structure,
       blockId: this.props.blockId,
     };
-    this.props.toggleBlockExpanded({
-      nodeId: this.props.nodeId,
-      blockId: this.props.blockId,
-      structure: this.props.structure,
-      expandedType: 'comment',
-    });
-    this.props.closeCommentPanel({
-      rewordingId: this.props.rewordingId,
-    });
+
+    this.props.onCommentFormSubmit?.();
     return this.props.createComment(preData);
   };
 
@@ -141,6 +126,9 @@ class RewordingCommentBundle extends React.Component {
     // const style = shouldRender ? undefined : { display: 'none' };
     return (
       <CommentBundle
+        ref={(ref) => {
+          this.bundleRef = ref;
+        }}
         key={`RewordingCommentBundle-${rewordingId}`}
         className={className}
         style={undefined}
@@ -156,12 +144,11 @@ class RewordingCommentBundle extends React.Component {
         isComment={!isCommentActive}
         autoFocus
         showSectionHeader
+        showAvatar={false}
       />
     );
   }
 }
-
-RewordingCommentBundle.contextType = MeasureContext;
 
 RewordingCommentBundle.propTypes = {
   className: PropTypes.string,
@@ -187,17 +174,16 @@ RewordingCommentBundle.propTypes = {
   shouldRender: PropTypes.bool,
   isCommentActive: PropTypes.bool,
 
-  closeCommentPanel: PropTypes.func,
-  toggleBlockExpanded: PropTypes.func,
   blockId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   structure: PropTypes.string,
   initialData: PropTypes.array,
   pageLayout: PropTypes.bool,
+  onCommentFormSubmit: PropTypes.func, // UI hide comment form;
 };
 
 RewordingCommentBundle.defaultProps = {
   pageLayout: true,
-}
+};
 
 const mapStateToProps = (state, props) => {
   const bundleStateSelector = makeSelectRewordingCommentBundle(state, props);
@@ -214,8 +200,6 @@ const mapDispatchToProps = {
   fetchRewordingCommentTree,
   registerRewordingCommentBundle,
   initRewordingCommentBundle,
-  toggleBlockExpanded,
-  closeCommentPanel,
 };
 
 const withConnect = connect(
@@ -223,6 +207,4 @@ const withConnect = connect(
   mapDispatchToProps,
 );
 
-export default compose(
-  withConnect,
-)(RewordingCommentBundle);
+export default compose(withConnect)(RewordingCommentBundle);

@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
+import ButtonBase from '@feat/feat-ui/lib/button/ButtonBase';
 import LikeButton from '@/components/LikeButton';
+import Icon from '../Icon';
 
 import {
   BLOCK_EXPANDED_SECTION_COMMENTS,
@@ -25,25 +27,27 @@ const CoverFooter = (props) => {
   return (
     <div className="dz-CoverFooter">
       <span className="margin_r_36">
-        <IconButton
-          className="margin_r_5"
-          svgIcon="edition"
-          isActive={
-            isExpanded && expandedType === BLOCK_EXPANDED_SECTION_VERSIONS
-          }
+        <ButtonBase
+          className={classNames('margin_r_5', {
+            'is-active':
+              isExpanded && expandedType === BLOCK_EXPANDED_SECTION_VERSIONS,
+          })}
           onClick={() => onToggle(BLOCK_EXPANDED_SECTION_VERSIONS)}
-        />
+        >
+          <Icon name="reword" className="size_xs" />
+        </ButtonBase>
         {candidateCount}/{historyCount}
       </span>
       <span className="margin_r_36">
-        <IconButton
-          className="margin_r_5"
-          svgIcon="comment"
-          isActive={
-            isExpanded && expandedType === BLOCK_EXPANDED_SECTION_COMMENTS
-          }
+        <ButtonBase
+          className={classNames('margin_r_5', {
+            'is-active':
+              isExpanded && expandedType === BLOCK_EXPANDED_SECTION_COMMENTS,
+          })}
           onClick={() => onToggle(BLOCK_EXPANDED_SECTION_COMMENTS)}
-        />
+        >
+          <Icon name="comment" className="size_xs" />
+        </ButtonBase>
         {commentsCount || 0}
       </span>
       <span className="margin_r_24">

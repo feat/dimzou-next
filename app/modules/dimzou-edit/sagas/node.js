@@ -6,6 +6,7 @@ import {
   takeLatest,
   fork,
   delay,
+  all,
 } from 'redux-saga/effects';
 // import { eventChannel } from 'redux-saga';
 import get from 'lodash/get';
@@ -18,18 +19,14 @@ import { selectCurrentUser } from '@/modules/auth/selectors';
 
 import notification from '@feat/feat-ui/lib/notification';
 
-// import Echo from 'services/echo';
 import {
-  patchContent,
-  receiveContentPatch,
+  initNodeEdit,
+  patchNodeData,
   likeSignal,
   commentSignal,
   // asyncFetchNodeEditInfo,
-  loadNodeEditInfo,
   commitBlock,
   submitBlock,
-  electBlock,
-  rejectBlock,
   removeBlock,
   updateBlockSort,
   commitRewording,
@@ -68,12 +65,12 @@ import {
   exitRewordingEdit,
   updateBlockEditor,
   exitBlockEdit,
-  // asyncFetchNodeData,
 } from '../actions';
 
 import {
-  patchDimzouEditInfo,
-  // getDimzouEditInfo,
+  getNodeBasic as getNodeBasicRequest,
+  getNodeContentIds as getNodeContentIdsRequest,
+  getNodeTitleSummaryCover as getNodeTitleSummaryCoverRequest,
   getBlockTranslation as getBlockTranslationRequest,
   likeRewording as likeRewordingRequest,
   unlikeRewording as unlikeRewordingRequest,
@@ -92,8 +89,10 @@ import {
   // update config
   updateChapter as updateChapterRequest,
 } from '../requests';
+
 import {
-  selectNodeData,
+  selectNodeState,
+  selectNodeBasic,
   selectBundleData,
   selectNodeCollaborators,
 } from '../selectors';
@@ -114,29 +113,29 @@ import {
   ACTION_SUBMIT_REWORDING,
   // ACTION_ELECT_REWORDING,
   // ACTION_REJECT_REWORDING,
-  ACTION_ELECT_BLOCK,
-  ACTION_REJECT_BLOCK,
   // ACTION_REMOVE_BLOCK,
-  // NODE_STRUCTURE_CONTENT,
   BEGINNING_PIVOT,
-  // NODE_STRUCTURE_TITLE,
-  // NODE_STRUCTURE_SUMMARY,
-  // NODE_STRUCTURE_COVER,
+  // NODE_STRUCTURE_CONTENT,
+  NODE_STRUCTURE_TITLE,
+  NODE_STRUCTURE_SUMMARY,
+  NODE_STRUCTURE_COVER,
   structureMap,
   NODE_TYPE_COVER,
   ACTION_UPDATE_COLLABORATOR,
   ACTION_ADD_COLLABORATOR,
   ACTION_REMOVE_COLLABORATOR,
+  TAILING_PIVOT,
 
   // ROLE_ADMIN,
 } from '../constants';
 
 import {
   getConfirmedText,
+  mapArray,
   // splitContent
 } from '../utils/content';
 import { getRewordType } from '../utils/rewordings';
-import { dimzouTransformer, patchDimzouNode } from '../utils/transformer';
+
 import {
   getNodeCache,
   appendingBlockKey,
@@ -145,6 +144,71 @@ import {
 } from '../utils/cache';
 
 import dimzouSocket from '../socket';
+
+function* initNodeFlow(action) {
+  const { payload } = action;
+  const { bundleId, nodeId, invitationCode } = payload;
+  const nodeState = yield select((state) => selectNodeState(state, payload));
+  if (nodeState && nodeState.isFetchingEditInfo) {
+    return;
+  }
+  try {
+    yield put(initNodeEdit.request(payload));
+    const [
+      { data: basic },
+      {
+        data: {
+          [NODE_STRUCTURE_TITLE]: title,
+          [NODE_STRUCTURE_SUMMARY]: summary,
+          [NODE_STRUCTURE_COVER]: cover,
+        },
+      },
+      { data: contentList },
+    ] = yield all([
+      getNodeBasicRequest(bundleId, {
+        node: nodeId,
+        invitation: invitationCode,
+      }),
+      getNodeTitleSummaryCoverRequest(nodeId),
+      getNodeContentIdsRequest({
+        node: nodeId,
+        invitation: invitationCode,
+      }),
+    ]);
+    // console.log(basic, title, summary, cover);
+    const blocks = {};
+    if (title) {
+      blocks[title.id] = title;
+    }
+    if (summary) {
+      blocks[summary.id] = summary;
+    }
+    if (cover) {
+      blocks[cover.id] = cover;
+    }
+
+    yield put(
+      initNodeEdit.success({
+        ...payload,
+        basic,
+        title: title ? title.id : undefined,
+        summary: summary ? summary.id : undefined,
+        cover: cover ? cover.id : undefined,
+        contentList,
+        blocks,
+      }),
+    );
+  } catch (err) {
+    yield put(
+      initNodeEdit.failure({
+        ...payload,
+        data: err,
+      }),
+    );
+  } finally {
+    yield put(initNodeEdit.fulfill(payload));
+  }
+}
 
 function joinNodeChannel(action) {
   const {
@@ -236,31 +300,6 @@ function* handleLikeSignal(action) {
 //   );
 // }
 
-function* handleContentPatch(action) {
-  const {
-    payload: { nodeId, data, bundleId },
-  } = action;
-  const node = yield select((state) => selectNodeData(state, { nodeId }));
-
-  const updatedNode = dimzouTransformer(node, data);
-  if (updatedNode === node) {
-    return;
-  }
-  yield put(
-    patchContent({
-      bundleId,
-      nodeId,
-      data: updatedNode,
-    }),
-  );
-}
-
-function* patchContentAsync(nodeId, payload, nextAction) {
-  const { data } = yield call(patchDimzouEditInfo, nodeId, payload);
-  yield call(handleContentPatch, receiveContentPatch({ nodeId, data }));
-  yield put(nextAction);
-}
-
 const mapLikeInfo = (likeInfo) => ({
   id: likeInfo.id,
   rewording_id: likeInfo.object_id,
@@ -293,6 +332,7 @@ function* likeRewordingAsync(action) {
       }),
     );
   } catch (err) {
+    // console.log(err);
     yield put(
       likeRewording.failure({
         rewordingId,
@@ -416,13 +456,20 @@ function* initBlockEditWithTranslationFlow(action) {
 
 function* insertContentFlow(action, routine) {
   const { payload } = action;
-  const { content, htmlContent, bundleId, nodeId, cacheKey } = payload;
+  const {
+    content,
+    htmlContent,
+    bundleId,
+    nodeId,
+    cacheKey,
+    isTailing,
+  } = payload;
 
   yield put(routine.request(payload));
 
   // user insert
   let params;
-  if (payload.isTailing) {
+  if (isTailing) {
     params = {
       is_tailing: true,
       content: getConfirmedText(htmlContent),
@@ -450,22 +497,23 @@ function* insertContentFlow(action, routine) {
       const cache = getNodeCache(nodeId);
       cache.remove(cacheKey);
     }
-    const node = yield select((state) =>
-      selectNodeData(state, { bundleId, nodeId }),
-    );
-    const updatedNode = patchDimzouNode(
-      node,
-      data,
-      payload.isTailing ? 'tailing-insert' : 'insert-content',
-    );
+    // const node = yield select((state) =>
+    //   selectNodeData(state, { bundleId, nodeId }),
+    // );
+
+    const [blockList, blocks] = mapArray(Array.isArray(data) ? data : [data]);
+    const { data: contentList } = yield call(getNodeContentIdsRequest, {
+      node: payload.nodeId,
+    });
+
     yield put(
-      patchContent({
-        bundleId,
-        nodeId,
-        data: updatedNode,
+      routine.success({
+        ...payload,
+        blockList,
+        blocks,
+        contentList,
       }),
     );
-    yield put(routine.success(payload));
   } catch (err) {
     notification.error({
       message: 'Error',
@@ -508,9 +556,8 @@ function* submitBlockAsync(action) {
 /**
  * Rewording actions
  */
-function* submitCoverFlow(action, routine, method) {
+function* submitCoverFlow(action, routine) {
   const { payload } = action;
-  logging.debug('submitCoverFlow', method);
   const params = {
     img: payload.sourceImage,
     crop_img: payload.croppedImage,
@@ -528,21 +575,15 @@ function* submitCoverFlow(action, routine, method) {
       payload.nodeId,
       params,
     );
-    const node = yield select((state) => selectNodeData(state, payload));
-    const updatedNode = patchDimzouNode(
-      node,
-      [data],
-      'submit-content',
-      'cover',
-    );
     yield put(
-      patchContent({
-        bundleId: payload.bundleId,
-        nodeId: payload.nodeId,
-        data: updatedNode,
+      routine.success({
+        ...payload,
+        blockList: [data.id],
+        blocks: {
+          [data.id]: data,
+        },
       }),
     );
-    yield put(routine.success(payload));
   } catch (err) {
     notification.error({
       message: 'Error',
@@ -562,9 +603,8 @@ function* submitCoverFlow(action, routine, method) {
   }
 }
 
-function* submitEditFlow(action, routine, method) {
+function* submitEditFlow(action, routine) {
   const { payload } = action;
-  logging.debug('submitCoverFlow', method);
   const params = {
     reword_type: getRewordType(payload.structure),
     paragraph_id: payload.blockId,
@@ -581,21 +621,18 @@ function* submitEditFlow(action, routine, method) {
       payload.nodeId,
       params,
     );
-    const node = yield select((state) => selectNodeData(state, payload));
-    const updatedDimzou = patchDimzouNode(
-      node,
-      data,
-      'submit-content',
-      payload.structure,
-    );
+    const [blockList, blocks] = mapArray(data.sort((a, b) => a.sort - b.sort));
+    const { data: contentList } = yield call(getNodeContentIdsRequest, {
+      node: payload.nodeId,
+    });
     yield put(
-      patchContent({
-        bundleId: payload.bundleId,
-        nodeId: payload.nodeId,
-        data: updatedDimzou,
+      routine.success({
+        ...payload,
+        blocks,
+        blockList,
+        contentList,
       }),
     );
-    yield put(routine.success(payload));
   } catch (err) {
     notification.error({
       message: 'Error',
@@ -674,16 +711,15 @@ function* removeRewordingAsync(action) {
       paragraph_id: payload.blockId,
       rewording_id: payload.rewordingId,
     });
-    const node = yield select((state) => selectNodeData(state, payload));
-    const updatedNode = patchDimzouNode(node, payload, 'remove-content');
+    const { data: contentList } = yield call(getNodeContentIdsRequest, {
+      node: payload.nodeId,
+    });
     yield put(
-      patchContent({
-        bundleId: payload.bundleId,
-        nodeId: payload.nodeId,
-        data: updatedNode,
+      removeRewording.success({
+        ...payload,
+        contentList,
       }),
     );
-    yield put(removeRewording.success(payload));
   } catch (err) {
     notification.error({
       message: 'Error',
@@ -730,38 +766,41 @@ function* checkEditFlow(action, routine, method) {
         reword_id: payload.rewordingId,
       },
     );
+    const [blockList, blocks] = mapArray(data);
+    const { data: contentList } = yield call(getNodeContentIdsRequest, {
+      node: payload.nodeId,
+    });
     yield put(
-      patchContent({
-        bundleId: payload.bundleId,
-        nodeId: payload.nodeId,
-        data,
+      routine.success({
+        ...payload,
+        blocks,
+        blockList,
+        contentList,
       }),
     );
-    // yield put(asyncFetchNodeData(payload.nodeId, payload.blockId));
-
-    yield put(routine.success(payload));
-    logging.debug(data);
   } catch (err) {
     if (err.code === 'INVALID_REWORD_STATUS') {
-      const data = yield select((state) => selectNodeData(state, payload));
-      const patched = patchDimzouNode(
-        data,
-        {
-          structure: payload.structure,
-          blockId: payload.blockId,
-          rewording: err.data,
-        },
-        'update-rewording',
-      );
       notification.error({
         message: 'Warning',
         description: err.message,
       });
       yield put(
-        patchContent({
+        patchNodeData({
           bundleId: payload.bundleId,
           nodeId: payload.nodeId,
-          data: patched,
+          mutators: [
+            {
+              [payload.blockId]: {
+                rewordings: (rewordings) =>
+                  rewordings.map((r) => {
+                    if (r.id === err.data.id) {
+                      return err.data;
+                    }
+                    return r;
+                  }),
+              },
+            },
+          ],
         }),
       );
     } else {
@@ -789,75 +828,6 @@ function* electRewordingAsync(action) {
   yield call(checkEditFlow, action, electRewording, 'elect');
 }
 
-function* electBlockAsync(action) {
-  const { payload } = action;
-  const params = {
-    structure: payload.structure,
-    block_id: payload.blockId,
-    rewording_id: payload.rewordingId,
-  };
-  yield put(electBlock.request(payload));
-  try {
-    yield call(
-      patchContentAsync,
-      payload.nodeId,
-      {
-        method: ACTION_ELECT_BLOCK,
-        params,
-      },
-      electBlock.success(payload),
-    );
-  } catch (err) {
-    notification.error({
-      message: 'Error',
-      description: err.message,
-    });
-    if (!(err instanceof ApiError)) {
-      logging.error(err);
-    }
-    yield put(
-      electBlock.failure({
-        ...payload,
-        data: err,
-      }),
-    );
-  } finally {
-    yield put(electBlock.fulfill(payload));
-  }
-}
-
-function* rejectBlockAsync(action) {
-  const { payload } = action;
-  const params = {
-    structure: payload.structure,
-    block_id: payload.blockId,
-    rewording_id: payload.rewordingId,
-  };
-  yield put(rejectBlock.request(payload));
-  try {
-    yield call(
-      patchContentAsync,
-      payload.nodeId,
-      {
-        method: ACTION_REJECT_BLOCK,
-        params,
-      },
-      rejectBlock.success(payload),
-    );
-  } catch (err) {
-    notification.error({
-      message: 'Error',
-      description: err.message,
-    });
-    if (!(err instanceof ApiError)) {
-      logging.error(err);
-    }
-    yield put(rejectBlock.failure(payload));
-  } finally {
-    yield put(rejectBlock.fulfill(payload));
-  }
-}
-
 function* removeBlockAsync(action) {
   // check auth status
   const currentUser = yield select(selectCurrentUser);
@@ -881,17 +851,18 @@ function* removeBlockAsync(action) {
       preData.reword_id = payload.rewordingId;
     }
     yield call(removeContentRequest, payload.bundleId, payload.nodeId, preData);
-    // if is node
-    const node = yield select((state) => selectNodeData(state, payload));
-    const updatedNode = patchDimzouNode(node, payload, 'remove-content');
+    const { data: contentList } = yield call(getNodeContentIdsRequest, {
+      node: payload.nodeId,
+    });
     yield put(
-      patchContent({
+      removeBlock.success({
         bundleId: payload.bundleId,
         nodeId: payload.nodeId,
-        data: updatedNode,
+        blockId: payload.blockId,
+        structure: payload.structure,
+        contentList,
       }),
     );
-    yield put(removeBlock.success(payload));
   } catch (err) {
     notification.error({
       message: 'Error',
@@ -934,16 +905,18 @@ function* addMediaBlockFlow(action, routine) {
       payload.nodeId,
       body,
     );
-    const node = yield select((state) => selectNodeData(state, payload));
-    const updatedNode = patchDimzouNode(node, data, 'insert-content');
+    const [blockList, blocks] = mapArray(data);
+    const { data: contentList } = yield call(getNodeContentIdsRequest, {
+      node: payload.nodeId,
+    });
     yield put(
-      patchContent({
-        bundleId: payload.bundleId,
-        nodeId: payload.nodeId,
-        data: updatedNode,
+      routine.success({
+        ...payload,
+        blockList,
+        blocks,
+        contentList,
       }),
     );
-    yield put(routine.success(payload));
   } catch (err) {
     notification.error({
       message: 'Error',
@@ -998,21 +971,18 @@ function* addMediaRewordingFlow(action, routine) {
         file: payload.file,
       },
     );
-    const node = yield select((state) => selectNodeData(state, payload));
-    const updatedNode = patchDimzouNode(
-      node,
-      data,
-      'submit-content',
-      payload.structure,
-    );
+    const { data: contentList } = yield call(getNodeContentIdsRequest, {
+      node: payload.nodeId,
+    });
+    const [blockList, blocks] = mapArray(data);
     yield put(
-      patchContent({
-        bundleId: payload.bundleId,
-        nodeId: node.id,
-        data: updatedNode,
+      routine.success({
+        ...payload,
+        blockList,
+        blocks,
+        contentList,
       }),
     );
-    yield put(routine.success(payload));
   } catch (err) {
     notification.error({
       message: 'Error',
@@ -1088,7 +1058,7 @@ function* changeTemplateAsync(action) {
   const { bundleId, nodeId, template } = payload;
   const bundle = yield select((state) => selectBundleData(state, { bundleId }));
   const node = yield select((state) =>
-    selectNodeData(state, { bundleId, nodeId }),
+    selectNodeBasic(state, { bundleId, nodeId }),
   );
   try {
     const template_config = {
@@ -1191,9 +1161,6 @@ function* handleCollaboratorPatch(action) {
     case ACTION_UPDATE_COLLABORATOR:
       updatedCollaborators = collaborators.map((c) => {
         if (c.id === data.payload.id) {
-          if (!data.payload.user) {
-            data.payload.user = c.user;
-          }
           return data.payload;
         }
         return c;
@@ -1357,21 +1324,34 @@ function* changeEditPermissionAsync(action) {
 }
 
 function* handleEditPatchSingal(action) {
-  const { payload } = action;
-  const node = yield select((state) => selectNodeData(state, payload));
-  const updatedNode = patchDimzouNode(
-    node,
-    payload.patch,
-    payload.method,
-    payload.structure,
-  );
-  yield put(
-    patchContent({
-      // bundleId: payload.bundleId,
-      nodeId: payload.nodeId,
-      data: updatedNode,
-    }),
-  );
+  logging.info('handleEditPatchSingal', action.payload);
+
+  const { method, structure, patch, nodeId } = action.payload;
+
+  /**
+   * 此处blocks 不使用 mutators 的方式进行数据更新，会影响到 blocks 初始化。
+   * 在修改前，请注意检查 blocks reducer
+   */
+  const payload = {
+    nodeId,
+    structure,
+  };
+  if (
+    method === 'insert-content' ||
+    method === 'remove-content' ||
+    method === 'reorder'
+  ) {
+    const { data: contentList } = yield call(getNodeContentIdsRequest, {
+      node: nodeId,
+    });
+    payload.contentList = contentList;
+  }
+  if (method === 'insert-content' || method === 'submit-content') {
+    const [, blocks] = mapArray(patch);
+    payload.blocks = blocks;
+  }
+
+  yield put(patchNodeData(payload));
 }
 
 const patchCache = (nodeId, cacheKey, patch) => {
@@ -1395,19 +1375,24 @@ function* initAppendEditCache(action) {
   const { editorState, ...cacheInfo } = payload;
   const html = getHTML(editorState.getCurrentContent());
   cacheInfo.html = html;
-  patchCache(payload.nodeId, cacheKey, cacheInfo);
+  if (payload.pivotId === TAILING_PIVOT && !html) {
+    removeAppendCache(action);
+  } else {
+    patchCache(payload.nodeId, cacheKey, cacheInfo);
+  }
 }
 
 function* updateAppendCache(action) {
   const { payload } = action;
-
   const cacheKey = appendingBlockKey(payload);
   const html = payload.editorState.getCurrentContent().hasText()
     ? getHTML(payload.editorState.getCurrentContent())
     : '';
-  patchCache(payload.nodeId, cacheKey, {
-    html,
-  });
+  if (payload.pivotId === TAILING_PIVOT && !html) {
+    removeAppendCache(action);
+  } else {
+    patchCache(payload.nodeId, cacheKey, { html });
+  }
 }
 
 function removeAppendCache(action) {
@@ -1443,6 +1428,9 @@ function removeRewordingEditCache(action) {
 
 function initBlockEditCache(action) {
   const { payload } = action;
+  if (payload.structure === 'cover') {
+    return;
+  }
   const cacheKey = blockKey(payload);
   const { editorState, ...cacheInfo } = payload;
   const html = editorState && getHTML(editorState.getCurrentContent());
@@ -1452,6 +1440,9 @@ function initBlockEditCache(action) {
 
 function updateBlockEditCache(action) {
   const { payload } = action;
+  if (payload.structure === 'cover') {
+    return;
+  }
   const cacheKey = blockKey(payload);
   const html = getHTML(payload.editorState.getCurrentContent());
   patchCache(payload.nodeId, cacheKey, { html });
@@ -1477,14 +1468,12 @@ function removeEditCache(action) {
 }
 
 export default function* nodeEditSaga() {
-  logging.debug('dimzou node edit saga run.');
-
   // ---- broadcasing
-  yield takeEvery(loadNodeEditInfo, joinNodeChannel);
+  yield takeEvery(initNodeEdit, initNodeFlow);
+  yield takeEvery(initNodeEdit.SUCCESS, joinNodeChannel);
 
   yield takeEvery(editPatchSignal, handleEditPatchSingal);
 
-  yield takeEvery(receiveContentPatch, handleContentPatch);
   yield takeEvery(likeSignal, handleLikeSignal);
   yield takeEvery(commentSignal, handleCommentSignal);
   // --- content operations
@@ -1492,8 +1481,6 @@ export default function* nodeEditSaga() {
   yield takeEvery(submitBlock, submitBlockAsync);
   yield takeEvery(commitMediaBlock, commitMediaBlockAsync);
   yield takeEvery(submitMediaBlock, submitMediaBlockAsync);
-  yield takeEvery(electBlock, electBlockAsync);
-  yield takeEvery(rejectBlock, rejectBlockAsync);
   yield takeEvery(removeBlock, removeBlockAsync);
   yield takeEvery(removeRewording, removeRewordingAsync);
   yield takeEvery(updateRewording, updateRewordingAsync);

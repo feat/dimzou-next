@@ -154,11 +154,25 @@ export const getParagraphRange = (params) =>
     params,
   });
 
+export const batchParagraph = (ids) =>
+  request({
+    url: '/api/dimzou/paragraph/batch/',
+    method: 'GET',
+    params: { ids },
+  });
+
 export const getParagraphType = (params) =>
   request({
     url: '/api/dimzou/paragraph/',
     method: 'GET',
     params,
+  });
+
+export const getNodeTitleSummaryCover = (id) =>
+  request({
+    url: '/api/dimzou/paragraph/title-summary-cover/',
+    method: 'GET',
+    params: { node: id },
   });
 
 export const updateBundleConfig = (id, data) =>
@@ -219,7 +233,9 @@ export const publish = (id, data) =>
 export const sectionRelease = (bundleId, data) => {
   const form = new FormData();
   Object.entries(data).forEach(([key, value]) => {
-    form.append(key, value);
+    if (value !== undefined) {
+      form.append(key, value);
+    }
   });
   return request({
     url: `/api/dimzou/bundle/${bundleId}/publish-node-section/`,
@@ -231,43 +247,27 @@ export const sectionRelease = (bundleId, data) => {
   });
 };
 
-// node
-export const getDimzouEditInfo = (id, params) =>
+/**
+ * 获取章节信息
+ * @param {*} bundleId
+ * @param {*} params { node, invitation }
+ */
+export const getNodeBasic = (bundleId, params) =>
   request({
-    url: `/api/v1/dimzou/${id}/edit`,
+    url: `/api/dimzou/bundle/${bundleId}/node-detail/`,
     method: 'GET',
     params,
   });
 
-export const patchDimzouEditInfo = (id, data) => {
-  if (data.params.structure === 'cover') {
-    const formData = new FormData();
-    formData.append('method', data.method);
-
-    Object.keys(data.params).forEach((key) => {
-      if (key === 'cropped_image' || key === 'source_image') {
-        formData.append(key, data.params[key]);
-      } else if (data.params[key] instanceof Object) {
-        formData.append(`params[${key}]`, JSON.stringify(data.params[key]));
-      } else {
-        formData.append(`params[${key}]`, data.params[key]);
-      }
-    });
-    return request({
-      url: `/api/v1/dimzou/${id}/edit`,
-      method: 'POST',
-      headers: {
-        'Content-Type': false,
-      },
-      data: formData,
-    });
-  }
-  return request({
-    url: `/api/v1/dimzou/${id}/edit`,
-    method: 'POST',
-    data,
+/**
+ * 获取章节内容ID列表
+ * @param {*} params { node, invitation }
+ */
+export const getNodeContentIds = (params) =>
+  request({
+    url: `/api/dimzou/paragraph/content-ids/`,
+    params,
   });
-};
 
 export const addAttachment = (id, file) => {
   const formData = new FormData();

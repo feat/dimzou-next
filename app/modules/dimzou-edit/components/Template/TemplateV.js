@@ -19,15 +19,15 @@ const TemplateV = React.forwardRef((props, ref) => {
       ref={ref}
     >
       <div className="dz-TemplateV__header">
-        <div className="dz-TemplateV__cover">{cover}</div>
+        <div className="dz-App__cover">{cover}</div>
       </div>
-      <div className="dz-TemplateV__mainContainer">
-        <div className="dz-TemplateV__mainWrap">
-          <div className="dz-TemplateV__sidebarFirst">{sidebarFirst}</div>
-          <div className="dz-TemplateV__main">{main}</div>
-          <div className="dz-TemplateV__sidebarSecond">{sidebarSecond}</div>
+      <div className="dz-App__mainContainer">
+        <div className="dz-App__mainWrap">
+          <div className="dz-App__sidebarFirst">{sidebarFirst}</div>
+          <div className="dz-App__main">{main}</div>
+          <div className="dz-App__sidebarSecond">{sidebarSecond}</div>
         </div>
-        <div className="dz-TemplateV__sidebarThird">{sidebarThird}</div>
+        <div className="dz-App__sidebarThird">{sidebarThird}</div>
       </div>
     </div>
   );

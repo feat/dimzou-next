@@ -4,7 +4,7 @@ import update from 'immutability-helper';
 import { normalize } from 'normalizr';
 import { mapHandleActions } from '@/utils/reducerCreators';
 import merge from '@/utils/merge';
-import { rewordingComment as rewordingCommentSchema } from '@/schema';
+import { rewordingComment as rewordingCommentSchema } from '../schema';
 
 import {
   createRewordingComment,
@@ -18,8 +18,12 @@ import {
   increaseRootCount,
   decreaseRootCount,
   registerRewordingCommentBundle,
-  loadNodeEditInfo,
-  patchContent,
+  initNodeEdit,
+  loadBlockRange,
+  commitBlock,
+  submitBlock,
+  commitMediaBlock,
+  submitMediaBlock,
 } from '../actions';
 
 export const initialBundleState = {
@@ -37,14 +41,14 @@ const rewordingCommentReducer = mapHandleActions(
       const base = {
         ...bundleState,
         rootCount: action.payload.rootCount,
-      }
+      };
       const { initialData } = action.payload;
       if (initialData) {
         const normalized = normalize(initialData, [rewordingCommentSchema]);
         base.comments = normalized.result;
         base.entities = normalized.entities;
         base.isInitialized = true;
-      }      
+      }
       return base;
     },
     [initRewordingCommentBundle]: (bundleState) => ({
@@ -85,7 +89,7 @@ const rewordingCommentReducer = mapHandleActions(
               $unset: [commentId],
             },
           },
-        })
+        });
       }
       return update(bundleState, {
         entities: {
@@ -126,10 +130,12 @@ const rewordingCommentReducer = mapHandleActions(
               if (!comment) {
                 return undefined;
               }
-              return ({
+              return {
                 ...comment,
-                children: comment.children ? uniq([...(comment.children), commentId]) : [commentId],
-              })
+                children: comment.children
+                  ? uniq([...comment.children, commentId])
+                  : [commentId],
+              };
             },
           },
         }),
@@ -175,46 +181,38 @@ const getInitialState = (r, nodeId) => {
     state.isInitialized = true;
   }
   return state;
+};
+
+function initWithNodeInit(state, action) {
+  const { blocks, basic } = action.payload;
+  const newState = { ...state };
+  let hasUpdate = false;
+  Object.values(blocks).forEach((block) => {
+    block.rewordings.forEach((r) => {
+      if (!newState[r.id]) {
+        hasUpdate = true;
+        newState[r.id] = getInitialState(r, basic.id);
+      }
+    });
+  });
+  if (hasUpdate) {
+    return newState;
+  }
+  return state;
 }
 
-const initCommentBundleWithNodeInfo = (state={}, action) => {
+function initWithChunk(state, action) {
+  const { nodeId, blocks } = action.payload;
   const newState = { ...state };
-  const { data } = action.payload;
   let hasUpdate = false;
-  if (data.title && data.title.rewordings) {
-    data.title.rewordings.forEach((r) => {
+  Object.values(blocks).forEach((block) => {
+    block.rewordings.forEach((r) => {
       if (!newState[r.id]) {
         hasUpdate = true;
-        newState[r.id] = getInitialState(r, data.id);
+        newState[r.id] = getInitialState(r, nodeId);
       }
-    })
-  }
-  if (data.summary && data.summary.rewordings) {
-    data.summary.rewordings.forEach((r) => {
-      if (!newState[r.id]) {
-        hasUpdate = true;
-        newState[r.id] = getInitialState(r, data.id);
-      }
-    })
-  }
-  if (data.cover && data.cover.rewordings) {
-    data.cover.rewordings.forEach((r) => {
-      if (!newState[r.id]) {
-        hasUpdate = true;
-        newState[r.id] = getInitialState(r, data.id);
-      }
-    })
-  }
-  if (data.content) {
-    data.content.forEach((block) => {
-      block.rewordings && block.rewordings.forEach((r) => {
-        if (!newState[r.id]) {
-          hasUpdate = true;
-          newState[r.id] = getInitialState(r, data.id);
-        }
-      })
-    })
-  }
+    });
+  });
   if (hasUpdate) {
     return newState;
   }
@@ -222,15 +220,20 @@ const initCommentBundleWithNodeInfo = (state={}, action) => {
 }
 
 const reducer = (state, action) => {
+  if (action.type === initNodeEdit.SUCCESS) {
+    return initWithNodeInit(state, action);
+  }
   if (
-    action.type === loadNodeEditInfo.toString() ||
-    action.type === patchContent.toString()
+    action.type === loadBlockRange.toString() ||
+    action.type === commitBlock.SUCCESS ||
+    action.type === submitBlock.SUCCESS ||
+    action.type === commitMediaBlock.SUCCESS ||
+    action.type === submitMediaBlock.SUCCESS
   ) {
-    return initCommentBundleWithNodeInfo(state, action);
+    return initWithChunk(state, action);
   }
 
   return rewordingCommentReducer(state, action);
-}
+};
 
 export default reducer;
-

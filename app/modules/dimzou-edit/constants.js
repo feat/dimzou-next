@@ -2,7 +2,7 @@ export const EDIT_PERMISSION_PUBLIC = 0;
 export const EDIT_PERMISSION_GROUP = 100;
 
 export const BUNDLE_TYPE_TRANSLATE = 2; // publication
-export const BUNDLE_TYPE_ORIGIN = 1;  // publication
+export const BUNDLE_TYPE_ORIGIN = 1; // publication
 
 export const BUNDLE_STATUS_DRAFT = 0;
 export const BUNDLE_STATUS_PUBLISHED = 200;
@@ -13,7 +13,7 @@ export const CONTENT_TYPE_ORIGIN = 0;
 export const ROLE_OWNER = 0;
 export const ROLE_ADMIN = 100;
 export const ROLE_PARTICIPATOR = 200;
-export const ROLE_BLOCKED = -1; 
+export const ROLE_BLOCKED = -1;
 
 export const REWORDIND_MEDIA_TYPE_TEXT = 0;
 export const REWORDIND_MEDIA_TYPE_CODE_BLOCK = 100;
@@ -50,7 +50,7 @@ export const structureMap = {
   [NODE_STRUCTURE_SUMMARY]: 'summary',
   [NODE_STRUCTURE_CONTENT]: 'content',
   [NODE_STRUCTURE_COVER]: 'cover',
-}
+};
 
 // rewording action;
 export const ACTION_ELECT_REWORDING = 'elect-rewording';
@@ -59,8 +59,8 @@ export const ACTION_SUBMIT_REWORDING = 'submit-rewording';
 export const ACTION_COMMIT_REWORDING = 'commit-rewording';
 export const ACTION_UPDATE_REWORDING = 'update-rewording';
 // block action;
-export const ACTION_ELECT_BLOCK = 'elect-block';
-export const ACTION_REJECT_BLOCK = 'reject-block';
+// export const ACTION_ELECT_BLOCK = 'elect-block';
+// export const ACTION_REJECT_BLOCK = 'reject-block';
 export const ACTION_SUBMIT_BLOCK = 'submit-block';
 export const ACTION_COMMIT_BLOCK = 'commit-block';
 export const ACTION_REMOVE_BLOCK = 'remove-block';
@@ -125,8 +125,13 @@ export const COVER_SUMMARY_ID = '__SUMMARY__';
 export const COVER_TITLE_ID = '__COVER__';
 
 // DnD
-export const DRAGGABLE_TYPE_BLOCK = 'dimzou_block';
-export const DRAGGABLE_TYPE_REWORDING = 'dimzou_rewording';
+export const DRAGGABLE_TYPE_BLOCK = 'DZ/BLOCK';
+export const DRAGGABLE_TYPE_REWORDING = 'DZ/REWORDING';
+export const DRAGGABLE_RESOURCE_NODE = 'DZ/RESOURCE_NODE';
+export const DRAGGABLE_TYPE_COLLABORATOR = 'DZ/COLLABORATOR';
+
+export const DRAG_TO_DELETE_DELTA = 120;
+export const MAX_TITLE_LENGTH = 100;
 
 // Features
 // ORIGIN_MULTI_CHAPTER_BUNDLE
@@ -134,18 +139,18 @@ export const FEATURES_OMCB = {
   canCreateChapter: true,
   canAppendContent: true,
   canChangeTemplate: false,
-}
+};
 
 // ORIGIN_SINGLE_CHAPTER_BUNDLE
 export const FEATURES_OSCB = {
   canCreateChapter: false,
   canAppendContent: true,
   canChangeTemplate: true,
-}
+};
 
 // TRANSLATION BUNDLE
 export const FEATURES_TB = {
   canCreateChapter: false,
   canAppendContent: false,
   canChangeTemplate: false,
-}
+};

@@ -1,4 +1,4 @@
-import { defineMessages } from '@/services/intl'
+import { defineMessages } from '@/services/intl';
 
 export const bundleListType = defineMessages({
   created: {
@@ -25,7 +25,7 @@ export const bundleListType = defineMessages({
     id: 'dimzou-admin.bundle-list.read',
     defaultMessage: 'Read',
   },
-})
+});
 
 export const fieldLabels = defineMessages({
   title: {
@@ -36,4 +36,4 @@ export const fieldLabels = defineMessages({
     id: 'dimzou-admin.fields.actions',
     defaultMessage: 'Actions',
   },
-})
+});

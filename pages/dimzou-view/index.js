@@ -1,33 +1,27 @@
-import { useRouter } from 'next/router'
-import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router';
 
-import get from 'lodash/get'
+import getReducerInjectors from '@/utils/reducerInjectors';
 
-import SiteLayout, { Content } from '@feat/feat-ui/lib/layout';
-import Layout from '@/components/Layout';
+import Layout, { Site, SiteContent } from '@/components/Layout';
 import Header from '@/containers/Header';
 import Footer from '@/containers/Footer';
-import SplashView from '@/components/SplashView';
-import { REDUCER_KEY } from '@/modules/dimzou-view/reducer';
-import { asyncInitDimzouView } from '@/modules/dimzou-view/actions';
-
-const Dynamic = dynamic(
-  () => import('@/modules/dimzou-view/containers/DimzouView'),
-  {
-    loading: () => <SplashView />,
-  }
-)
+import { REDUCER_KEY } from '@/modules/dimzou-view/config';
+import {
+  asyncFetchBundlePublicationMeta,
+  asyncFetchNodePublication,
+} from '@/modules/dimzou-view/actions';
+import Render from '@/modules/dimzou-view';
 
 function DimzouDetail() {
   const router = useRouter();
   return (
-    <SiteLayout mode="fixed-header">
+    <Site mode="fixed-header">
       <Header />
-      <Content>
+      <SiteContent>
         <Layout>
           <Layout.Main>
             <Layout.Main modifier="base" id="main">
-              <Dynamic  
+              <Render
                 bundleId={router.query.bundleId}
                 nodeId={router.query.nodeId}
               />
@@ -35,31 +29,31 @@ function DimzouDetail() {
           </Layout.Main>
           <Footer />
         </Layout>
-      </Content>
-    </SiteLayout>
-  )
+      </SiteContent>
+    </Site>
+  );
 }
 
-DimzouDetail.getInitialProps = async ({ store, query, req }) => {
-  // select state
-  const state = get(store.getState(), [REDUCER_KEY, query.bundleId])
-  if (!state || !state.initialized) {
-    try {
-      await store.dispatch(asyncInitDimzouView({
-        ...query,
-        related: true,
-      }, req ? {
-        headers: req.getApiHeaders(),
-      } : undefined))
-    } catch (err) {
-      if (err.code !== 'NOT_FOUND') {
-        // TODO
-      }
-    };
-    
+DimzouDetail.getInitialProps = async ({ store, query }) => {
+  if (typeof window === 'undefined') {
+    const { default: reducer } = await import('@/modules/dimzou-view/reducer');
+    getReducerInjectors(store).injectReducer(REDUCER_KEY, reducer);
+    const info = await store.dispatch(
+      asyncFetchBundlePublicationMeta({
+        bundleId: query.bundleId,
+      }),
+    );
+    if (info) {
+      await store.dispatch(
+        asyncFetchNodePublication({
+          bundleId: query.bundleId,
+          nodeId: query.nodeId || info.nodes[0].id,
+          related: !info.bundle_is_multi_chapter,
+        }),
+      );
+    }
   }
-  
-  return {}
-}
-  
-export default DimzouDetail
+  return {};
+};
+
+export default DimzouDetail;

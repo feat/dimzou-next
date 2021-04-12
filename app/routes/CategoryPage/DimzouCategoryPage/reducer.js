@@ -1,15 +1,7 @@
 import { mapHandleActions } from '@/utils/reducerCreators';
 
 import { fetchCategoryFeeds } from './actions';
-
-export const initialPageState = {
-  loading: false,
-  items: [],
-  error: null,
-  next: undefined,
-  hasMore: true,
-  onceFetched: false,
-};
+import { initialPageState } from './config';
 
 export default mapHandleActions(
   {
@@ -42,5 +34,3 @@ export default mapHandleActions(
   initialPageState,
   (action) => action.payload.categoryId,
 );
-
-export const REDUCER_KEY = 'category-dimzou';

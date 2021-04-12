@@ -9,7 +9,6 @@ import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
-import getConfig from 'next/config';
 
 import classNames from 'classnames';
 import { connect } from 'react-redux';
@@ -17,39 +16,32 @@ import { connect } from 'react-redux';
 import Link from 'next/link';
 import { withRouter } from 'next/router';
 
-import { asPathname } from '@/utils/router';
+import { asPathname, getAsPath } from '@/utils/router';
 
 import mMessages from '@/messages/menu';
 import { selectCurrentUser } from '@/modules/auth/selectors';
 
 import LanguageSelectModal from '@/modules/language/containers/LanguageSelectModal';
+import TranslatableMessage from '@/modules/language/containers/TranslatableMessage';
 import LanguageSelectTrigger from '@/modules/language/containers/LanguageSelectTrigger';
-import TranslateLocaleSelectModal from '@/modules/language/containers/TranslateLanguageSelectModal';
-import TranslatableModeHint from '@/modules/language/containers/TranslatableModeHint';
 
 import {
+  isLanguageSelectOpened,
   isTranslateModeEnabled,
   isTranslateLanguageSelectOpened,
+  selectCurrentLocale,
 } from '@/modules/language/selectors';
 import {
+  changeLocale,
   disableTranslationMode,
+  closeLanguageSelect,
   closeTranslateLanguageSelect,
   openTranslateLanguageSelect,
 } from '@/modules/language/actions';
 
-import { Header } from '@feat/feat-ui/lib/layout';
+import { SiteHeader } from '@/components/Layout';
 import Navbar from '@feat/feat-ui/lib/navbar';
 import Menu from '@feat/feat-ui/lib/menu';
-
-
-/* assets */
-// import logo from '@/images/footer-logo.png';
-// import dollar from '@/images/dollar.svg';
-// import book from '@/images/book.svg';
-// import awesome from '@/images/awesome.svg';
-// import search from '@/images/search.svg';
-
-// import feat from '@/images/f.svg';
 
 import UserMenu from './UserMenu';
 
@@ -70,38 +62,16 @@ class HeaderContainer extends Component {
       }
       return (
         <Menu>
-          <Link
-            href={{
-              pathname: '/auth/login',
-              query: menuQuery,
-            }}
+          <a
+            className={classNames('ft-Menu__item', {
+              'is-active': asPathname(router.asPath) === '/auth/login',
+            })}
+            data-track-anchor="Login"
+            data-anchor-type="UserMenu"
+            href={getAsPath('/auth/login', menuQuery)}
           >
-            <a
-              className={classNames('ft-Menu__item', {
-                'is-active': asPathname(router.asPath) === '/auth/login',
-              })}
-              data-track-anchor="Login"
-              data-anchor-type="UserMenu"
-            >
-              <FormattedMessage {...mMessages.signIn} />
-            </a>
-          </Link>
-          <Link
-            href={{
-              pathname: '/auth/register',
-              query: menuQuery,
-            }}
-          >
-            <a
-              className={classNames('ft-Menu__item', {
-                'is-active': asPathname(router.asPath) === '/auth/register',
-              })}
-              data-track-anchor="Register"
-              data-anchor-type="UserMenu"
-            >
-              <FormattedMessage {...mMessages.signUp} />
-            </a>
-          </Link>
+            <FormattedMessage {...mMessages.signIn} />
+          </a>
         </Menu>
       );
     }
@@ -124,7 +94,7 @@ class HeaderContainer extends Component {
               'is-active': asPathname(router.asPath) === '/',
             })}
           >
-            Home
+            <TranslatableMessage message={mMessages.home} />
           </a>
         </Link>
       </div>
@@ -135,7 +105,7 @@ class HeaderContainer extends Component {
     const { subMenu } = this.props;
 
     return (
-      <Header
+      <SiteHeader
         className={classNames('Header', {
           'has-subMenu': !!subMenu,
         })}
@@ -146,40 +116,62 @@ class HeaderContainer extends Component {
             <div className="Header__navLink">{this.renderRootLinks()}</div>
           </Navbar.Left>
           <Navbar.Right>
-            <LanguageSelectModal isRegion />
+            <LanguageSelectModal
+              isRegion
+              isOpen={this.props.isLanguageSelectOpened}
+              selectedLang={this.props.currentLocale}
+              onClose={this.props.closeLanguageSelect}
+              onConfirm={(locale, option) => {
+                this.props.changeLocale({
+                  locale,
+                  localeLabel: option.label,
+                  localeRegion: option.label_region,
+                  forceRefresh: true,
+                });
+              }}
+            />
+            <LanguageSelectTrigger
+              className="ft-Menu__item"
+              style={{ marginRight: 10 }}
+            />
             {this.renderUserMenu()}
           </Navbar.Right>
-          <div className="ft-Navbar__bottom">
-            <LanguageSelectTrigger className="ft-Menu__item" />
-          </div>
-          <TranslateLocaleSelectModal />
-          <TranslatableModeHint />
         </Navbar>
         {subMenu && <div className="Header__subMenu">{subMenu}</div>}
-      </Header>
+      </SiteHeader>
     );
   }
 }
 
 HeaderContainer.propTypes = {
   currentUser: PropTypes.object,
+  // language select modal
+  isLanguageSelectOpened: PropTypes.bool,
+  changeLocale: PropTypes.func,
+  currentLocale: PropTypes.string,
+  // translate lang select modal
   isTranslateModeEnabled: PropTypes.bool,
   isTranslateLanguageSelectOpened: PropTypes.bool,
   disableTranslationMode: PropTypes.func.isRequired,
+  closeLanguageSelect: PropTypes.func,
   closeTranslateLanguageSelect: PropTypes.func.isRequired,
   openTranslateLanguageSelect: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser,
+  currentLocale: selectCurrentLocale,
+  isLanguageSelectOpened,
   isTranslateModeEnabled,
   isTranslateLanguageSelectOpened,
 });
 
 const mapDispatchToProps = {
   disableTranslationMode,
+  closeLanguageSelect,
   closeTranslateLanguageSelect,
   openTranslateLanguageSelect,
+  changeLocale,
 };
 
 const withConnect = connect(

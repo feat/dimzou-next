@@ -1,5 +1,0 @@
-@import 'base.scss';
-
-@include block(ns(WorksView, p)) {
-  padding-bottom: px-to-rem(72);
-}

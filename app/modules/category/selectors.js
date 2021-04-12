@@ -1,10 +1,9 @@
 import { createSelector } from 'reselect';
 import { denormalize } from 'normalizr';
-import listToTree from 'list-to-tree-lite';
 import get from 'lodash/get';
-
+import listToTree from '@/utils/listToTree';
 import { selectEntities } from '@/modules/entity/selectors';
-import { category as categorySchema } from '@/schema';
+import { category as categorySchema } from './schema';
 import { REDUCER_KEY } from './reducer';
 import tryToGetKey from '../../utils/tryToGetKey';
 

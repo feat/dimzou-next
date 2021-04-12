@@ -57,7 +57,7 @@ export default class DeviceInfoProvider extends React.PureComponent {
       media = this.state;
     } else {
       // TODO: default media query
-      this.state = {}
+      this.state = {};
     }
   }
 

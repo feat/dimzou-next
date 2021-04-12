@@ -7,23 +7,12 @@ class FeedTemplateIII extends Base {
   static displayName = 'FeedTemplateIII';
 
   renderI(item, index) {
-    return (
-      <DimzouCardIII
-        titleLines={2}
-        bodyLines={12}
-        key={index}
-      />
-    );
+    return <DimzouCardIII titleLines={2} bodyLines={12} key={index} />;
   }
 
   renderII(item, index) {
     return (
-      <DimzouCardII
-        layoutType="L"
-        titleLines={2}
-        bodyLines={7}
-        key={index}
-      />
+      <DimzouCardII layoutType="L" titleLines={2} bodyLines={7} key={index} />
     );
   }
 }

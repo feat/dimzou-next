@@ -6,19 +6,16 @@ import { normalize } from 'normalizr';
 import uniqBy from 'lodash/uniqBy';
 import sortBy from 'lodash/sortBy';
 
-import {
-  category as categorySchema,
-  dimzouBundleDesc as dimzouBundleDescSchema,
-  dimzouNodeDesc as dimzouNodeDescSchema,
-} from '@/schema';
 import ApiError from '@/errors/ApiError';
 
 import notification from '@feat/feat-ui/lib/notification';
+import { category as categorySchema } from '@/modules/category/schema';
+import {
+  dimzouBundleDesc as dimzouBundleDescSchema,
+  dimzouNodeDesc as dimzouNodeDescSchema,
+} from '../schema';
 
 import {
-  getBundleEditInfo as getBundleEditInfoRequest,
-  getParagraphRange as getParagraphRangeRequest,
-  getParagraphType as getParagraphTypeRequest,
   updateNodeSort as updateNodeSortRequest,
   setChapterNode as setChapterNodeRequest,
   setCoverNode as setCoverNodeRequest,
@@ -35,7 +32,6 @@ import {
   patchNodes,
   // receiveNewNode,
   // receiveNodeDescInfo,
-  receiveNodeUpdateSignal,
   receiveNewNode,
   receiveNodeDescInfo,
   bundleUpdateSingal,
@@ -47,18 +43,12 @@ import {
   editPatchSignal,
   commentSignal,
   likeSignal,
-  patchContent,
   changeTemplate,
   receiveCollaboratorPatch,
-  fetchNodeEditInfo,
   updateBundleDesc,
 } from '../actions';
 
-import {
-  selectBundleState,
-  selectNodeData,
-  selectNodeState,
-} from '../selectors';
+import { selectBundleState, selectNodeState } from '../selectors';
 import {
   ACTION_UPDATE_COLLABORATOR,
   ACTION_ADD_COLLABORATOR,
@@ -70,6 +60,7 @@ import {
 } from '../constants';
 
 import dimzouSocket from '../socket';
+import { getAsPath } from '../utils/router';
 
 function joinBundleChannel(bundleId) {
   logging.debug('joinBundleChannel', bundleId);
@@ -118,27 +109,6 @@ function* initBundleFlow(action) {
         data: err,
       }),
     );
-    // invalid nodeId, node may be deleted.
-    if (err.code === 'VALIDATION_EXCEPTION' && nodeId) {
-      const nextPayload = { ...payload };
-      delete nextPayload.nodeId;
-      yield put(initBundle(nextPayload));
-    } else {
-      if (!(err instanceof ApiError)) {
-        logging.error(err);
-      }
-      notification.error({
-        message: 'Error',
-        description: err.message,
-      });
-      yield put(
-        fetchNodeEditInfo.failure({
-          bundleId,
-          nodeId,
-          data: err,
-        }),
-      );
-    }
   } finally {
     // 定位文章段落位置；
     // const hash = window.location.hash;
@@ -252,19 +222,19 @@ function* listenDimzouSocket() {
       if (!bundleId) {
         return;
       }
-      // const normalized = normalize(data, dimzouNodeDescSchema);
+      const normalized = normalize(data, dimzouNodeDescSchema);
       const action = receiveNodeDescInfo({
         bundleId,
         data,
-        entityMutators: [
-          {
-            [dimzouNodeDescSchema.key]: {
-              [data.id]: {
-                $set: data,
-              },
-            },
+        entities: normalized.entities,
+        mergeOptions: {
+          customMerge: (key) => {
+            if (key === 'section') {
+              return (a, b) => b;
+            }
+            return undefined;
           },
-        ],
+        },
       });
       emitter(action);
     });
@@ -293,14 +263,6 @@ function* listenDimzouSocket() {
       emitter(action);
     });
     // node level
-    dimzouSocket.on('dimzou.edit.node-patch', (room, msg) => {
-      emitter(
-        receiveNodeUpdateSignal({
-          bundleId: msg.bundle_id,
-          nodeId: msg.node_id,
-        }),
-      );
-    });
     dimzouSocket.on('dimzou.edit.paragraph-updated', (room, msg) => {
       const nodeId = getNodeId(room);
       const paragraphType = get(msg, 'paragraphs.0.type');
@@ -404,57 +366,6 @@ function* listenDimzouSocket() {
     }
   } finally {
     channel.close();
-  }
-}
-
-function* tryToFetchUpdatedInfo(action) {
-  logging.debug('tryToFetchUpdatedInfo');
-  const { payload } = action;
-  const node = yield select((state) => selectNodeData(state, payload));
-  if (!node) {
-    return;
-  }
-  try {
-    const {
-      data: { node: updatedNode },
-    } = yield call(getBundleEditInfoRequest, payload.bundleId, {
-      node: payload.nodeId,
-    });
-    const { data: content } = yield call(getParagraphRangeRequest, {
-      node_id: updatedNode.id,
-    });
-    const { data: title } = yield call(getParagraphTypeRequest, {
-      node: payload.nodeId,
-      type: 0,
-    });
-    const { data: summary } = yield call(getParagraphTypeRequest, {
-      node: payload.nodeId,
-      type: 100,
-    });
-    const { data: cover } = yield call(getParagraphTypeRequest, {
-      node: payload.nodeId,
-      type: 300,
-    });
-    yield put(
-      patchContent({
-        ...payload,
-        data: {
-          ...updatedNode,
-          content,
-          title: title[0],
-          summary: summary[0],
-          cover: cover[0] || {},
-        },
-      }),
-    );
-  } catch (err) {
-    notification.error({
-      message: 'Error',
-      description: err.message,
-    });
-    if (!(err instanceof ApiError)) {
-      logging.error(err);
-    }
   }
 }
 
@@ -582,7 +493,7 @@ function* workshopUpdateFlow(action) {
       );
       break;
     default:
-      logging.warn(action);
+      logging.warn('NOT_HANDLED_BUNLDE_UPDATE_SIGNAL', action);
   }
 }
 
@@ -673,24 +584,21 @@ function* separateChapterFlow(action) {
   );
 
   if (String(Router.query.nodeId) === String(nodeId)) {
-    Router.replace(
-      {
-        pathname: '/dimzou-edit',
-        query: {
-          ...Router.query,
-          bundleId: newBundleId,
-          nodeId,
-        },
+    const href = {
+      pathname: '/dimzou-edit',
+      query: {
+        ...Router.query,
+        bundleId: newBundleId,
+        nodeId,
       },
-      `/draft/${newBundleId}/${nodeId}`,
-    );
+    };
+    Router.replace(href, getAsPath(href));
   }
 }
 
 export default function* dimzouBundleSaga() {
   yield takeEvery(initBundle, initBundleFlow);
   yield takeEvery(receiveBundleConfigPatch, handleBundleConfigPatch);
-  yield takeEvery(receiveNodeUpdateSignal, tryToFetchUpdatedInfo);
   yield takeEvery(bundleUpdateSingal, workshopUpdateFlow);
   yield takeEvery(updateNodeSort, updateNodeSortFlow);
   yield fork(listenDimzouSocket);

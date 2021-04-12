@@ -1,0 +1,14 @@
+<svg id="icon-collapse-all" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+  <rect id="矩形_111" data-name="矩形 111" width="28" height="28" fill="rgba(246,246,246,0)"/>
+  <g id="组_79" data-name="组 79" transform="translate(7 7)">
+    <g id="矩形_113" data-name="矩形 113" transform="translate(3.294)" fill="#fff" stroke="#707070" stroke-width="1">
+      <rect width="10.706" height="10.706" stroke="none"/>
+      <rect x="0.5" y="0.5" width="9.706" height="9.706" fill="none"/>
+    </g>
+    <g id="矩形_112" data-name="矩形 112" transform="translate(0 3.294)" fill="#fff" stroke="#707070" stroke-width="1">
+      <rect width="10.706" height="10.706" stroke="none"/>
+      <rect x="0.5" y="0.5" width="9.706" height="9.706" fill="none"/>
+    </g>
+    <line id="直线_5" data-name="直线 5" x2="4.941" transform="translate(2.882 8.647)" fill="none" stroke="#707070" stroke-width="1"/>
+  </g>
+</svg>

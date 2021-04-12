@@ -118,36 +118,36 @@ class ImageField extends React.Component {
         </Dropzone>
         {this.state.isCropOpened &&
           this.state.src && (
-          <div
-            className="ft-ImageDropzone__cropContainer"
-            style={{
-              minHeight: this.state.imgHeight,
-              height: this.state.imgHeight !== 0 ? 'auto' : '600px',
-            }}
-          >
-            <CropPanel
-              ref={(n) => {
-                this.cropPanel = n;
+            <div
+              className="ft-ImageDropzone__cropContainer"
+              style={{
+                minHeight: this.state.imgHeight,
+                height: this.state.imgHeight !== 0 ? 'auto' : '600px',
               }}
-              src={this.state.src}
-              crossorigin="Anonymous"
-              defaultCrop={{ width: 50, height: 50, aspect: 1.6, unit: '%' }}
-            />
-            <div className="ft-ImageDropzone__cropControls">
-              <IconButton
-                className="margin_r_24"
-                svgIcon="no-btn"
-                size="md"
-                onClick={this.handleCropClose}
+            >
+              <CropPanel
+                ref={(n) => {
+                  this.cropPanel = n;
+                }}
+                src={this.state.src}
+                crossorigin="Anonymous"
+                defaultCrop={{ width: 50, height: 50, aspect: 1.6, unit: '%' }}
               />
-              <IconButton
-                svgIcon="ok-btn"
-                size="md"
-                onClick={this.handleComfirm}
-              />
+              <div className="ft-ImageDropzone__cropControls">
+                <IconButton
+                  className="margin_r_24"
+                  svgIcon="no-btn"
+                  size="md"
+                  onClick={this.handleCropClose}
+                />
+                <IconButton
+                  svgIcon="ok-btn"
+                  size="md"
+                  onClick={this.handleComfirm}
+                />
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </FormItem>
     );
   }

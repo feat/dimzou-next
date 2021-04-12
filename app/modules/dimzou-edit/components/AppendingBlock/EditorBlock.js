@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
+import ActionButton from '@/components/ActionButton';
 import DimzouEditor, { getHTML, convertToRaw } from '../DimzouEditor';
 import {
   commitBlock,
@@ -11,7 +11,6 @@ import {
   updateAppendBlock,
 } from '../../actions';
 import { appendingBlockKey } from '../../utils/cache';
-import { useMeasure } from '../../context';
 import { TAILING_PIVOT } from '../../constants';
 
 function EditorBlock(props) {
@@ -30,8 +29,6 @@ function EditorBlock(props) {
   } = props;
   const dispatch = useDispatch();
   const hasText = editorState.getCurrentContent().hasText();
-
-  useMeasure([editorState]);
 
   const handleConfirm = (e) => {
     e.preventDefault();
@@ -77,9 +74,11 @@ function EditorBlock(props) {
       )}
       style={style}
     >
-      <div className="dz-BlockSection__paraNum">{props.sort}</div>
+      <div className="dz-BlockSection__leading">
+        <div className="dz-BlockSection__paraNum">{props.sort}</div>
+      </div>
       <DimzouEditor
-        className="typo-Article"
+        className="dz-Typo dz-ContentEditRegion"
         placeholder={placeholder}
         editorState={editorState}
         onChange={(editorState) => {
@@ -113,8 +112,8 @@ function EditorBlock(props) {
         <div className="dz-BlockSectionFooter">
           <div className="dz-BlockSectionFooter__left" />
           <div className="dz-BlockSectionFooter__right">
-            <IconButton
-              svgIcon="no-btn"
+            <ActionButton
+              type="no"
               size="md"
               disabled={!hasText || submitting}
               className={classNames('dz-BlockSectionFooter__btn', {
@@ -131,8 +130,8 @@ function EditorBlock(props) {
                 );
               }}
             />
-            <IconButton
-              svgIcon="ok-btn"
+            <ActionButton
+              type="ok"
               size="md"
               disabled={!hasText || submitting}
               className={classNames('dz-BlockSectionFooter__btn', {

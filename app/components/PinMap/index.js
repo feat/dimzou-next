@@ -48,7 +48,7 @@ class PinMap extends React.PureComponent {
 
   renderMap() {
     const { boundsInfo, initialValue } = this.props;
-    const domId = this.domId;
+    const { domId } = this;
     let provider;
     if (this.props.provider) {
       provider = this.props.provider;
@@ -58,16 +58,11 @@ class PinMap extends React.PureComponent {
       provider = 'google';
     }
 
-    const mapLayer = L.tileLayer(
-      tileProviderMap[provider].url,
-      Object.assign(
-        {
-          minZoom: 0,
-          maxZoom: 23,
-        },
-        tileProviderMap[provider].options,
-      ),
-    );
+    const mapLayer = L.tileLayer(tileProviderMap[provider].url, {
+      minZoom: 0,
+      maxZoom: 23,
+      ...tileProviderMap[provider].options,
+    });
 
     let center;
     let bounds;

@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { injectIntl } from 'react-intl';
 
 import FeatModal from '@feat/feat-ui/lib/feat-modal';
-import IconButton from '@feat/feat-ui/lib/button/IconButton';
 import TranslatableMessage from '@/modules/language/containers/TranslatableMessage';
 
-import { formatMessage } from '@/services/intl';
 import TagGroupInput from '@/components/TagGroupInput';
+import ActionButton from '@/components/ActionButton';
 import { getApplyScenes } from '../../../../requests';
 import rMessages from '../../messages';
 
@@ -25,7 +25,7 @@ function fetchAsyncOptions(value) {
 class ReleaseApplyScenes extends React.PureComponent {
   state = {
     value: this.props.data || [],
-  }
+  };
 
   componentDidMount() {
     if (this.input) {
@@ -47,15 +47,18 @@ class ReleaseApplyScenes extends React.PureComponent {
 
   handleChange = (value) => {
     this.setState({ value });
-  }
+  };
 
   handleConfirm = () => {
     this.props.onConfirm(this.state.value);
-  }
+  };
 
   render() {
+    const {
+      intl: { formatMessage },
+    } = this.props;
     return (
-      <FeatModal>
+      <FeatModal fixedHeight>
         <FeatModal.Wrap>
           <FeatModal.Header>
             <FeatModal.Title>
@@ -63,9 +66,11 @@ class ReleaseApplyScenes extends React.PureComponent {
             </FeatModal.Title>
           </FeatModal.Header>
           <FeatModal.Content>
-            <div style={{ marginTop: 20}}>
+            <div style={{ marginTop: 20 }}>
               <TagGroupInput
-                ref={(n) => { this.input = n; }}
+                ref={(n) => {
+                  this.input = n;
+                }}
                 placeholder={formatMessage(rMessages.applyScenePlaceholder)}
                 value={this.state.value}
                 onChange={this.handleChange}
@@ -78,21 +83,25 @@ class ReleaseApplyScenes extends React.PureComponent {
             </div>
           </FeatModal.Content>
           <FeatModal.Footer>
-            <IconButton
-              svgIcon="ok-btn"
+            <ActionButton
+              type="ok"
               size="md"
+              data-type="action"
+              data-button-style="icon"
               onClick={this.handleConfirm}
             />
           </FeatModal.Footer>
         </FeatModal.Wrap>
       </FeatModal>
-    )
+    );
   }
 }
 
 ReleaseApplyScenes.propTypes = {
   data: PropTypes.array,
   onConfirm: PropTypes.func,
-}
 
-export default ReleaseApplyScenes;
+  intl: PropTypes.object,
+};
+
+export default injectIntl(ReleaseApplyScenes, { forwardRef: true });

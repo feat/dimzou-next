@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import createTemplate from '@feat/feat-ui/lib/util/createTemplate';
 
 import './style.scss';
@@ -61,6 +62,45 @@ Layout.Title = createTemplate({
   displayName: 'Title',
   customProps: ['modifier'],
   state: ({ baseName, modifier }) => modifier && `${baseName}_${modifier}`,
+});
+
+Layout.Content = createTemplate({
+  Compo: 'div',
+  namespace: '',
+  baseName: 'MainLayout__content',
+  displayName: 'Content',
+  customProps: ['modifier'],
+});
+
+export const Site = (props) => {
+  const { className, children, mode, ...restProps } = props;
+  return (
+    <div
+      className={classNames(className, 'Site', {
+        Site_fixedHeader: mode === 'fixed-header',
+        Site_staticHeader: mode === 'static-header',
+      })}
+      {...restProps}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const SiteHeader = createTemplate({
+  Compo: 'div',
+  namespace: '',
+  baseName: 'Site__header',
+  displayName: 'SiteHeader',
+  customProps: ['modifier'],
+});
+
+export const SiteContent = createTemplate({
+  Compo: 'div',
+  namespace: '',
+  baseName: 'Site__content',
+  displayName: 'SiteContent',
+  customProps: ['modifier'],
 });
 
 export default Layout;

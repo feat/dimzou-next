@@ -1,6 +1,7 @@
 import { combineActions } from 'redux-actions';
 import update from 'immutability-helper';
 import { mapHandleActions } from '@/utils/reducerCreators';
+import invariant from 'invariant';
 
 import {
   // block
@@ -12,26 +13,29 @@ import {
   updateBlockEditor,
   updateBlockState,
   // node
-  loadNodeEditInfo,
+  initNodeEdit,
   commitRewording,
   updateRewording,
   submitRewording,
   electRewording,
   rejectRewording,
-  electBlock,
-  rejectBlock,
   submitMediaRewording,
   commitMediaRewording,
   updateMediaRewording,
-  patchContent,
   removeBlock,
-  updateNodeInfo,
+  loadBlockRange,
+  commitBlock,
+  submitBlock,
+  commitMediaBlock,
+  submitMediaBlock,
+  patchNodeData,
 } from '../actions';
 
 import {
   BLOCK_KEY_SEPARATOR,
   BLOCK_EXPANDED_SECTION_VERSIONS,
   REWORDING_WIDGET_IMAGE,
+  structureMap,
   // CONTENT_TYPE_TRANSLATE,
 } from '../constants';
 import { createFromRawData, createFromHTML } from '../components/DimzouEditor';
@@ -79,13 +83,13 @@ function getInitialBlockState(block, structure, contentType) {
       editorState =
         structure === 'title'
           ? createFromRawData({
-            blocks: [{ type: 'header-one', text: '' }],
-            entityMap: {},
-          })
+              blocks: [{ type: 'header-one', text: '' }],
+              entityMap: {},
+            })
           : createFromRawData({
-            blocks: [{ type: 'unstyled', text: '' }],
-            entityMap: {},
-          });
+              blocks: [{ type: 'unstyled', text: '' }],
+              entityMap: {},
+            });
     }
     if (editorState) {
       base.editorState = editorState;
@@ -100,99 +104,116 @@ function getInitialBlockState(block, structure, contentType) {
   return initialBlockState;
 }
 
-export const getBlockKey = ({ structure, blockId }) =>
-  `${structure}${BLOCK_KEY_SEPARATOR}${blockId}`;
+export const getBlockKey = ({ structure, blockId }) => {
+  invariant(structure, '`structure` is required to init blocks');
+  return `${structure}${BLOCK_KEY_SEPARATOR}${blockId}`;
+};
 
-const initBlockWithNodeInfo = (state, action) => {
+const initWithNodeInit = (state, action) => {
   let newState = { ...state };
   const {
-    payload: { data, contentType },
+    payload: { basic, title, cover, summary, blocks, contentType },
   } = action;
-  if (data.title) {
+  if (title) {
     const blockKey = getBlockKey({
       structure: 'title',
-      blockId: data.title.id,
+      blockId: title,
     });
     if (!newState[blockKey]) {
       newState[blockKey] = {
-        ...getInitialBlockState(data.title, 'title', contentType),
+        ...getInitialBlockState(blocks[title], 'title', contentType),
         structure: 'title',
-        bundleId: data.bundle_id,
-        nodeId: data.id,
-        blockId: data.title.id,
+        bundleId: basic.bundle_id,
+        nodeId: basic.id,
+        blockId: title,
         expandedType: BLOCK_EXPANDED_SECTION_VERSIONS,
       };
     }
   }
-  if (data.summary) {
+  if (summary) {
     const blockKey = getBlockKey({
       structure: 'summary',
-      blockId: data.summary.id,
+      blockId: summary,
     });
     if (!newState[blockKey]) {
       newState[blockKey] = {
-        ...getInitialBlockState(data.summary, 'summary', contentType),
+        ...getInitialBlockState(blocks[summary], 'summary', contentType),
         structure: 'summary',
-        bundleId: data.bundle_id,
-        nodeId: data.id,
-        blockId: data.summary.id,
+        bundleId: basic.bundle_id,
+        nodeId: basic.id,
+        blockId: summary,
         expandedType: BLOCK_EXPANDED_SECTION_VERSIONS,
       };
     }
   }
-  if (data.cover) {
+  if (cover) {
     const blockKey = getBlockKey({
       structure: 'cover',
-      blockId: data.cover.id,
+      blockId: cover,
     });
     if (!newState[blockKey]) {
       newState[blockKey] = {
         ...initialBlockState,
         structure: 'cover',
-        bundleId: data.bundle_id,
-        nodeId: data.id,
-        blockId: data.cover.id,
+        bundleId: basic.bundle_id,
+        nodeId: basic.id,
+        blockId: cover,
       };
     }
+  } else if (!newState[`node-cover-${basic.id}`]) {
+    newState[`cover-node:${basic.id}`] = {
+      ...initialBlockState,
+      structure: 'cover',
+      bundleId: basic.bundle_id,
+      nodeId: basic.id,
+      blockId: cover,
+    };
   }
-  if (data.content) {
-    data.content.forEach((block) => {
-      const blockKey = getBlockKey({ structure: 'content', blockId: block.id });
-      if (!newState[blockKey]) {
-        newState[blockKey] = {
-          ...getInitialBlockState(block, 'content', contentType),
-          structure: 'content',
-          bundleId: data.bundle_id,
-          nodeId: data.id,
-          blockId: block.id,
-          // only accepted block has expanded.
-          expandedType:
-            // index === 0 && // all block should be expanded
-            block.rewordings &&
-            block.rewordings.some((item) => item.is_selected)
-              ? BLOCK_EXPANDED_SECTION_VERSIONS
-              : undefined,
-        };
+  // initialize with cache
+  const cache = getNodeCache(action.payload.nodeId);
+  if (cache) {
+    Object.keys(newState).forEach((key) => {
+      // if has cache, init block edit with cache;
+      const blockCache = cache.get(`block-${key}`);
+      if (blockCache) {
+        const { html, ...payload } = blockCache;
+        payload.editorState = createFromHTML(html);
+        newState = baseBlockReducer(newState, initBlockEdit(payload));
       }
     });
   }
-  // cache info
-  if (action.type === loadNodeEditInfo.toString()) {
-    const cache = getNodeCache(action.payload.nodeId);
-    if (cache) {
-      const blocks = Object.entries(cache.all()).filter(([key]) =>
-        /^block-/.test(key),
-      );
-      blocks.forEach((cacheInfo) => {
-        if (cacheInfo[1] && !cacheInfo[1].html) {
-          return;
-        }
-        const { html, ...payload } = cacheInfo[1];
-        payload.editorState = createFromHTML(html);
-        newState = baseBlockReducer(newState, initBlockEdit(payload));
-      });
-    }
+  return newState;
+};
+
+const initWithChunk = (state, action) => {
+  const { nodeId, bundleId, blocks } = action.payload;
+  // patchNodeData 可能没有 blocks 数据
+  if (!blocks) {
+    return state;
   }
+  const newState = { ...state };
+  Object.values(blocks).forEach((block) => {
+    const structure = structureMap[block.type];
+    const blockKey = getBlockKey({
+      structure,
+      blockId: block.id,
+    });
+    if (!newState[blockKey]) {
+      newState[blockKey] = {
+        ...getInitialBlockState(block, structure),
+        structure,
+        bundleId,
+        nodeId,
+        blockId: block.id,
+        // only accepted block has expanded.
+        expandedType:
+          // index === 0 && // all block should be expanded
+          block.rewordings && block.rewordings.some((item) => item.is_selected)
+            ? BLOCK_EXPANDED_SECTION_VERSIONS
+            : undefined,
+      };
+    }
+  });
   return newState;
 };
 
@@ -394,21 +415,15 @@ const baseBlockReducer = mapHandleActions(
         submitting: false,
       };
     },
-    [combineActions(
-      electRewording.REQUEST,
-      rejectRewording.REQUEST,
-      electBlock.REQUEST,
-      rejectBlock.REQUEST,
-    )]: (blockState) => ({
+    [combineActions(electRewording.REQUEST, rejectRewording.REQUEST)]: (
+      blockState,
+    ) => ({
       ...blockState,
       electingRewording: true,
     }),
-    [combineActions(
-      electRewording.FULFILL,
-      rejectRewording.FULFILL,
-      electBlock.FULFILL,
-      rejectBlock.FULFILL,
-    )]: (blockState) => ({
+    [combineActions(electRewording.FULFILL, rejectRewording.FULFILL)]: (
+      blockState,
+    ) => ({
       ...blockState,
       electingRewording: false,
     }),
@@ -480,13 +495,22 @@ const baseBlockReducer = mapHandleActions(
 );
 
 const blockReducer = (state = {}, action) => {
-  if (
-    action.type === loadNodeEditInfo.toString() ||
-    action.type === patchContent.toString() ||
-    action.type === updateNodeInfo.toString()
-  ) {
-    return initBlockWithNodeInfo(state, action);
+  if (action.type === initNodeEdit.SUCCESS) {
+    return initWithNodeInit(state, action);
   }
+  if (
+    action.type === loadBlockRange.toString() ||
+    action.type === patchNodeData.toString() ||
+    action.type === commitBlock.SUCCESS ||
+    action.type === submitBlock.SUCCESS ||
+    action.type === commitMediaBlock.SUCCESS ||
+    action.type === submitMediaBlock.SUCCESS ||
+    action.type === commitRewording.SUCCESS
+  ) {
+    const blockInitialized = initWithChunk(state, action);
+    return baseBlockReducer(blockInitialized, action);
+  }
+
   if (action.type === toggleBlockExpanded.toString()) {
     return toggleBlockReducer(state, action);
   }

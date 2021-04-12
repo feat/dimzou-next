@@ -1,17 +1,9 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import Slider from 'react-slick';
-
-import { formatMessage } from '@/services/intl';
-import {
-  shareToWeibo,
-  // shareToGPlus,
-  shareToFacebook,
-  shareToLinkedIn,
-  shareToTwitter,
-  shareWithEmail,
-} from '@/services/share';
+import { injectIntl } from 'react-intl';
 
 // import Tabs from '@feat/feat-ui/lib/tabs';
 import Button from '@feat/feat-ui/lib/button';
@@ -21,20 +13,21 @@ import TranslatableMessage from '@/modules/language/containers/TranslatableMessa
 import { withDeviceInfo } from '@/modules/device-info';
 
 // import PhoneForm from './PhoneForm'; // use regiter Phone Form
-
-// import googlePlusIcon from './assets/google-plus.svg';
-import facebookIcon from './assets/facebook.svg';
-import twitterIcon from './assets/twitter.svg';
-import linkedinIcon from './assets/linkedin.svg';
-import weiboIcon from './assets/weibo.svg';
-// import emailIcon from './assets/email.svg';
+import {
+  shareToWeibo,
+  // shareToGPlus,
+  shareToFacebook,
+  shareToLinkedIn,
+  shareToTwitter,
+  shareWithEmail,
+} from '../../index';
 
 import intlMessages from './messages';
+import SocialIcon from '../SocialIcon';
 
 import './style.scss';
 
 class ShareModal extends React.Component {
-
   handleWeiboButtonClick = (e) => {
     e.preventDefault();
     const { shareText, link, source, sourceUrl } = this.props.shareInfo;
@@ -96,6 +89,9 @@ class ShareModal extends React.Component {
 
   handleCopy = (e) => {
     e.preventDefault();
+    const {
+      intl: { formatMessage },
+    } = this.props;
     this.linkInput.select();
     document.execCommand('copy');
     message.success(formatMessage(intlMessages.copySuccessHint));
@@ -106,9 +102,9 @@ class ShareModal extends React.Component {
     if (this.props.onShareBtnClick) {
       this.props.onShareBtnClick({
         type,
-      })
+      });
     }
-  }
+  };
 
   renderPublicPanel() {
     const { shareHint, shareInfo = {}, isMobile } = this.props;
@@ -134,10 +130,11 @@ class ShareModal extends React.Component {
               <button
                 type="button"
                 className="PublicShareOption PublicShareOption_weibo"
-                dangerouslySetInnerHTML={{ __html: weiboIcon }}
                 onClick={this.handleWeiboButtonClick}
                 disabled={!isReady}
-              />
+              >
+                <SocialIcon name="weibo" />
+              </button>
             </div>
             {/* <div className="PublicShare__option">
               <button
@@ -152,28 +149,31 @@ class ShareModal extends React.Component {
               <button
                 type="button"
                 className="PublicShareOption PublicShareOption_facebook"
-                dangerouslySetInnerHTML={{ __html: facebookIcon }}
                 onClick={this.handleFacebookButtonClick}
                 disabled={!isReady}
-              />
+              >
+                <SocialIcon name="facebook" />
+              </button>
             </div>
             <div className="PublicShare__option">
               <button
                 type="button"
                 className="PublicShareOption PublicShareOption_linkedIn"
-                dangerouslySetInnerHTML={{ __html: linkedinIcon }}
                 onClick={this.handleLinkedInButtonClick}
                 disabled={!isReady}
-              />
+              >
+                <SocialIcon name="linkedIn" />
+              </button>
             </div>
             <div className="PublicShare__option">
               <button
                 type="button"
                 className="PublicShareOption PublicShareOption_twitter"
-                dangerouslySetInnerHTML={{ __html: twitterIcon }}
                 onClick={this.handleTwitterButtonClick}
                 disabled={!isReady}
-              />
+              >
+                <SocialIcon name="twitter" />
+              </button>
             </div>
             {/* <div className="PublicShare__option">
               <button
@@ -260,19 +260,19 @@ class ShareModal extends React.Component {
 
   render() {
     return (
-      <FeatModal>
+      <FeatModal fixedHeight>
         <FeatModal.Header>
           <FeatModal.Title>
             <TranslatableMessage message={intlMessages.title} />
           </FeatModal.Title>
         </FeatModal.Header>
-        <FeatModal.Content>{this.renderPublicPanel()}</FeatModal.Content>
+        <FeatModal.Content noPadding>
+          {this.renderPublicPanel()}
+        </FeatModal.Content>
       </FeatModal>
     );
   }
 }
-
-export default withDeviceInfo(ShareModal);
 
 ShareModal.propTypes = {
   // canShareWithSMS: PropTypes.bool,
@@ -296,6 +296,7 @@ ShareModal.propTypes = {
   // smsShareHint: PropTypes.node,
 
   // shareWithSMS: PropTypes.func,
+  intl: PropTypes.object,
 };
 
 ShareModal.defaultProps = {
@@ -304,3 +305,5 @@ ShareModal.defaultProps = {
   // smsShareHint: 'Send an SMS to friend.',
   // loadingHint: 'Loading...',
 };
+
+export default withDeviceInfo(injectIntl(ShareModal));
